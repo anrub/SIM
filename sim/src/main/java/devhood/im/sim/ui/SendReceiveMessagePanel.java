@@ -4,6 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -11,7 +17,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.JViewport;
 
+import devhood.im.sim.Sim;
+import devhood.im.sim.model.Message;
+import devhood.im.sim.model.User;
+import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.EventObserver;
 import devhood.im.sim.ui.event.Events;
@@ -29,6 +40,13 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	private JTabbedPane tabbedPane;
 
+	private Map<String, JTextArea> nameTextAreaMap = new HashMap<String, JTextArea>();
+
+	/**
+	 * DateFormat.s
+	 */
+	private DateFormat df = new SimpleDateFormat("HH:mm:ss");
+
 	public SendReceiveMessagePanel() {
 		super();
 		setLayout(new BorderLayout());
@@ -40,7 +58,31 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		// Lay out the buttons from left to right.
 		JPanel buttonPane = new JPanel();
 
-		buttonPane.add(new JButton("Send"));
+		JButton sendButton = new JButton("Send");
+		sendButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JPanel p = (JPanel) tabbedPane.getSelectedComponent();
+
+				JTextArea timeline = (JTextArea) ((JViewport) ((JScrollPane) p
+						.getComponent(0)).getComponent(0)).getComponent(0);
+				JTextArea input = (JTextArea) ((JViewport) ((JScrollPane) p
+						.getComponent(1)).getComponent(0)).getComponent(0);
+
+				timeline.setText(getFormattedMessage(Sim.getUsername(),
+						input.getText(), timeline.getText()));
+
+				input.setText("");
+
+				input.requestFocusInWindow();
+
+				// MessagingService send message in Swing Thread ...buttonPane
+				// Fehlerbehandlung
+			}
+		});
+
+		buttonPane.add(sendButton);
 		buttonPane.add(new JButton("Cancel"));
 
 		JButton closeButton = new JButton("Close");
@@ -48,10 +90,14 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Component c = tabbedPane.getSelectedComponent();
-				String name = c.getName();
-				tabbedPane.remove(c);
 
+				int index = tabbedPane.getSelectedIndex();
+				Component c = tabbedPane.getComponentAt(index);
+
+				String title = tabbedPane.getTitleAt(index);
+				nameTextAreaMap.remove(title);
+
+				tabbedPane.remove(index);
 			}
 		});
 		buttonPane.add(closeButton);
@@ -69,10 +115,96 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	public void eventReceived(Events event, Object o) {
 		if (Events.USER_SELECTED.equals(event)) {
 			JCheckBox box = (JCheckBox) o;
-			String name = box.getText();
-			addToTabPane(name, null);
-			focusTabPane(name);
+			String text = box.getText();
+			addToTabPane(text, null);
+			focusTabPane(text);
+		} else if (Events.MESSAGE_RECEIVED.equals(event)) {
+			if (o instanceof Message) {
+				Message m = (Message) o;
+				processNewMessage(m);
+			} else {
+				throw new IllegalArgumentException("Fuer Event "
+						+ Events.MESSAGE_RECEIVED
+						+ " muss eine Message als Object kkommen! ist aber: "
+						+ o.getClass());
+			}
 		}
+	}
+
+	/**
+	 * Verarbeitung einer neuen Nachricht.
+	 * 
+	 * @param m
+	 *            Message
+	 */
+	public void processNewMessage(Message m) {
+		boolean valid = validateMessage(m);
+		if (!valid) {
+			throw new IllegalArgumentException(
+					"Uebergebene Message ist nicht valide! Message: " + m);
+		}
+
+		List<User> users = ServiceLocator.getInstance().getRegistryService()
+				.getUsers();
+
+		String name = m.getName();
+		JTextArea textArea = nameTextAreaMap.get(name);
+
+		if (textArea != null) {
+			String oldText = textArea.getText();
+			textArea.setText(getFormattedMessage(m.getName(), m.getText(),
+					oldText));
+		} else {
+			String text = getFormattedMessage(m.getName(), m.getText());
+			addToTabPane(m.getName(), text);
+			// focusTabPane(m.getName());
+		}
+
+		System.out.println("Message: Name: " + m.getName() + " Text: "
+				+ m.getText());
+
+	}
+
+	/**
+	 * Gibt die Message formatiert aus.
+	 * 
+	 * @param username
+	 *            Username
+	 * @param msg
+	 *            Nachricht
+	 * @param oldText
+	 *            vorhandener text in der text area
+	 * @return formatierter String
+	 */
+	public String getFormattedMessage(String username, String msg,
+			String oldText) {
+		return oldText + "\n" + getFormattedMessage(username, msg);
+
+	}
+
+	/**
+	 * Gibt die Message formatiert aus.
+	 * 
+	 * @param username
+	 *            Username
+	 * @param msg
+	 *            Nachricht
+	 * @param oldText
+	 *            vorhandener text in der text area
+	 * @return formatierter String
+	 */
+	public String getFormattedMessage(String username, String msg) {
+		return "[" + df.format(new Date()) + "] " + username + "> " + msg;
+	}
+
+	/**
+	 * Validiert die neue nachricht
+	 * 
+	 * @param m
+	 */
+	public boolean validateMessage(Message m) {
+
+		return true;
 	}
 
 	/**
@@ -80,6 +212,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * 
 	 * @param label
 	 *            Label des Tabs
+	 * @param text
+	 *            Text der in die TextArea geschrieben wird.
 	 */
 	public void addToTabPane(String label, String text) {
 		JPanel textPanel = new JPanel(new BorderLayout());
@@ -103,6 +237,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		tabbedPane.addTab(label, textPanel);
 
+		nameTextAreaMap.put(label, timelineTextArea);
 	}
 
 	/**

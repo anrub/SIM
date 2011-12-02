@@ -59,7 +59,7 @@ public class MainFrame {
 	private String trayIcon = "/images/trayIcon.gif";
 
 	public MainFrame() {
-		registryService = ServiceLocator.getInstance().getUserService();
+		registryService = ServiceLocator.getInstance().getRegistryService();
 	}
 
 	/**

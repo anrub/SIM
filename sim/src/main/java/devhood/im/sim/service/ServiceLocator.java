@@ -25,7 +25,7 @@ public class ServiceLocator {
 	 * 
 	 * @return UserService;
 	 */
-	public RegistryService getUserService() {
+	public RegistryService getRegistryService() {
 		return userService;
 	}
 }

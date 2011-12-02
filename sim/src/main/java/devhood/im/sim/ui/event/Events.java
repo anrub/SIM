@@ -10,6 +10,11 @@ public enum Events {
 	/**
 	 * Ein User wurde ausgewaehlt.
 	 */
-	USER_SELECTED;
+	USER_SELECTED,
+
+	/**
+	 * Eine neue Nachricht wurde empfangen.
+	 */
+	MESSAGE_RECEIVED;
 
 }

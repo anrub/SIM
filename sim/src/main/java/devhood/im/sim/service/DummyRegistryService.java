@@ -26,6 +26,7 @@ public class DummyRegistryService implements RegistryService {
 		for (int i = 0; i < 10; i++) {
 			User u = new User();
 			u.setName("User " + i);
+			u.setId(Integer.toString(i));
 			users.add(u);
 		}
 		return users;

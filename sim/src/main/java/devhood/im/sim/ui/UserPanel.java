@@ -35,31 +35,25 @@ public class UserPanel extends JPanel {
 	 * Initialisiert, füllt das UserPanel.
 	 */
 	public void init() {
-
 		setLayout(new GridLayout(10, 1));
 
 		List<User> users = registryService.getUsers();
 		for (User user : users) {
 			JCheckBox userCheckBox = new JCheckBox(user.getName());
-			userCheckBox.addItemListener(new UserSelectedListener());
+			userCheckBox.setName(user.getId());
+
+			userCheckBox.addItemListener(new ItemListener() {
+
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					if (e.getStateChange() == ItemEvent.SELECTED) {
+						JCheckBox box = (JCheckBox) e.getSource();
+						EventDispatcher.fireEvent(Events.USER_SELECTED, box);
+					}
+				}
+			});
+
 			add(userCheckBox);
-		}
-	}
-
-	/**
-	 * Listener reagiert auf die Auswahl eines Users.
-	 * 
-	 * @author flo
-	 * 
-	 */
-	class UserSelectedListener implements ItemListener {
-
-		@Override
-		public void itemStateChanged(ItemEvent e) {
-			if (e.getStateChange() == ItemEvent.SELECTED) {
-				JCheckBox box = (JCheckBox) e.getSource();
-				EventDispatcher.fireEvent(Events.USER_SELECTED, box);
-			}
 		}
 	}
 }

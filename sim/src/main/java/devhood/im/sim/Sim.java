@@ -11,14 +11,10 @@ import devhood.im.sim.model.User;
  * 
  */
 public class Sim {
-	private List<User> selectedUsers;
 
-	public List<User> getSelectedUsers() {
-		return selectedUsers;
+	private static String username = "flo";
+
+	public static String getUsername() {
+		return username;
 	}
-
-	public void setSelectedUsers(List<User> selectedUsers) {
-		this.selectedUsers = selectedUsers;
-	}
-
 }

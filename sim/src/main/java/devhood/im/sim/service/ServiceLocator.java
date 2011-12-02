@@ -1,10 +1,10 @@
 package devhood.im.sim.service;
 
-import devhood.im.sim.service.interfaces.UserService;
+import devhood.im.sim.service.interfaces.RegistryService;
 
 public class ServiceLocator {
 
-	private UserService userService = new DummyUserService();
+	private RegistryService userService = new DummyRegistryService();
 
 	private static ServiceLocator instance;
 
@@ -25,7 +25,7 @@ public class ServiceLocator {
 	 * 
 	 * @return UserService;
 	 */
-	public UserService getUserService() {
+	public RegistryService getUserService() {
 		return userService;
 	}
 }

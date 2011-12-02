@@ -18,7 +18,7 @@ import javax.swing.JSplitPane;
 
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.ServiceLocator;
-import devhood.im.sim.service.interfaces.UserService;
+import devhood.im.sim.service.interfaces.RegistryService;
 
 /**
  * This is the main frame of the application.
@@ -33,7 +33,7 @@ public class MainFrame {
 	private JScrollPane userScrollPane;
 	private Component msgScrollPane;
 
-	private UserService userService;
+	private RegistryService userService;
 
 	public MainFrame() {
 		userService = ServiceLocator.getInstance().getUserService();

@@ -10,7 +10,7 @@ import devhood.im.sim.model.User;
  * @author flo
  * 
  */
-public interface UserService {
+public interface RegistryService {
 
 	/**
 	 * Returns the List of available Users.

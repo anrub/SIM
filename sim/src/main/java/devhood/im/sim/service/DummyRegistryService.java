@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import devhood.im.sim.model.User;
-import devhood.im.sim.service.interfaces.UserService;
+import devhood.im.sim.service.interfaces.RegistryService;
 
 /**
  * Dummy user service mock data.
@@ -12,7 +12,7 @@ import devhood.im.sim.service.interfaces.UserService;
  * @author flo
  * 
  */
-public class DummyUserService implements UserService {
+public class DummyRegistryService implements RegistryService {
 
 	/**
 	 * Returns the List of available Users. Mock Data.

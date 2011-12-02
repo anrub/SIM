@@ -2,7 +2,6 @@ package devhood.im.sim.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -11,13 +10,9 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.List;
 
-import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -27,7 +22,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 import devhood.im.sim.SimMain;
-import devhood.im.sim.model.User;
 import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.service.interfaces.RegistryService;
 
@@ -109,31 +103,10 @@ public class MainFrame {
 	 * Initialies the user scrollpane.
 	 */
 	protected void initUserScrollPane() {
-		JPanel p = new JPanel(new GridLayout(10, 1));
+		JPanel userPanel = new UserPanel(registryService);
 
-		userScrollPane = new JScrollPane(p);
+		userScrollPane = new JScrollPane(userPanel);
 
-		// userScrollPane.setLayout(new Lay
-		List<User> users = registryService.getUsers();
-		for (User user : users) {
-			JCheckBox userCheckBox = new JCheckBox(user.getName());
-			userCheckBox.addItemListener(new CreateTabListener());
-			p.add(userCheckBox);
-		}
-
-	}
-
-	class CreateTabListener implements ItemListener {
-
-		@Override
-		public void itemStateChanged(ItemEvent e) {
-			if (e.getStateChange() == ItemEvent.SELECTED) {
-				JCheckBox box = (JCheckBox) e.getSource();
-				String name = box.getText();
-				msgScrollPane.addToTabPane(name);
-				msgScrollPane.focusTabPane(name);
-			}
-		}
 	}
 
 	/**

@@ -4,10 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -19,7 +18,7 @@ import javax.swing.JTextArea;
  * @author flo
  * 
  */
-public class SendReceiveMessagePanel extends JPanel {
+public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	private JTabbedPane tabbedPane;
 
@@ -29,7 +28,7 @@ public class SendReceiveMessagePanel extends JPanel {
 
 		tabbedPane = new JTabbedPane();
 
-		addToTabPane("Info");
+		addToTabPane("Info", "SIM - S Instant Messenger");
 
 		// Lay out the buttons from left to right.
 		JPanel buttonPane = new JPanel();
@@ -45,14 +44,25 @@ public class SendReceiveMessagePanel extends JPanel {
 				Component c = tabbedPane.getSelectedComponent();
 				String name = c.getName();
 				tabbedPane.remove(c);
-				
-				
+
 			}
 		});
 		buttonPane.add(closeButton);
 
 		this.add(tabbedPane, BorderLayout.CENTER);
 		this.add(buttonPane, BorderLayout.PAGE_END);
+
+		EventDispatcher.add(this);
+	}
+
+	@Override
+	public void eventReceived(Events event, Object o) {
+		if (Events.USER_SELECTED.equals(event)) {
+			JCheckBox box = (JCheckBox) o;
+			String name = box.getText();
+			addToTabPane(name, null);
+			focusTabPane(name);
+		}
 	}
 
 	/**
@@ -61,10 +71,13 @@ public class SendReceiveMessagePanel extends JPanel {
 	 * @param label
 	 *            Label des Tabs
 	 */
-	public void addToTabPane(String label) {
+	public void addToTabPane(String label, String text) {
 		JPanel textPanel = new JPanel(new BorderLayout());
 
 		JTextArea timelineTextArea = new JTextArea(5, 50);
+		if (text != null) {
+			timelineTextArea.setText(text);
+		}
 		timelineTextArea.setWrapStyleWord(true);
 		timelineTextArea.setLineWrap(true);
 		timelineTextArea.setEditable(false);

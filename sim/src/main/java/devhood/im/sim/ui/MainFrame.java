@@ -1,7 +1,6 @@
 package devhood.im.sim.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -12,7 +11,8 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
@@ -39,24 +39,39 @@ import devhood.im.sim.service.interfaces.RegistryService;
  */
 public class MainFrame {
 
+	/**
+	 * Das ist der main frame.
+	 */
 	private JFrame frame;
 
+	/**
+	 * Das ist das Scrollpane, in dem die User stehen.
+	 */
 	private JScrollPane userScrollPane;
-	private Component msgScrollPane;
 
-	private RegistryService userService;
+	/**
+	 * Das ist das Scrollpane, in dem Messages empfangen, versendet werden.
+	 */
+	private SendReceiveMessagePanel msgScrollPane;
 
+	/**
+	 * Das ist der Service zum Zugriff auf Stammdaten, wie zb verfuegbare User.
+	 */
+	private RegistryService registryService;
+
+	/**
+	 * Icon, dass im Tray angezeigt wird.
+	 */
 	private String trayIcon = "/images/trayIcon.gif";
 
 	public MainFrame() {
-		userService = ServiceLocator.getInstance().getUserService();
+		registryService = ServiceLocator.getInstance().getUserService();
 	}
 
 	/**
 	 * Initialises the main frame.
 	 */
-	public void initFrame() {
-		// 1. Create the frame.
+	public void initMainFrame() {
 		frame = new JFrame("FrameDemo");
 
 		initMenuBar();
@@ -65,7 +80,8 @@ public class MainFrame {
 		initTray();
 
 		// 2. Optional: What happens when the frame closes?
-		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		// frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
 
 		// Create a split pane with the two scroll panes in it.
@@ -75,7 +91,7 @@ public class MainFrame {
 		splitPane.setDividerLocation(150);
 
 		// Provide minimum sizes for the two components in the split pane
-		Dimension minimumSize = new Dimension(100, 50);
+		Dimension minimumSize = new Dimension(50, 50);
 		userScrollPane.setMinimumSize(minimumSize);
 		msgScrollPane.setMinimumSize(minimumSize);
 
@@ -86,6 +102,7 @@ public class MainFrame {
 
 		// 5. Show it.
 		frame.setVisible(true);
+
 	}
 
 	/**
@@ -97,19 +114,33 @@ public class MainFrame {
 		userScrollPane = new JScrollPane(p);
 
 		// userScrollPane.setLayout(new Lay
-		List<User> users = userService.getUsers();
+		List<User> users = registryService.getUsers();
 		for (User user : users) {
 			JCheckBox userCheckBox = new JCheckBox(user.getName());
+			userCheckBox.addItemListener(new CreateTabListener());
 			p.add(userCheckBox);
 		}
 
+	}
+
+	class CreateTabListener implements ItemListener {
+
+		@Override
+		public void itemStateChanged(ItemEvent e) {
+			if (e.getStateChange() == ItemEvent.SELECTED) {
+				JCheckBox box = (JCheckBox) e.getSource();
+				String name = box.getText();
+				msgScrollPane.addToTabPane(name);
+				msgScrollPane.focusTabPane(name);
+			}
+		}
 	}
 
 	/**
 	 * Initialies the messsaging scrollpane.
 	 */
 	protected void initMsgScrollPane() {
-		JPanel p = new SendReceiveMessagePanel();
+		SendReceiveMessagePanel p = new SendReceiveMessagePanel();
 
 		msgScrollPane = p;
 	}
@@ -134,13 +165,16 @@ public class MainFrame {
 		menuPrivacy = new JMenu("Privat");
 
 		menuNotifications.addSeparator();
-		cbMenuItem = new JCheckBoxMenuItem("Statusänderung anzeigen");
-		cbMenuItem.setMnemonic(KeyEvent.VK_C);
+		cbMenuItem = new JCheckBoxMenuItem("Statusänderungen anzeigen");
 		menuNotifications.add(cbMenuItem);
 
 		cbMenuItem = new JCheckBoxMenuItem("Another one");
-		cbMenuItem.setMnemonic(KeyEvent.VK_H);
 		menuNotifications.add(cbMenuItem);
+
+		cbMenuItem = new JCheckBoxMenuItem("Status veröffentlichen");
+		menuPrivacy.add(cbMenuItem);
+		cbMenuItem = new JCheckBoxMenuItem("Tippstatus veröffentlichen");
+		menuPrivacy.add(cbMenuItem);
 
 		menuBar.add(menuNotifications);
 		menuBar.add(menuPrivacy);
@@ -190,7 +224,7 @@ public class MainFrame {
 			 */
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
+				if (MouseEvent.BUTTON1 == e.getButton()) {
 					frame.setVisible(true);
 				}
 
@@ -199,8 +233,12 @@ public class MainFrame {
 
 		MenuItem item = new MenuItem("Exit");
 		item.setLabel("Exit");
+
 		item.addActionListener(new ActionListener() {
 
+			/**
+			 * Bei click auf Exit, Anwendung schließen.
+			 */
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				System.exit(0);

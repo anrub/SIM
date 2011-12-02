@@ -1,12 +1,5 @@
 package devhood.im.sim;
 
-import java.awt.Image;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-import java.awt.SystemTray;
-import java.awt.Toolkit;
-import java.awt.TrayIcon;
-
 import javax.swing.UIManager;
 
 import devhood.im.sim.ui.MainFrame;
@@ -18,7 +11,7 @@ import devhood.im.sim.ui.MainFrame;
  * 
  */
 public class SimMain {
-	
+
 	/**
 	 * Main method, starts the program. <br />
 	 * Possible commandline arguments:
@@ -34,6 +27,6 @@ public class SimMain {
 			e.printStackTrace();
 		}
 		MainFrame mainFrame = new MainFrame();
-		mainFrame.initFrame();
+		mainFrame.initMainFrame();
 	}
 }

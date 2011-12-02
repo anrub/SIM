@@ -1,0 +1,32 @@
+package devhood.im.sim.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import devhood.im.sim.model.User;
+
+/**
+ * Dummy user service mock data.
+ * 
+ * @author flo
+ * 
+ */
+public class DummyUserService implements UserService {
+
+	/**
+	 * Returns the List of available Users. Mock Data.
+	 * 
+	 * @return Users
+	 */
+	@Override
+	public List<User> getUsers() {
+		List<User> users = new ArrayList<User>();
+
+		for (int i = 0; i < 10; i++) {
+			User u = new User();
+			u.setName("User " + i);
+			users.add(u);
+		}
+		return users;
+	}
+}

@@ -10,7 +10,11 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.List;
 
 import javax.swing.JCheckBox;
@@ -61,7 +65,7 @@ public class MainFrame {
 		initTray();
 
 		// 2. Optional: What happens when the frame closes?
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
 
 		// Create a split pane with the two scroll panes in it.
@@ -105,7 +109,7 @@ public class MainFrame {
 	 * Initialies the messsaging scrollpane.
 	 */
 	protected void initMsgScrollPane() {
-		JPanel p = new SendMessagePanel();
+		JPanel p = new SendReceiveMessagePanel();
 
 		msgScrollPane = p;
 	}
@@ -155,9 +159,54 @@ public class MainFrame {
 
 		PopupMenu popup = new PopupMenu();
 		final TrayIcon trayIcon = new TrayIcon(image, "The Tip Text", popup);
+		trayIcon.addMouseListener(new MouseListener() {
 
-		MenuItem item = new MenuItem("Error");
-		item.setLabel("Test Item");
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+			/**
+			 * Macht den Frame nach click auf das TrayIcon wieder sichtbar.
+			 */
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					frame.setVisible(true);
+				}
+
+			}
+		});
+
+		MenuItem item = new MenuItem("Exit");
+		item.setLabel("Exit");
+		item.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				System.exit(0);
+
+			}
+		});
 
 		popup.add(item);
 		try {

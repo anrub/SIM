@@ -16,10 +16,10 @@ import javax.swing.JTextField;
  * @author flo
  *
  */
-public class SendMessagePanel extends JPanel {
+public class SendReceiveMessagePanel extends JPanel {
 
 	
-	public SendMessagePanel() {
+	public SendReceiveMessagePanel() {
 		super();
 		setLayout(new BorderLayout());
 

@@ -30,4 +30,10 @@ public class DummyRegistryService implements RegistryService {
 		}
 		return users;
 	}
+
+	@Override
+	public void refresh(User user) {
+		// TODO Auto-generated method stub
+
+	}
 }

@@ -12,6 +12,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
+import devhood.im.sim.ui.event.EventDispatcher;
+import devhood.im.sim.ui.event.EventObserver;
+import devhood.im.sim.ui.event.Events;
+
 /**
  * Panel to send messages.
  * 
@@ -20,6 +24,9 @@ import javax.swing.JTextArea;
  */
 public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
+	/**
+	 * Tabbed pane der einzelnen Konversationen. Eine Konv. pro Tab.
+	 */
 	private JTabbedPane tabbedPane;
 
 	public SendReceiveMessagePanel() {
@@ -55,6 +62,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		EventDispatcher.add(this);
 	}
 
+	/**
+	 * Empfaengt Events.
+	 */
 	@Override
 	public void eventReceived(Events event, Object o) {
 		if (Events.USER_SELECTED.equals(event)) {

@@ -5,7 +5,7 @@ import java.util.List;
 import devhood.im.sim.model.User;
 
 /**
- * User related services.
+ * RegistryService - Liefert persistente Daten, z.B. User.
  * 
  * @author flo
  * 
@@ -13,9 +13,18 @@ import devhood.im.sim.model.User;
 public interface RegistryService {
 
 	/**
-	 * Returns the List of available Users.
+	 * Gibt eine Liste von Usern zurueck.
 	 * 
 	 * @return Users
 	 */
 	public List<User> getUsers();
+
+	/**
+	 * Aktualisiert den Status des Users und der Adresse. User ist technisch
+	 * verfuegbar.
+	 * 
+	 * @param user
+	 *            User.
+	 */
+	public void refresh(User user);
 }

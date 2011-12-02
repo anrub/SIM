@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 /**
  * Panel to send messages.
@@ -22,17 +23,25 @@ public class SendMessagePanel extends JPanel {
 		super();
 		setLayout(new BorderLayout());
 
-		Label l = new Label("Just type...");
-		this.add(l, BorderLayout.NORTH);
 
 		JTabbedPane tabbedPane = new JTabbedPane();
-		
-			JTextArea msg = new JTextArea(5, 50);
-			msg.setWrapStyleWord(true);
-			msg.setLineWrap(true);
-			JScrollPane textScrollPane = new JScrollPane(msg);
-
-			tabbedPane.addTab("Type..", textScrollPane);
+			JPanel textPanel = new JPanel(new BorderLayout());
+			
+			JTextArea timelineTextArea = new JTextArea(5, 50);
+			timelineTextArea.setWrapStyleWord(true);
+			timelineTextArea.setLineWrap(true);
+			timelineTextArea.setEditable(false);
+			JScrollPane textScrollPane = new JScrollPane(timelineTextArea);
+			textPanel.add(textScrollPane, BorderLayout.CENTER);
+			
+			JTextArea messageTextArea = new JTextArea(2,50);
+			messageTextArea.setWrapStyleWord(true);
+			messageTextArea.setLineWrap(true);
+			JScrollPane messageScrollPane = new JScrollPane(messageTextArea);
+			
+			textPanel.add(messageScrollPane, BorderLayout.SOUTH);
+			
+			tabbedPane.addTab("Type..", textPanel);
 		
 		// Lay out the buttons from left to right.
 		JPanel buttonPane = new JPanel();

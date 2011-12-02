@@ -18,7 +18,7 @@ import javax.swing.JSplitPane;
 
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.ServiceLocator;
-import devhood.im.sim.service.UserService;
+import devhood.im.sim.service.interfaces.UserService;
 
 /**
  * This is the main frame of the application.

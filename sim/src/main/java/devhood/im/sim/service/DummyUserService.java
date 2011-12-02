@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import devhood.im.sim.model.User;
+import devhood.im.sim.service.interfaces.UserService;
 
 /**
  * Dummy user service mock data.

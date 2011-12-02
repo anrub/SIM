@@ -1,5 +1,7 @@
 package devhood.im.sim.service;
 
+import devhood.im.sim.service.interfaces.UserService;
+
 public class ServiceLocator {
 
 	private UserService userService = new DummyUserService();

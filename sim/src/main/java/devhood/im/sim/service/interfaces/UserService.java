@@ -1,4 +1,4 @@
-package devhood.im.sim.service;
+package devhood.im.sim.service.interfaces;
 
 import java.util.List;
 

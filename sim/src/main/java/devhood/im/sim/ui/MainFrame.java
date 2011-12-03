@@ -73,9 +73,11 @@ public class MainFrame implements EventObserver {
 		initMsgScrollPane();
 		initTray();
 
-		// 2. Optional: What happens when the frame closes?
-		//frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		
 		frame.setLayout(new BorderLayout());
 
 		// Create a split pane with the two scroll panes in it.

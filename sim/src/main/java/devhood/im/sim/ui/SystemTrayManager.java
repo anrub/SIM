@@ -76,6 +76,12 @@ public class SystemTrayManager implements EventObserver {
 		EventDispatcher.add(this);
 	}
 
+	/**
+	 * Wird vom {@link EventDispatcher} aufgerufen.
+	 * 
+	 * @param Events event siehe {@link Events}
+	 * @param Object o je nach Event verschiedene Parameter moeglich.
+	 */
 	@Override
 	public void eventReceived(Events event, Object o) {
 		if (Events.MESSAGE_RECEIVED.equals(event)) {
@@ -87,6 +93,12 @@ public class SystemTrayManager implements EventObserver {
 
 	}
 
+	/**
+	 * Fuegt einen MouseListener an das SystmeTray.
+	 * 
+	 * @param listener
+	 *            Listener.
+	 */
 	public void addMouseListener(MouseListener listener) {
 		systrayIcon.addMouseListener(listener);
 	}

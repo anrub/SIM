@@ -7,6 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JViewport;
+import javax.swing.text.JTextComponent;
 
 import devhood.im.sim.Sim;
 import devhood.im.sim.model.Message;
@@ -66,22 +70,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JPanel p = (JPanel) tabbedPane.getSelectedComponent();
-
-				JTextArea timeline = (JTextArea) ((JViewport) ((JScrollPane) p
-						.getComponent(0)).getComponent(0)).getComponent(0);
-				JTextArea input = (JTextArea) ((JViewport) ((JScrollPane) p
-						.getComponent(1)).getComponent(0)).getComponent(0);
-
-				timeline.setText(getFormattedMessage(Sim.getUsername(),
-						input.getText(), timeline.getText()));
-
-				input.setText("");
-
-				input.requestFocusInWindow();
-
-				// MessagingService send message in Swing Thread ...buttonPane
-				// Fehlerbehandlung
+				sendMessage();
 			}
 		});
 
@@ -109,6 +98,25 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		this.add(buttonPane, BorderLayout.PAGE_END);
 
 		EventDispatcher.add(this);
+	}
+
+	/**
+	 * Versendet die Nachricht, aktualisiert die UI.
+	 */
+	private void sendMessage() {
+		JPanel p = (JPanel) tabbedPane.getSelectedComponent();
+
+		JTextArea timeline = (JTextArea) ((JViewport) ((JScrollPane) p
+				.getComponent(0)).getComponent(0)).getComponent(0);
+		JTextComponent input = (JTextComponent) ((JViewport) ((JScrollPane) p
+				.getComponent(1)).getComponent(0)).getComponent(0);
+
+		timeline.setText(getFormattedMessage(Sim.getUsername(),
+				input.getText(), timeline.getText()));
+
+		input.setText(null);
+
+		input.requestFocusInWindow();
 	}
 
 	/**
@@ -249,10 +257,20 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		textPanel.add(textScrollPane, BorderLayout.CENTER);
 
-		JTextArea messageTextArea = new JTextArea(2, 70);
+		JTextArea messageTextArea = new JTextArea(3, 70);
 		messageTextArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		messageTextArea.setWrapStyleWord(true);
 		messageTextArea.setLineWrap(true);
+		messageTextArea.addKeyListener(new KeyAdapter() {
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					sendMessage();
+				}
+			}
+		});
+
 		JScrollPane messageScrollPane = new JScrollPane(messageTextArea);
 
 		textPanel.add(messageScrollPane, BorderLayout.SOUTH);

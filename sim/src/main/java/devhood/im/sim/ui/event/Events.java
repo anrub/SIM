@@ -25,6 +25,12 @@ public enum Events {
 	/**
 	 * Zeigt das tabbed pane, braucht parameter: String name.
 	 */
-	SHOW_MSG_TABBED_PANE;
+	SHOW_MSG_TABBED_PANE,
+
+	/**
+	 * Es gibt ungelesene Nachrichten parameter: Liste von Usern, deren
+	 * nachrichten noch nicht gelesen wurden.
+	 */
+	UNREAD_MESSAGES;
 
 }

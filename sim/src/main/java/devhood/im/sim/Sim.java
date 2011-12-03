@@ -12,6 +12,8 @@ import devhood.im.sim.model.User;
  */
 public class Sim {
 
+	public static String applicationName = "SIM - S Intstant Messenger";
+
 	private static String username = "flo";
 
 	public static String getUsername() {

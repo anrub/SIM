@@ -18,6 +18,7 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import devhood.im.sim.Sim;
 import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.service.interfaces.RegistryService;
 import devhood.im.sim.ui.event.EventDispatcher;
@@ -45,7 +46,12 @@ public class MainFrame implements EventObserver {
 	/**
 	 * Das ist das Scrollpane, in dem Messages empfangen, versendet werden.
 	 */
-	private SendReceiveMessagePanel msgScrollPane;
+	private SendReceiveMessagePanel timelineScrollPane;
+
+	/**
+	 * Checkbox ob Nachrichten in Systray angezeigt werden sollen, oder nicht.
+	 */
+	private JCheckBoxMenuItem systrayMenuItem;
 
 	/**
 	 * Das ist der Service zum Zugriff auf Stammdaten, wie zb verfuegbare User.
@@ -62,7 +68,7 @@ public class MainFrame implements EventObserver {
 	 * Initialises the main frame.
 	 */
 	public void initMainFrame() {
-		frame = new JFrame("FrameDemo");
+		frame = new JFrame(Sim.applicationName);
 
 		initMenuBar();
 		initUserScrollPane();
@@ -76,14 +82,14 @@ public class MainFrame implements EventObserver {
 
 		// Create a split pane with the two scroll panes in it.
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				userScrollPane, msgScrollPane);
+				userScrollPane, timelineScrollPane);
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setDividerLocation(150);
 
 		// Provide minimum sizes for the two components in the split pane
 		Dimension minimumSize = new Dimension(50, 50);
 		userScrollPane.setMinimumSize(minimumSize);
-		msgScrollPane.setMinimumSize(minimumSize);
+		timelineScrollPane.setMinimumSize(minimumSize);
 
 		frame.getContentPane().add(splitPane, BorderLayout.CENTER);
 
@@ -111,7 +117,7 @@ public class MainFrame implements EventObserver {
 	protected void initMsgScrollPane() {
 		SendReceiveMessagePanel p = new SendReceiveMessagePanel();
 
-		msgScrollPane = p;
+		timelineScrollPane = p;
 	}
 
 	/**
@@ -137,9 +143,12 @@ public class MainFrame implements EventObserver {
 		cbMenuItem = new JCheckBoxMenuItem("Statusänderungen anzeigen");
 		menuNotifications.add(cbMenuItem);
 
-		cbMenuItem = new JCheckBoxMenuItem("Another one");
-		menuNotifications.add(cbMenuItem);
+		systrayMenuItem = new JCheckBoxMenuItem("Nachrichten Systray anzeigen");
+		menuNotifications.add(systrayMenuItem);
 
+		cbMenuItem = new JCheckBoxMenuItem("Ungelesene Nachrichten Systray anzeigen");
+		menuNotifications.add(cbMenuItem);
+		
 		cbMenuItem = new JCheckBoxMenuItem("Status veröffentlichen");
 		menuPrivacy.add(cbMenuItem);
 		cbMenuItem = new JCheckBoxMenuItem("Tippstatus veröffentlichen");

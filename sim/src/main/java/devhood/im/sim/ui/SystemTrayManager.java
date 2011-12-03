@@ -10,6 +10,7 @@ import java.awt.TrayIcon.MessageType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
+import java.util.List;
 
 import devhood.im.sim.SimMain;
 import devhood.im.sim.model.Message;
@@ -100,6 +101,10 @@ public class SystemTrayManager implements EventObserver {
 			systrayIcon.displayMessage(m.getSender(), m.getText(),
 					MessageType.INFO);
 			lastUser = m.getSender();
+		} else if (Events.UNREAD_MESSAGES.equals(event)) {
+			List<String> users = (List<String>) o;
+			systrayIcon.displayMessage("Ungelesene Nachrichten",
+					users.toString(), MessageType.INFO);
 		}
 
 	}

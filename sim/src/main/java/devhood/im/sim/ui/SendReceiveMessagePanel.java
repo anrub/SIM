@@ -12,9 +12,13 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -79,13 +83,18 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	private ImageIcon unreadIcon = createImageIcon("/images/unread.png",
 			"Ungelesene Nachrichten");
 
+	/**
+	 * List mit ungelesenen Tabs.
+	 */
+	private List<String> unreadTabsList = new ArrayList<String>();
+
 	public SendReceiveMessagePanel() {
 		super();
 		setLayout(new BorderLayout());
 
 		tabbedPane = new JTabbedPane();
 
-		addToTabPane("Info", "SIM - S Instant Messenger");
+		addToTabPane("Info", Sim.applicationName);
 
 		// Lay out the buttons from left to right.
 		JPanel buttonPane = new JPanel();
@@ -128,7 +137,30 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		this.add(tabbedPane, BorderLayout.CENTER);
 		this.add(buttonPane, BorderLayout.PAGE_END);
 
+		createUnreadMessagesTimer();
+
 		EventDispatcher.add(this);
+	}
+
+	/**
+	 * Erzeugt den Timer, der regelmäßig checkt ob es ungelesene Nachrichten
+	 * gibt.
+	 */
+	public void createUnreadMessagesTimer() {
+		Timer t = new Timer("Unread Messages Timer");
+		TimerTask task = new TimerTask() {
+
+			@Override
+			public void run() {
+
+				if (unreadTabsList.size() > 0) {
+					EventDispatcher.fireEvent(Events.UNREAD_MESSAGES,
+							unreadTabsList);
+				}
+			}
+		};
+
+		t.schedule(task, 0, 20000);
 	}
 
 	/**
@@ -386,7 +418,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 				focusMessageTextArea(title);
 
-				unsetTabIcon(title);
+				setIconToReadMessages(title);
 			}
 		});
 
@@ -495,9 +527,14 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            Name des Tabs.
 	 */
 	protected void setIconToUnreadMessages(String name) {
+		if (!unreadTabsList.contains(name)) {
+			unreadTabsList.add(name);
+		}
+
 		ImageIcon icon = unreadIcon;
 		int index = tabbedPane.indexOfTab(name);
 		tabbedPane.setIconAt(index, icon);
+
 	}
 
 	/**
@@ -506,7 +543,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @param name
 	 *            Name des Tabs.
 	 */
-	protected void unsetTabIcon(String name) {
+	protected void setIconToReadMessages(String name) {
+		unreadTabsList.remove(name);
 		int index = tabbedPane.indexOfTab(name);
 		tabbedPane.setIconAt(index, readIcon);
 	}

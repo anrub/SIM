@@ -29,15 +29,21 @@ public class SimMain {
 
 		Timer t = new Timer();
 		TimerTask task = new TimerTask() {
+			int cnt = 0;
+
 			@Override
 			public void run() {
-				Message m = new Message();
-				int userid = (int) Math.floor(Math.random() * 5);
-				m.setSender("User " + userid);
-				m.setReceiver(Sim.getUsername());
 
-				m.setText("Dies ist eine Nachricht öäüß " + Math.random());
-				EventDispatcher.fireEvent(Events.MESSAGE_RECEIVED, m);
+				if (cnt < 5) {
+					Message m = new Message();
+					int userid = (int) Math.floor(Math.random() * 5);
+					m.setSender("User " + userid);
+					m.setReceiver(Sim.getUsername());
+
+					m.setText("Dies ist eine Nachricht öäüß " + Math.random());
+					EventDispatcher.fireEvent(Events.MESSAGE_RECEIVED, m);
+					cnt++;
+				}
 
 			}
 		};

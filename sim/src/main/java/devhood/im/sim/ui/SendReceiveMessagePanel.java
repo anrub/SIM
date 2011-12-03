@@ -125,7 +125,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	/**
 	 * Versendet die Nachricht, aktualisiert die UI.
 	 */
-	private void sendMessage() {
+	protected void sendMessage() {
 		JPanel p = (JPanel) tabbedPane.getSelectedComponent();
 
 		JTextComponent timeline = (JTextComponent) ((JViewport) ((JScrollPane) p
@@ -181,7 +181,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @param m
 	 *            Message
 	 */
-	public void processNewMessage(Message m) {
+	protected void processNewMessage(Message m) {
 		boolean valid = validateMessage(m);
 		if (!valid) {
 			throw new IllegalArgumentException(
@@ -236,7 +236,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            vorhandener text in der text area
 	 * @return formatierter String
 	 */
-	public String getFormattedMessage(String username, String msg,
+	protected String getFormattedMessage(String username, String msg,
 			String oldText) {
 		StringBuffer newMsg = new StringBuffer(oldText);
 
@@ -261,7 +261,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            vorhandener text in der text area
 	 * @return formatierter String
 	 */
-	public String getFormattedMessage(String username, String msg) {
+	protected String getFormattedMessage(String username, String msg) {
 		return "[" + df.format(new Date()) + "] " + username + "> " + msg;
 	}
 
@@ -270,7 +270,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * 
 	 * @param m
 	 */
-	public boolean validateMessage(Message m) {
+	private boolean validateMessage(Message m) {
 
 		return true;
 	}
@@ -283,7 +283,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @param text
 	 *            Text der in die TextArea geschrieben wird.
 	 */
-	public void addToTabPane(final String label, String text) {
+	protected void addToTabPane(final String label, String text) {
 		JPanel textPanel = new JPanel(new BorderLayout());
 
 		final JEditorPane timelineTextArea = new JEditorPane("text/html", text);
@@ -359,7 +359,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @param name
 	 *            Name des Panes.
 	 */
-	public void focusTabPane(String name) {
+	protected void focusTabPane(String name) {
 		int index = tabbedPane.indexOfTab(name);
 		if (index != -1) {
 			tabbedPane.setSelectedIndex(index);
@@ -372,34 +372,43 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @param name
 	 *            Name des Tabs.
 	 */
-	public void focusMessageTextArea(String name) {
+	protected void focusMessageTextArea(String name) {
 		inputTextAreaMap.get(name).requestFocusInWindow();
 	}
 
 	/**
-	 * Setzt das Icon im Tab, so dass es auf ungelesene Nachrichten aufmerksa
+	 * Setzt das Icon im Tab, so dass es auf ungelesene Nachrichten aufmerksam
 	 * macht.
 	 * 
 	 * @param name
 	 *            Name des Tabs.
 	 */
-	public void setIconToUnreadMessages(String name) {
+	protected void setIconToUnreadMessages(String name) {
 		ImageIcon icon = unreadIcon;
 		int index = tabbedPane.indexOfTab(name);
 		tabbedPane.setIconAt(index, icon);
 	}
 
 	/**
-	 * Entfernt das Icon vom Tab.
+	 * Entfernt das Icon vom Tab und setzt das standardicon readicon.
 	 * 
 	 * @param name
 	 *            Name des Tabs.
 	 */
-	public void unsetTabIcon(String name) {
+	protected void unsetTabIcon(String name) {
 		int index = tabbedPane.indexOfTab(name);
 		tabbedPane.setIconAt(index, readIcon);
 	}
 
+	/**
+	 * Erzeugt ien ImageIcon aus dem uebergebenen path. path ist im classpath.
+	 * 
+	 * @param path
+	 *            path aus classpath
+	 * @param description
+	 *            beschreibung
+	 * @return imageicon
+	 */
 	protected ImageIcon createImageIcon(String path, String description) {
 		java.net.URL imgURL = getClass().getResource(path);
 		if (imgURL != null) {

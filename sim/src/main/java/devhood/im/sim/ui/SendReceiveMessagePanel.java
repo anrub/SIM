@@ -7,13 +7,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
@@ -24,12 +26,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JViewport;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.JTextComponent;
 
 import devhood.im.sim.Sim;
 import devhood.im.sim.model.Message;
-import devhood.im.sim.model.User;
-import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.EventObserver;
 import devhood.im.sim.ui.event.Events;
@@ -51,6 +53,11 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * Map von Name Des Tabs -> Texarea des Msg.
 	 */
 	private Map<String, JEditorPane> nameTextAreaMap = new HashMap<String, JEditorPane>();
+
+	/**
+	 * Map von Name Des Tabs -> Texarea des Msg.
+	 */
+	private Map<String, JTextArea> inputTextAreaMap = new HashMap<String, JTextArea>();
 
 	/**
 	 * DateFormat.s
@@ -92,6 +99,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 				String title = tabbedPane.getTitleAt(index);
 				nameTextAreaMap.remove(title);
+				inputTextAreaMap.remove(title);
 
 				tabbedPane.remove(index);
 			}
@@ -170,9 +178,6 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 					"Uebergebene Message ist nicht valide! Message: " + m);
 		}
 
-		List<User> users = ServiceLocator.getInstance().getRegistryService()
-				.getUsers();
-
 		String name = m.getName();
 		JEditorPane textArea = nameTextAreaMap.get(name);
 
@@ -249,7 +254,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @param text
 	 *            Text der in die TextArea geschrieben wird.
 	 */
-	public void addToTabPane(String label, String text) {
+	public void addToTabPane(final String label, String text) {
 		JPanel textPanel = new JPanel(new BorderLayout());
 
 		final JEditorPane timelineTextArea = new JEditorPane("text/html", text);
@@ -298,7 +303,19 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		tabbedPane.addTab(label, textPanel);
 
+		tabbedPane.addChangeListener(new ChangeListener() {
+
+			/**
+			 * Beim Tabwechsel wird der Fokus auf das Eingabefeld gelegt.
+			 */
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				focusMessageTextArea(label);
+			}
+		});
+
 		nameTextAreaMap.put(label, timelineTextArea);
+		inputTextAreaMap.put(label, messageTextArea);
 	}
 
 	/**
@@ -312,6 +329,16 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		if (index != -1) {
 			tabbedPane.setSelectedIndex(index);
 		}
+	}
+
+	/**
+	 * Fokussiert das Feld im Tab mit dem Namen.
+	 * 
+	 * @param name
+	 *            Name des Tabs.
+	 */
+	public void focusMessageTextArea(String name) {
+		inputTextAreaMap.get(name).requestFocusInWindow();
 	}
 
 }

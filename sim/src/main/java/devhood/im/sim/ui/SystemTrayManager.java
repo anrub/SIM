@@ -1,6 +1,5 @@
 package devhood.im.sim.ui;
 
-import java.awt.DisplayMode;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;

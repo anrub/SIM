@@ -9,7 +9,6 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,6 +18,7 @@ import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -47,7 +47,10 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	private JTabbedPane tabbedPane;
 
-	private Map<String, JTextArea> nameTextAreaMap = new HashMap<String, JTextArea>();
+	/**
+	 * Map von Name Des Tabs -> Texarea des Msg.
+	 */
+	private Map<String, JEditorPane> nameTextAreaMap = new HashMap<String, JEditorPane>();
 
 	/**
 	 * DateFormat.s
@@ -77,6 +80,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		buttonPane.add(sendButton);
 		buttonPane.add(new JButton("Cancel"));
 
+		// Schlieﬂt das aktuelle Tab.
 		JButton closeButton = new JButton("Close");
 		closeButton.addActionListener(new ActionListener() {
 
@@ -106,7 +110,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	private void sendMessage() {
 		JPanel p = (JPanel) tabbedPane.getSelectedComponent();
 
-		JTextArea timeline = (JTextArea) ((JViewport) ((JScrollPane) p
+		JTextComponent timeline = (JTextComponent) ((JViewport) ((JScrollPane) p
 				.getComponent(0)).getComponent(0)).getComponent(0);
 		JTextComponent input = (JTextComponent) ((JViewport) ((JScrollPane) p
 				.getComponent(1)).getComponent(0)).getComponent(0);
@@ -124,6 +128,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	@Override
 	public void eventReceived(Events event, Object o) {
+		// Ein user wurde per UserPanel ausgeawehlt, nun wird das Tab
+		// fokussiert.
 		if (Events.USER_SELECTED.equals(event)) {
 			JCheckBox box = (JCheckBox) o;
 			String text = box.getText();
@@ -133,6 +139,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				addToTabPane(text, null);
 			}
 			focusTabPane(text);
+			// Neue Nachricht verarbeiten.
 		} else if (Events.MESSAGE_RECEIVED.equals(event)) {
 			if (o instanceof Message) {
 				Message m = (Message) o;
@@ -143,6 +150,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 						+ " muss eine Message als Object kkommen! ist aber: "
 						+ o.getClass());
 			}
+			// Zeigt die Tabbed pane mit dem entsprechenden Namen.
 		} else if (Events.SHOW_MSG_TABBED_PANE.equals(event)) {
 			String name = (String) o;
 			focusTabPane(name);
@@ -166,7 +174,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				.getUsers();
 
 		String name = m.getName();
-		JTextArea textArea = nameTextAreaMap.get(name);
+		JEditorPane textArea = nameTextAreaMap.get(name);
 
 		if (textArea != null) {
 			String oldText = textArea.getText();
@@ -196,7 +204,15 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	public String getFormattedMessage(String username, String msg,
 			String oldText) {
-		return oldText + "\n" + getFormattedMessage(username, msg);
+		StringBuffer newMsg = new StringBuffer(oldText);
+
+		if (oldText.contains("</body>")) {
+			int index = oldText.indexOf("</body>");
+
+			newMsg.insert(index, "<br />" + getFormattedMessage(username, msg));
+		}
+
+		return newMsg.toString();
 
 	}
 
@@ -236,14 +252,17 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	public void addToTabPane(String label, String text) {
 		JPanel textPanel = new JPanel(new BorderLayout());
 
-		final JTextArea timelineTextArea = new JTextArea(5, 70);
-		if (text != null) {
-			timelineTextArea.setText(text);
-		}
-		timelineTextArea.setWrapStyleWord(true);
-		timelineTextArea.setLineWrap(true);
+		final JEditorPane timelineTextArea = new JEditorPane("text/html", text);
+		// if (text != null) {
+		// timelineTextArea.setText(text);
+		// }
+		// timelineTextArea.setWrapStyleWord(true);
+		// timelineTextArea.setLineWrap(true);
+
 		timelineTextArea.setEditable(false);
 		timelineTextArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+
+		// timelineTextArea.get
 
 		JScrollPane textScrollPane = new JScrollPane(timelineTextArea);
 

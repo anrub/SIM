@@ -2,6 +2,9 @@ package devhood.im.sim.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -9,9 +12,12 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.service.interfaces.RegistryService;
@@ -64,11 +70,9 @@ public class MainFrame implements EventObserver {
 		initMsgScrollPane();
 		initTray();
 
-
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		
+		// frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		frame.setLayout(new BorderLayout());
 
 		// Create a split pane with the two scroll panes in it.
@@ -145,6 +149,9 @@ public class MainFrame implements EventObserver {
 		menuBar.add(menuNotifications);
 		menuBar.add(menuPrivacy);
 
+		JMenu layout = createLayoutChangingMenu();
+		menuBar.add(layout);
+
 		frame.setJMenuBar(menuBar);
 	}
 
@@ -155,32 +162,7 @@ public class MainFrame implements EventObserver {
 		SystemTrayManager sys = new SystemTrayManager();
 		sys.init();
 
-		sys.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
+		sys.addMouseListener(new MouseAdapter() {
 			/**
 			 * Macht den Frame nach click auf das TrayIcon wieder sichtbar.
 			 */
@@ -200,5 +182,45 @@ public class MainFrame implements EventObserver {
 		if (Events.SHOW_FRAME.equals(event)) {
 			frame.setVisible(true);
 		}
+	}
+
+	/**
+	 * Erzeugt das Menu zum aendern des layouts.
+	 * 
+	 * @return layouts.
+	 */
+	public JMenu createLayoutChangingMenu() {
+		JMenu layout = new JMenu("Layout");
+		final JMenuItem r1 = new JMenuItem("Windows Layout");
+		final JMenuItem r2 = new JMenuItem("Java Layout");
+
+		ActionListener layoutListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				try {
+					if (e.getSource() == r1) {
+						UIManager.setLookAndFeel(UIManager
+								.getSystemLookAndFeelClassName());
+						SwingUtilities.updateComponentTreeUI(frame);
+					}
+					if (e.getSource() == r2) {
+						UIManager.setLookAndFeel(UIManager
+								.getCrossPlatformLookAndFeelClassName());
+						SwingUtilities.updateComponentTreeUI(frame);
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		};
+		r1.addActionListener(layoutListener);
+		r2.addActionListener(layoutListener);
+
+		layout.add(r1);
+		layout.add(r2);
+
+		return layout;
 	}
 }

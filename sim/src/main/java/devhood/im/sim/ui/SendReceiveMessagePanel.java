@@ -301,7 +301,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	protected String getFormattedMessage(Message m) {
 		String text = m.getText();
 		String[] chunks = text.split("\\s");
-		String linkPattern = "((mailto\\:|(news|(ht|f)tp(s?))\\://){1}\\S+)";
+		String linkPattern = "((file\\:|mailto\\:|(news|(ht|f)tp(s?))\\://){1}\\S+)";
 		StringBuffer msg = new StringBuffer();
 
 		for (String c : chunks) {
@@ -410,11 +410,13 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
 
 				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+
 					try {
 						Desktop.getDesktop().browse(e.getURL().toURI());
 					} catch (Exception uri) {
 						System.out.println(uri);
 					}
+
 				}
 			}
 		});

@@ -7,7 +7,7 @@ package devhood.im.sim.model;
  * 
  */
 public class Message {
-
+	
 	private String name;
 	/**
 	 * Text der Nachricht.

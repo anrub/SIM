@@ -7,9 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.DateFormat;
@@ -18,6 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JEditorPane;
@@ -63,6 +61,18 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * DateFormat.s
 	 */
 	private DateFormat df = new SimpleDateFormat("HH:mm:ss");
+
+	/**
+	 * Icon der gelesenen Nachrichten.
+	 */
+	private ImageIcon readIcon = createImageIcon("/images/read.png",
+			"Nachrichten gelesen");
+
+	/**
+	 * Icon der ungelesenen Nachrichten.
+	 */
+	private ImageIcon unreadIcon = createImageIcon("/images/unread.png",
+			"Ungelesene Nachrichten");
 
 	public SendReceiveMessagePanel() {
 		super();
@@ -179,21 +189,40 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		}
 
 		String name = m.getName();
+		String text = m.getText();
+
 		JEditorPane textArea = nameTextAreaMap.get(name);
 
 		if (textArea != null) {
 			String oldText = textArea.getText();
-			textArea.setText(getFormattedMessage(m.getName(), m.getText(),
-					oldText));
+			textArea.setText(getFormattedMessage(name, text, oldText));
 		} else {
-			String text = getFormattedMessage(m.getName(), m.getText());
-			addToTabPane(m.getName(), text);
+			String textline = getFormattedMessage(name, text);
+			addToTabPane(m.getName(), textline);
 			// focusTabPane(m.getName());
 		}
 
-		System.out.println("Message: Name: " + m.getName() + " Text: "
-				+ m.getText());
+		// Icon setzten, falls tab derzeit nicht ausgewaehlt.
+		if (!isTabSelected(name)) {
+			setIconToUnreadMessages(name);
+		}
 
+		System.out.println("Message: Name: " + name + " Text: " + text);
+
+	}
+
+	/**
+	 * Gibt zurueck ob der Tab mit dem Namen derzeit ausgewaehlt ist oder nicht.
+	 * 
+	 * @param name
+	 *            Name des Tabs
+	 * @return true/false
+	 */
+	public boolean isTabSelected(String name) {
+		int selected = tabbedPane.getSelectedIndex();
+		int index = tabbedPane.indexOfTab(name);
+
+		return selected == index;
 	}
 
 	/**
@@ -310,7 +339,13 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			 */
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				focusMessageTextArea(label);
+				JTabbedPane src = (JTabbedPane) e.getSource();
+				int index = src.getSelectedIndex();
+				String title = src.getTitleAt(index);
+
+				focusMessageTextArea(title);
+
+				unsetTabIcon(title);
 			}
 		});
 
@@ -341,4 +376,37 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		inputTextAreaMap.get(name).requestFocusInWindow();
 	}
 
+	/**
+	 * Setzt das Icon im Tab, so dass es auf ungelesene Nachrichten aufmerksa
+	 * macht.
+	 * 
+	 * @param name
+	 *            Name des Tabs.
+	 */
+	public void setIconToUnreadMessages(String name) {
+		ImageIcon icon = unreadIcon;
+		int index = tabbedPane.indexOfTab(name);
+		tabbedPane.setIconAt(index, icon);
+	}
+
+	/**
+	 * Entfernt das Icon vom Tab.
+	 * 
+	 * @param name
+	 *            Name des Tabs.
+	 */
+	public void unsetTabIcon(String name) {
+		int index = tabbedPane.indexOfTab(name);
+		tabbedPane.setIconAt(index, readIcon);
+	}
+
+	protected ImageIcon createImageIcon(String path, String description) {
+		java.net.URL imgURL = getClass().getResource(path);
+		if (imgURL != null) {
+			return new ImageIcon(imgURL, description);
+		} else {
+			System.err.println("Couldn't find file: " + path);
+			return null;
+		}
+	}
 }

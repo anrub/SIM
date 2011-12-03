@@ -15,6 +15,16 @@ public enum Events {
 	/**
 	 * Eine neue Nachricht wurde empfangen.
 	 */
-	MESSAGE_RECEIVED;
+	MESSAGE_RECEIVED,
+
+	/**
+	 * Zeigt das Fenster an.
+	 */
+	SHOW_FRAME,
+
+	/**
+	 * Zeigt das tabbed pane, braucht parameter name.
+	 */
+	SHOW_MSG_TABBED_PANE;
 
 }

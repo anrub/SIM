@@ -24,6 +24,9 @@ import javax.swing.JSplitPane;
 import devhood.im.sim.SimMain;
 import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.service.interfaces.RegistryService;
+import devhood.im.sim.ui.event.EventDispatcher;
+import devhood.im.sim.ui.event.EventObserver;
+import devhood.im.sim.ui.event.Events;
 
 /**
  * This is the main frame of the application.
@@ -31,7 +34,7 @@ import devhood.im.sim.service.interfaces.RegistryService;
  * @author flo
  * 
  */
-public class MainFrame {
+public class MainFrame implements EventObserver {
 
 	/**
 	 * Das ist der main frame.
@@ -53,13 +56,10 @@ public class MainFrame {
 	 */
 	private RegistryService registryService;
 
-	/**
-	 * Icon, dass im Tray angezeigt wird.
-	 */
-	private String trayIcon = "/images/trayIcon.gif";
-
 	public MainFrame() {
 		registryService = ServiceLocator.getInstance().getRegistryService();
+
+		EventDispatcher.add(this);
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class MainFrame {
 		initTray();
 
 		// 2. Optional: What happens when the frame closes?
-		// frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		//frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
 
@@ -159,14 +159,10 @@ public class MainFrame {
 	 * Initialises the system tray functionality.
 	 */
 	protected void initTray() {
-		final SystemTray tray = SystemTray.getSystemTray();
+		SystemTrayManager sys = new SystemTrayManager();
+		sys.init();
 
-		String iconFilename = SimMain.class.getResource(trayIcon).getFile();
-		Image image = Toolkit.getDefaultToolkit().getImage(iconFilename);
-
-		PopupMenu popup = new PopupMenu();
-		final TrayIcon trayIcon = new TrayIcon(image, "The Tip Text", popup);
-		trayIcon.addMouseListener(new MouseListener() {
+		sys.addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
@@ -202,28 +198,14 @@ public class MainFrame {
 				}
 
 			}
+
 		});
+	}
 
-		MenuItem item = new MenuItem("Exit");
-		item.setLabel("Exit");
-
-		item.addActionListener(new ActionListener() {
-
-			/**
-			 * Bei click auf Exit, Anwendung schlieﬂen.
-			 */
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				System.exit(0);
-
-			}
-		});
-
-		popup.add(item);
-		try {
-			tray.add(trayIcon);
-		} catch (Exception e) {
-			e.printStackTrace();
+	@Override
+	public void eventReceived(Events event, Object o) {
+		if (Events.SHOW_FRAME.equals(event)) {
+			frame.setVisible(true);
 		}
 	}
 }

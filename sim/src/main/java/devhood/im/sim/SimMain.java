@@ -41,7 +41,7 @@ public class SimMain {
 			}
 		};
 		
-		t.schedule(task, 1000, 2000);
+		t.schedule(task, 1000, 5000);
 	
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

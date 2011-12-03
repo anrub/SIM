@@ -17,10 +17,16 @@ import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.EventObserver;
 import devhood.im.sim.ui.event.Events;
 
+/**
+ * Verwaltet das SystemTray.
+ * 
+ * @author flo
+ * 
+ */
 public class SystemTrayManager implements EventObserver {
 
 	/**
-	 * von diesen User kam die letzte Nachricht.
+	 * Von diesem User kam die letzte Nachricht.
 	 */
 	private String lastUser;
 
@@ -29,6 +35,9 @@ public class SystemTrayManager implements EventObserver {
 	 */
 	private String trayIcon = "/images/trayIcon.gif";
 
+	/**
+	 * Referenz auf das TrayIcon.
+	 */
 	private TrayIcon systrayIcon;
 
 	public void init() {
@@ -62,6 +71,7 @@ public class SystemTrayManager implements EventObserver {
 			e.printStackTrace();
 		}
 
+		// Zeige bei Klick auf die Bubble-Message das Tab des letzten Users.
 		systrayIcon.addActionListener(new ActionListener() {
 
 			@Override
@@ -78,8 +88,10 @@ public class SystemTrayManager implements EventObserver {
 	/**
 	 * Wird vom {@link EventDispatcher} aufgerufen.
 	 * 
-	 * @param Events event siehe {@link Events}
-	 * @param Object o je nach Event verschiedene Parameter moeglich.
+	 * @param Events
+	 *            event siehe {@link Events}
+	 * @param Object
+	 *            o je nach Event verschiedene Parameter moeglich.
 	 */
 	@Override
 	public void eventReceived(Events event, Object o) {

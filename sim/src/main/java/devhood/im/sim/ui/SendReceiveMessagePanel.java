@@ -280,6 +280,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		messageTextArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		messageTextArea.setWrapStyleWord(true);
 		messageTextArea.setLineWrap(true);
+
+		// Schickt die Nachricht auf Enter.
 		messageTextArea.addKeyListener(new KeyAdapter() {
 
 			@Override

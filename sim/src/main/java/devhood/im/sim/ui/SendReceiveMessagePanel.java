@@ -2,6 +2,7 @@ package devhood.im.sim.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +28,8 @@ import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.text.JTextComponent;
 
 import devhood.im.sim.Sim;
@@ -92,7 +95,10 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				sendMessage();
+				if (tabbedPane.getSelectedIndex() != 0) {
+					String toUser = getCurrentSelectedTabTitle();
+					sendMessage(toUser);
+				}
 			}
 		});
 
@@ -107,9 +113,10 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			public void actionPerformed(ActionEvent e) {
 
 				int index = tabbedPane.getSelectedIndex();
-				Component c = tabbedPane.getComponentAt(index);
-
-				String title = tabbedPane.getTitleAt(index);
+				if (index == 0) {
+					return;
+				}
+				String title = getCurrentSelectedTabTitle();
 				nameTextAreaMap.remove(title);
 				inputTextAreaMap.remove(title);
 
@@ -125,9 +132,24 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	}
 
 	/**
+	 * Gibt den Titel des aktuellen Tabs zurueck.
+	 * 
+	 * @return Titel.
+	 */
+	protected String getCurrentSelectedTabTitle() {
+		int index = tabbedPane.getSelectedIndex();
+
+		Component c = tabbedPane.getComponentAt(index);
+
+		String title = tabbedPane.getTitleAt(index);
+
+		return title;
+	}
+
+	/**
 	 * Versendet die Nachricht, aktualisiert die UI.
 	 */
-	protected void sendMessage() {
+	protected void sendMessage(String toUser) {
 		JPanel p = (JPanel) tabbedPane.getSelectedComponent();
 
 		JTextComponent timeline = (JTextComponent) ((JViewport) ((JScrollPane) p
@@ -136,7 +158,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				.getComponent(1)).getComponent(0)).getComponent(0);
 
 		final Message newMessage = new Message();
-		newMessage.setName(Sim.getUsername());
+		newMessage.setReceiver(toUser);
+		newMessage.setSender(Sim.getUsername());
 		newMessage.setText(input.getText());
 
 		timeline.setText(getFormattedMessage(newMessage, timeline.getText()));
@@ -204,26 +227,25 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 					"Uebergebene Message ist nicht valide! Message: " + m);
 		}
 
-		String name = m.getName();
+		String sender = m.getSender();
 		String text = m.getText();
 
-		JEditorPane textArea = nameTextAreaMap.get(name);
+		JEditorPane textArea = nameTextAreaMap.get(sender);
 
 		if (textArea != null) {
 			String oldText = textArea.getText();
 			textArea.setText(getFormattedMessage(m, oldText));
 		} else {
 			String textline = getFormattedMessage(m);
-			addToTabPane(m.getName(), textline);
-			// focusTabPane(m.getName());
+			addToTabPane(sender, textline);
 		}
 
-		// Icon setzten, falls tab derzeit nicht ausgewaehlt.
-		if (!isTabSelected(name)) {
-			setIconToUnreadMessages(name);
+		// Icon auf ungelesen setzten, falls tab derzeit nicht ausgewaehlt.
+		if (!isTabSelected(sender)) {
+			setIconToUnreadMessages(sender);
 		}
 
-		System.out.println("Message: Name: " + name + " Text: " + text);
+		System.out.println("Message: " + m + ", received.");
 
 	}
 
@@ -277,8 +299,21 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @return formatierter String
 	 */
 	protected String getFormattedMessage(Message m) {
-		return "[" + df.format(new Date()) + "] " + m.getName() + "> "
-				+ m.getText();
+		String text = m.getText();
+		String[] chunks = text.split("\\s");
+		String linkPattern = "((mailto\\:|(news|(ht|f)tp(s?))\\://){1}\\S+)";
+		StringBuffer msg = new StringBuffer();
+
+		for (String c : chunks) {
+			if (c.matches(linkPattern)) {
+				c = "<a href=\"" + c + "\">" + c + "</a>";
+			}
+			msg.append(" ");
+			msg.append(c);
+		}
+
+		return "[" + df.format(new Date()) + "] " + m.getSender() + "> "
+				+ msg.toString();
 	}
 
 	/**
@@ -302,29 +337,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	protected void addToTabPane(final String label, String text) {
 		JPanel textPanel = new JPanel(new BorderLayout());
 
-		final JEditorPane timelineTextArea = new JEditorPane("text/html", text);
-		// if (text != null) {
-		// timelineTextArea.setText(text);
-		// }
-		// timelineTextArea.setWrapStyleWord(true);
-		// timelineTextArea.setLineWrap(true);
-
-		timelineTextArea.setEditable(false);
-		timelineTextArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
-
-		// timelineTextArea.get
-
-		JScrollPane textScrollPane = new JScrollPane(timelineTextArea);
-
-		textScrollPane.getVerticalScrollBar().addAdjustmentListener(
-				new AdjustmentListener() {
-					public void adjustmentValueChanged(AdjustmentEvent e) {
-						timelineTextArea.select(
-								timelineTextArea.getHeight() + 1000, 0);
-					}
-				});
-
-		textPanel.add(textScrollPane, BorderLayout.CENTER);
+		JScrollPane timelineScrollPane = createTimelineScrollpane(label, text);
+		textPanel.add(timelineScrollPane, BorderLayout.CENTER);
 
 		JTextArea messageTextArea = new JTextArea(3, 70);
 		messageTextArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
@@ -337,7 +351,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					sendMessage();
+					sendMessage(label);
 				}
 			}
 		});
@@ -365,8 +379,58 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			}
 		});
 
-		nameTextAreaMap.put(label, timelineTextArea);
 		inputTextAreaMap.put(label, messageTextArea);
+	}
+
+	/**
+	 * Erzeugt das timeline Scrollpane incl inhalt.
+	 * 
+	 * @param label
+	 *            Label des Tabs.
+	 * @param text
+	 *            Textinhalt.
+	 * @return
+	 */
+	protected JScrollPane createTimelineScrollpane(String label, String text) {
+		final JEditorPane timelineTextArea = new JEditorPane("text/html", text);
+
+		timelineTextArea.setEditable(false);
+		timelineTextArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+
+		timelineTextArea.addHyperlinkListener(new HyperlinkListener() {
+
+			/**
+			 * Bei Klick auf einen Link in der Timeline, wird der Browser
+			 * geöffnet.
+			 * 
+			 * @param e
+			 *            Event.
+			 */
+			@Override
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+
+				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+					try {
+						Desktop.getDesktop().browse(e.getURL().toURI());
+					} catch (Exception uri) {
+						System.out.println(uri);
+					}
+				}
+			}
+		});
+		nameTextAreaMap.put(label, timelineTextArea);
+
+		JScrollPane timelineScrollPane = new JScrollPane(timelineTextArea);
+
+		timelineScrollPane.getVerticalScrollBar().addAdjustmentListener(
+				new AdjustmentListener() {
+					public void adjustmentValueChanged(AdjustmentEvent e) {
+						timelineTextArea.select(
+								timelineTextArea.getHeight() + 1000, 0);
+					}
+				});
+
+		return timelineScrollPane;
 	}
 
 	/**

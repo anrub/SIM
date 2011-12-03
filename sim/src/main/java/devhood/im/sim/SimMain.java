@@ -33,16 +33,17 @@ public class SimMain {
 			public void run() {
 				Message m = new Message();
 				int userid = (int) Math.floor(Math.random() * 5);
-				m.setName("User " + userid);
-				
+				m.setSender("User " + userid);
+				m.setReceiver(Sim.getUsername());
+
 				m.setText("Dies ist eine Nachricht цдья " + Math.random());
 				EventDispatcher.fireEvent(Events.MESSAGE_RECEIVED, m);
-				
+
 			}
 		};
-		
+
 		t.schedule(task, 1000, 5000);
-	
+
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
@@ -50,7 +51,6 @@ public class SimMain {
 		}
 		MainFrame mainFrame = new MainFrame();
 		mainFrame.initMainFrame();
-
 
 	}
 }

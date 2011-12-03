@@ -97,9 +97,9 @@ public class SystemTrayManager implements EventObserver {
 	public void eventReceived(Events event, Object o) {
 		if (Events.MESSAGE_RECEIVED.equals(event)) {
 			Message m = (Message) o;
-			systrayIcon.displayMessage(m.getName(), m.getText(),
+			systrayIcon.displayMessage(m.getSender(), m.getText(),
 					MessageType.INFO);
-			lastUser = m.getName();
+			lastUser = m.getSender();
 		}
 
 	}

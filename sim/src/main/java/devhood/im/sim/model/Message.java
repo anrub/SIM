@@ -8,7 +8,8 @@ package devhood.im.sim.model;
  */
 public class Message {
 
-	private String name;
+	private String sender;
+	private String receiver;
 	/**
 	 * Text der Nachricht.
 	 */
@@ -22,16 +23,25 @@ public class Message {
 		this.text = text;
 	}
 
-	public String getName() {
-		return name;
+	public String getSender() {
+		return sender;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setSender(String sender) {
+		this.sender = sender;
+	}
+
+	public String getReceiver() {
+		return receiver;
+	}
+
+	public void setReceiver(String receiver) {
+		this.receiver = receiver;
 	}
 
 	public String toString() {
-		return "Name: " + name + ", Text: " + text;
+		return "Sender: " + sender + ", Receiver: " + receiver + ", Text: "
+				+ text;
 	}
 
 }

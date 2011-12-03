@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Event Dispatcher, verteilt die Events an die Subscriber
+ * Event Dispatcher, verteilt die Events an alle registierten
+ * {@link EventObserver}.
  * 
  * @author flo
  * 

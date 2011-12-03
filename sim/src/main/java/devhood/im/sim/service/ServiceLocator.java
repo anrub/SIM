@@ -1,5 +1,6 @@
 package devhood.im.sim.service;
 
+import devhood.im.sim.service.interfaces.MessageService;
 import devhood.im.sim.service.interfaces.RegistryService;
 
 /**
@@ -12,6 +13,8 @@ import devhood.im.sim.service.interfaces.RegistryService;
 public class ServiceLocator {
 
 	private RegistryService userService = new DummyRegistryService();
+
+	private MessageService messageService = new DummyMessageService();
 
 	private static ServiceLocator instance;
 
@@ -42,5 +45,14 @@ public class ServiceLocator {
 	 */
 	public RegistryService getRegistryService() {
 		return userService;
+	}
+
+	/**
+	 * Gibt den {@link MessageService} zurueck.
+	 * 
+	 * @return {@link MessageService}
+	 */
+	public MessageService getMessageService() {
+		return messageService;
 	}
 }

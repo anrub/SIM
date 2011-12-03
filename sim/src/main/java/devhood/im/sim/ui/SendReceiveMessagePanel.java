@@ -24,12 +24,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.JTextComponent;
 
 import devhood.im.sim.Sim;
 import devhood.im.sim.model.Message;
+import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.EventObserver;
 import devhood.im.sim.ui.event.Events;
@@ -48,12 +50,12 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	private JTabbedPane tabbedPane;
 
 	/**
-	 * Map von Name Des Tabs -> Texarea des Msg.
+	 * Map von Name Des Tabs -> Texarea des Msg (Timeline).
 	 */
 	private Map<String, JEditorPane> nameTextAreaMap = new HashMap<String, JEditorPane>();
 
 	/**
-	 * Map von Name Des Tabs -> Texarea des Msg.
+	 * Map von Name Des Tabs -> Texarea der Inputzeile (Text sendne).
 	 */
 	private Map<String, JTextArea> inputTextAreaMap = new HashMap<String, JTextArea>();
 
@@ -133,12 +135,26 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		JTextComponent input = (JTextComponent) ((JViewport) ((JScrollPane) p
 				.getComponent(1)).getComponent(0)).getComponent(0);
 
-		timeline.setText(getFormattedMessage(Sim.getUsername(),
-				input.getText(), timeline.getText()));
+		final Message newMessage = new Message();
+		newMessage.setName(Sim.getUsername());
+		newMessage.setText(input.getText());
+
+		timeline.setText(getFormattedMessage(newMessage, timeline.getText()));
 
 		input.setText(null);
 
 		input.requestFocusInWindow();
+
+		// Versand wird asynchron ausgefuehrt, da potentiell langsam und droht
+		// die ui zu blocken.
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				ServiceLocator.getInstance().getMessageService()
+						.sendMessage(newMessage);
+			}
+		});
 	}
 
 	/**
@@ -195,9 +211,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		if (textArea != null) {
 			String oldText = textArea.getText();
-			textArea.setText(getFormattedMessage(name, text, oldText));
+			textArea.setText(getFormattedMessage(m, oldText));
 		} else {
-			String textline = getFormattedMessage(name, text);
+			String textline = getFormattedMessage(m);
 			addToTabPane(m.getName(), textline);
 			// focusTabPane(m.getName());
 		}
@@ -236,14 +252,13 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            vorhandener text in der text area
 	 * @return formatierter String
 	 */
-	protected String getFormattedMessage(String username, String msg,
-			String oldText) {
+	protected String getFormattedMessage(Message m, String oldText) {
 		StringBuffer newMsg = new StringBuffer(oldText);
 
 		if (oldText.contains("</body>")) {
 			int index = oldText.indexOf("</body>");
 
-			newMsg.insert(index, "<br />" + getFormattedMessage(username, msg));
+			newMsg.insert(index, "<br />" + getFormattedMessage(m));
 		}
 
 		return newMsg.toString();
@@ -261,8 +276,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            vorhandener text in der text area
 	 * @return formatierter String
 	 */
-	protected String getFormattedMessage(String username, String msg) {
-		return "[" + df.format(new Date()) + "] " + username + "> " + msg;
+	protected String getFormattedMessage(Message m) {
+		return "[" + df.format(new Date()) + "] " + m.getName() + "> "
+				+ m.getText();
 	}
 
 	/**
@@ -330,7 +346,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		textPanel.add(messageScrollPane, BorderLayout.SOUTH);
 
-		tabbedPane.addTab(label, textPanel);
+		tabbedPane.addTab(label, readIcon, textPanel);
 
 		tabbedPane.addChangeListener(new ChangeListener() {
 

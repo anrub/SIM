@@ -7,7 +7,7 @@ package devhood.im.sim.model;
  * 
  */
 public class Message {
-	
+
 	private String name;
 	/**
 	 * Text der Nachricht.
@@ -28,6 +28,10 @@ public class Message {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String toString() {
+		return "Name: " + name + ", Text: " + text;
 	}
 
 }

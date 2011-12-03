@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -26,7 +25,7 @@ import devhood.im.sim.ui.event.EventObserver;
 import devhood.im.sim.ui.event.Events;
 
 /**
- * This is the main frame of the application.
+ * Diese Klasse erzeugt das Hauptfenster der Anwendung.
  * 
  * @author flo
  * 

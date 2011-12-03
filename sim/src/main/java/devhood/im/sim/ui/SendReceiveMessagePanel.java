@@ -25,7 +25,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JViewport;
-import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.HyperlinkEvent;
@@ -170,14 +170,25 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		// Versand wird asynchron ausgefuehrt, da potentiell langsam und droht
 		// die ui zu blocken.
-		SwingUtilities.invokeLater(new Runnable() {
+		SwingWorker<Boolean, Message> worker = new SwingWorker<Boolean, Message>() {
 
 			@Override
-			public void run() {
-				ServiceLocator.getInstance().getMessageService()
-						.sendMessage(newMessage);
+			protected Boolean doInBackground() throws Exception {
+				// TODO Auto-generated method stub
+				Boolean success = ServiceLocator.getInstance()
+						.getMessageService().sendMessage(newMessage);
+
+				return success;
 			}
-		});
+
+			@Override
+			protected void done() {
+				// TODO Auto-generated method stub
+				super.done();
+			}
+		};
+
+		worker.execute();
 	}
 
 	/**
@@ -407,15 +418,33 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			 *            Event.
 			 */
 			@Override
-			public void hyperlinkUpdate(HyperlinkEvent e) {
+			public void hyperlinkUpdate(final HyperlinkEvent e) {
 
 				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 
-					try {
-						Desktop.getDesktop().browse(e.getURL().toURI());
-					} catch (Exception uri) {
-						System.out.println(uri);
-					}
+					// Fenster asynchron öffnen, sonst blockt ui.
+					SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+						@Override
+						protected Void doInBackground() throws Exception {
+
+							try {
+								Desktop.getDesktop().browse(e.getURL().toURI());
+							} catch (Exception uri) {
+								System.out.println(uri);
+							}
+
+							return null;
+						}
+
+						@Override
+						protected void done() {
+							// TODO Auto-generated method stub
+							super.done();
+						}
+					};
+
+					worker.execute();
 
 				}
 			}

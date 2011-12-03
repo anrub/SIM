@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -19,6 +21,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import devhood.im.sim.Sim;
+import devhood.im.sim.model.User;
 import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.service.interfaces.RegistryService;
 import devhood.im.sim.ui.event.EventDispatcher;
@@ -74,6 +77,7 @@ public class MainFrame implements EventObserver {
 		initUserScrollPane();
 		initMsgScrollPane();
 		initTray();
+		initRefreshUserState();
 
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		// frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -99,6 +103,21 @@ public class MainFrame implements EventObserver {
 		// 5. Show it.
 		frame.setVisible(true);
 
+	}
+
+	/**
+	 * Aktualisiert den eigenen Nutzerstatus in der DB.
+	 */
+	protected void initRefreshUserState() {
+		Timer t = new Timer();
+		TimerTask task = new TimerTask() {
+			public void run() {
+				User u = Sim.getUser();
+				registryService.refresh(u);
+			};
+		};
+
+		t.schedule(task, 0, 10000);
 	}
 
 	/**
@@ -146,9 +165,10 @@ public class MainFrame implements EventObserver {
 		systrayMenuItem = new JCheckBoxMenuItem("Nachrichten Systray anzeigen");
 		menuNotifications.add(systrayMenuItem);
 
-		cbMenuItem = new JCheckBoxMenuItem("Ungelesene Nachrichten Systray anzeigen");
+		cbMenuItem = new JCheckBoxMenuItem(
+				"Ungelesene Nachrichten Systray anzeigen");
 		menuNotifications.add(cbMenuItem);
-		
+
 		cbMenuItem = new JCheckBoxMenuItem("Status veröffentlichen");
 		menuPrivacy.add(cbMenuItem);
 		cbMenuItem = new JCheckBoxMenuItem("Tippstatus veröffentlichen");

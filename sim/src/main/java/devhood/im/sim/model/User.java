@@ -8,9 +8,22 @@ package devhood.im.sim.model;
  */
 public class User {
 	/**
-	 * name of user.
+	 * name of user. to send the messages to the user.
 	 */
 	private String name;
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	/**
+	 * address.
+	 */
+	private String address;
 
 	/**
 	 * Id des Users.

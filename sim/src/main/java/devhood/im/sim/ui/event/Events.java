@@ -31,6 +31,11 @@ public enum Events {
 	 * Es gibt ungelesene Nachrichten parameter: Liste von Usern, deren
 	 * nachrichten noch nicht gelesen wurden.
 	 */
-	UNREAD_MESSAGES;
+	UNREAD_MESSAGES,
+	
+	/**
+	 * Event wird beim logoff geworfen parameter: String username.
+	 */
+	LOGOUT;
 
 }

@@ -26,10 +26,21 @@ public class SimMain {
 	 *            arguments
 	 */
 	public static void main(String[] args) {
+		if (args.length > 0) {
+			for (int i = 0; i < args.length; i++) {
+				if ("-n".equals(args[i]) && i + 1 < args.length) {
+					Sim.username = args[i + 1];
+				}
+				if ("-f".equals(args[i]) && i + 1 < args.length) {
+					Sim.dbPath = args[i + 1];
+				}
+			}
+
+		}
 
 		Timer t = new Timer();
 		TimerTask task = new TimerTask() {
-			int cnt = 0;
+			volatile int cnt = 0;
 
 			@Override
 			public void run() {

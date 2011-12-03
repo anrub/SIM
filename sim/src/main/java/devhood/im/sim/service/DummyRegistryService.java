@@ -37,4 +37,10 @@ public class DummyRegistryService implements RegistryService {
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public void logout(String username) {
+		// TODO Auto-generated method stub
+
+	}
 }

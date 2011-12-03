@@ -12,8 +12,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.util.List;
 
+import devhood.im.sim.Sim;
 import devhood.im.sim.SimMain;
 import devhood.im.sim.model.Message;
+import devhood.im.sim.service.ServiceLocator;
+import devhood.im.sim.service.interfaces.RegistryService;
 import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.EventObserver;
 import devhood.im.sim.ui.event.Events;
@@ -35,6 +38,9 @@ public class SystemTrayManager implements EventObserver {
 	 * Icon, dass im Tray angezeigt wird.
 	 */
 	private String trayIcon = "/images/trayIcon.gif";
+
+	private RegistryService registryService = ServiceLocator.getInstance()
+			.getRegistryService();
 
 	/**
 	 * Referenz auf das TrayIcon.
@@ -60,6 +66,7 @@ public class SystemTrayManager implements EventObserver {
 			 */
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				registryService.logout(Sim.username);
 				System.exit(0);
 
 			}

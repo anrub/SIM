@@ -27,4 +27,13 @@ public interface RegistryService {
 	 *            User.
 	 */
 	public void refresh(User user);
+
+	/**
+	 * Loescht diesen User aus der Datenbank. Ist damit fuer andere nicht mehr
+	 * sichtbar.
+	 * 
+	 * @param username
+	 *            Username.
+	 */
+	public void logout(String username);
 }

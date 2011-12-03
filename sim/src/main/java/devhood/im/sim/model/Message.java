@@ -8,8 +8,16 @@ package devhood.im.sim.model;
  */
 public class Message {
 
+	/**
+	 * Sender Name.
+	 */
 	private String sender;
+
+	/**
+	 * Receiver Name.
+	 */
 	private String receiver;
+
 	/**
 	 * Text der Nachricht.
 	 */

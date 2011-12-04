@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JEditorPane;
@@ -70,18 +69,6 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * DateFormat.
 	 */
 	private DateFormat df = new SimpleDateFormat("HH:mm:ss");
-
-	/**
-	 * Icon der gelesenen Nachrichten.
-	 */
-	private ImageIcon readIcon = createImageIcon("/images/read.png",
-			"Nachrichten gelesen");
-
-	/**
-	 * Icon der ungelesenen Nachrichten.
-	 */
-	private ImageIcon unreadIcon = createImageIcon("/images/unread.png",
-			"Ungelesene Nachrichten");
 
 	/**
 	 * List mit ungelesenen Tabs.
@@ -393,7 +380,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		textPanel.add(messageScrollPane, BorderLayout.SOUTH);
 
-		tabbedPane.addTab(label, readIcon, textPanel);
+		tabbedPane.addTab(label, Sim.readIcon, textPanel);
 
 		tabbedPane.addChangeListener(new ChangeListener() {
 
@@ -522,10 +509,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		if (!unreadTabsList.contains(name)) {
 			unreadTabsList.add(name);
 		}
-
-		ImageIcon icon = unreadIcon;
+		;
 		int index = tabbedPane.indexOfTab(name);
-		tabbedPane.setIconAt(index, icon);
+		tabbedPane.setIconAt(index, Sim.unreadIcon);
 
 	}
 
@@ -538,25 +524,6 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	protected void setIconToReadMessages(String name) {
 		unreadTabsList.remove(name);
 		int index = tabbedPane.indexOfTab(name);
-		tabbedPane.setIconAt(index, readIcon);
-	}
-
-	/**
-	 * Erzeugt ien ImageIcon aus dem uebergebenen path. path ist im classpath.
-	 * 
-	 * @param path
-	 *            path aus classpath
-	 * @param description
-	 *            beschreibung
-	 * @return imageicon
-	 */
-	protected ImageIcon createImageIcon(String path, String description) {
-		java.net.URL imgURL = getClass().getResource(path);
-		if (imgURL != null) {
-			return new ImageIcon(imgURL, description);
-		} else {
-			System.err.println("Couldn't find file: " + path);
-			return null;
-		}
+		tabbedPane.setIconAt(index, Sim.readIcon);
 	}
 }

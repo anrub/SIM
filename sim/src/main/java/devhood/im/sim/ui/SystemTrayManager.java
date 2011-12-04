@@ -4,7 +4,6 @@ import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
-import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
 import java.awt.event.ActionEvent;
@@ -13,7 +12,6 @@ import java.awt.event.MouseListener;
 import java.util.List;
 
 import devhood.im.sim.Sim;
-import devhood.im.sim.SimMain;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
@@ -34,11 +32,6 @@ public class SystemTrayManager implements EventObserver {
 	 */
 	private String lastUser;
 
-	/**
-	 * Icon, dass im Tray angezeigt wird.
-	 */
-	private String trayIcon = "/images/trayIcon.gif";
-
 	private RegistryService registryService = ServiceLocator.getInstance()
 			.getRegistryService();
 
@@ -55,11 +48,10 @@ public class SystemTrayManager implements EventObserver {
 	public void init() {
 		final SystemTray tray = SystemTray.getSystemTray();
 
-		String iconFilename = SimMain.class.getResource(trayIcon).getFile();
-		Image image = Toolkit.getDefaultToolkit().getImage(iconFilename);
+		Image trayIcon = Sim.trayIcon;
 
 		PopupMenu popup = new PopupMenu();
-		systrayIcon = new TrayIcon(image, Sim.applicationName, popup);
+		systrayIcon = new TrayIcon(trayIcon, Sim.applicationName, popup);
 
 		MenuItem item = new MenuItem("Exit");
 		item.setLabel("Exit");

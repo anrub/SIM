@@ -50,7 +50,7 @@ public class SimMain {
 		}
 
 		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			UIManager.setLookAndFeel(Sim.lookAndFeel);
 		} catch (Exception e) {
 			log.log(Level.WARNING,
 					"Konnte System default Look n Feel nicht laden, benutzte Java default.",

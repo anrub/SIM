@@ -176,4 +176,10 @@ public class RegistryServiceSqljet implements RegistryService {
 		}
 
 	}
+
+	@Override
+	public void purgeOfflineUsers() {
+		// TODO Auto-generated method stub
+
+	}
 }

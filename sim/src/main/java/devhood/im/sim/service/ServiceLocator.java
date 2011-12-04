@@ -12,10 +12,10 @@ import devhood.im.sim.service.interfaces.RegistryService;
  */
 public class ServiceLocator {
 
-	private RegistryService userService = new DummyRegistryService();
+	private RegistryService userService = new InMemoryMockDataRegistryService();
 	// private RegistryService userService = new RegistryServiceSqljet();
 
-	private MessageService messageService = new DummyMessageService();
+	private MessageService messageService = new PeerToPeerMessageService();
 
 	private static ServiceLocator instance;
 

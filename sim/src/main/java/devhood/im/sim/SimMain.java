@@ -2,11 +2,11 @@ package devhood.im.sim;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.UIManager;
 
-import devhood.im.sim.event.EventDispatcher;
-import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Message;
 import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.service.interfaces.MessageService;
@@ -14,6 +14,11 @@ import devhood.im.sim.ui.MainFrame;
 
 /**
  * Main Class.
+ * 
+ * Possible commandline arguments:
+ * 
+ * -n nickname -f databasefile
+ * 
  * 
  * @author flo
  * 
@@ -23,9 +28,10 @@ public class SimMain {
 	final private static MessageService messageService = ServiceLocator
 			.getInstance().getMessageService();
 
+	private static Logger log = Logger.getLogger(SimMain.class.toString());
+
 	/**
 	 * Main method, starts the program. <br />
-	 * Possible commandline arguments:
 	 * 
 	 * @param args
 	 *            arguments
@@ -43,16 +49,33 @@ public class SimMain {
 
 		}
 
-		Timer t = new Timer();
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			log.log(Level.WARNING,
+					"Konnte System default Look n Feel nicht laden, benutzte Java default.",
+					e);
+		}
+		MainFrame mainFrame = new MainFrame();
+		mainFrame.initMainFrame();
+
+		SimMain.startSimulation();
+	}
+
+	/**
+	 * startet messaging simulaton, erzeugt 10 nachrichten.
+	 */
+	public static void startSimulation() {
+		final Timer t = new Timer();
 		TimerTask task = new TimerTask() {
 			volatile int cnt = 0;
 
 			@Override
 			public void run() {
 
-				if (cnt < 8) {
+				if (cnt < 10) {
 					Message m = new Message();
-					int userid = (int) Math.floor(Math.random() * 5);
+					int userid = (int) Math.floor(Math.random() * 10);
 					m.setSender("User " + userid);
 					m.setReceiver(Sim.getUsername());
 
@@ -61,20 +84,14 @@ public class SimMain {
 					messageService.receiveMessage(m);
 
 					cnt++;
+				} else {
+					t.cancel();
 				}
 
 			}
 		};
 
 		t.schedule(task, 1000, 5000);
-
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		MainFrame mainFrame = new MainFrame();
-		mainFrame.initMainFrame();
 
 	}
 }

@@ -36,4 +36,9 @@ public interface RegistryService {
 	 *            Username.
 	 */
 	public void logout(String username);
+
+	/**
+	 * Loescht die offline user aus der db.
+	 */
+	public void purgeOfflineUsers();
 }

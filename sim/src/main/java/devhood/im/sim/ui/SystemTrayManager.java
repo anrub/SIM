@@ -112,6 +112,9 @@ public class SystemTrayManager implements EventObserver {
 			List<String> users = (List<String>) o;
 			systrayIcon.displayMessage("Ungelesene Nachrichten",
 					users.toString(), MessageType.INFO);
+		} else if (Events.USER_OFFLINE_NOTICE.equals(event)) {
+			systrayIcon.displayMessage("User offline", o.toString(),
+					MessageType.INFO);
 		}
 
 	}

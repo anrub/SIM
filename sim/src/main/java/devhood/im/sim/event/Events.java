@@ -36,6 +36,11 @@ public enum Events {
 	/**
 	 * Event wird beim logoff geworfen parameter: String username.
 	 */
-	LOGOUT;
+	LOGOUT,
+	/**
+	 * Event, wird geworfenn wenn User offline gehen und aus der Liste
+	 * verschwinden parameter: String userNotice die angezeigt werden soll.
+	 */
+	USER_OFFLINE_NOTICE;
 
 }

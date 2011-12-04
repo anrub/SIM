@@ -270,12 +270,6 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            Message
 	 */
 	protected void processNewMessage(Message m) {
-		boolean valid = validateMessage(m);
-		if (!valid) {
-			throw new IllegalArgumentException(
-					"Uebergebene Message ist nicht valide! Message: " + m);
-		}
-
 		String sender = m.getSender();
 		String text = m.getText();
 
@@ -363,16 +357,6 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		return "[" + df.format(new Date()) + "] " + m.getSender() + "> "
 				+ msg.toString();
-	}
-
-	/**
-	 * Validiert die neue nachricht
-	 * 
-	 * @param m
-	 */
-	private boolean validateMessage(Message m) {
-
-		return true;
 	}
 
 	/**

@@ -25,4 +25,12 @@ public interface MessageService {
 	 *            Message.
 	 */
 	public void receiveMessage(Message m);
+
+	/**
+	 * Validiert die neue nachricht.
+	 * 
+	 * @param m
+	 *            message.
+	 */
+	public boolean validateIncomingMessage(Message m);
 }

@@ -47,6 +47,11 @@ public class SystemTrayManager implements EventObserver {
 	 */
 	private TrayIcon systrayIcon;
 
+	public SystemTrayManager() {
+		init();
+		EventDispatcher.add(this);
+	}
+
 	public void init() {
 		final SystemTray tray = SystemTray.getSystemTray();
 
@@ -89,8 +94,6 @@ public class SystemTrayManager implements EventObserver {
 						.fireEvent(Events.SHOW_MSG_TABBED_PANE, lastUser);
 			}
 		});
-
-		EventDispatcher.add(this);
 	}
 
 	/**

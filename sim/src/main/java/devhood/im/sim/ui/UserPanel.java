@@ -16,7 +16,8 @@ import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.RegistryService;
 
 /**
- * Panel zur Auswahl der User.
+ * Panel zur Auswahl der User. Aktualisiert sich selbst via
+ * {@link RegistryService}.
  * 
  * @author flo
  * 
@@ -45,8 +46,6 @@ public class UserPanel extends JPanel {
 
 	/**
 	 * Initialisiert, füllt das UserPanel.
-	 * 
-	 * TODO Hier regelmäßig die Userliste abrufen und die UI aktualisieren.
 	 */
 	public void init() {
 		BoxLayout layout = new BoxLayout(this, BoxLayout.PAGE_AXIS);

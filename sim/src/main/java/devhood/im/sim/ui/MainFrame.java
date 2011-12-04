@@ -50,7 +50,7 @@ public class MainFrame implements EventObserver {
 	/**
 	 * Das ist das Scrollpane, in dem Messages empfangen, versendet werden.
 	 */
-	private SendReceiveMessagePanel timelineScrollPane;
+	private SendReceiveMessagePanel timelinePanel;
 
 	/**
 	 * Checkbox ob Nachrichten in Systray angezeigt werden sollen, oder nicht.
@@ -87,14 +87,14 @@ public class MainFrame implements EventObserver {
 
 		// Create a split pane with the two scroll panes in it.
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				userScrollPane, timelineScrollPane);
+				userScrollPane, timelinePanel);
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setDividerLocation(150);
 
 		// Provide minimum sizes for the two components in the split pane
 		Dimension minimumSize = new Dimension(50, 50);
 		userScrollPane.setMinimumSize(minimumSize);
-		timelineScrollPane.setMinimumSize(minimumSize);
+		timelinePanel.setMinimumSize(minimumSize);
 
 		frame.getContentPane().add(splitPane, BorderLayout.CENTER);
 
@@ -138,7 +138,7 @@ public class MainFrame implements EventObserver {
 	protected void initMsgScrollPane() {
 		SendReceiveMessagePanel p = new SendReceiveMessagePanel();
 
-		timelineScrollPane = p;
+		timelinePanel = p;
 	}
 
 	/**
@@ -190,7 +190,6 @@ public class MainFrame implements EventObserver {
 	 */
 	protected void initTray() {
 		SystemTrayManager sys = new SystemTrayManager();
-		sys.init();
 
 		sys.addMouseListener(new MouseAdapter() {
 			/**
@@ -235,18 +234,16 @@ public class MainFrame implements EventObserver {
 		final JRadioButtonMenuItem r3 = new JRadioButtonMenuItem(
 				"Nimbus Layout");
 
-		final JRadioButtonMenuItem r4 = new JRadioButtonMenuItem(
-				"Motif Layout");
+		final JRadioButtonMenuItem r4 = new JRadioButtonMenuItem("Motif Layout");
 		final JRadioButtonMenuItem r5 = new JRadioButtonMenuItem(
 				"Windows classic Layout");
-			
+
 		group.add(r1);
 		group.add(r2);
 		group.add(r3);
 		group.add(r4);
 		group.add(r5);
 
-		
 		ItemListener layoutListener = new ItemListener() {
 
 			public void itemStateChanged(java.awt.event.ItemEvent e) {
@@ -291,12 +288,11 @@ public class MainFrame implements EventObserver {
 		r4.addItemListener(layoutListener);
 		r5.addItemListener(layoutListener);
 
-		
 		layout.add(r1);
 		layout.add(r2);
 		layout.add(r3);
-	//	layout.add(r4);
-	//	layout.add(r5);
+		// layout.add(r4);
+		// layout.add(r5);
 
 		return layout;
 	}

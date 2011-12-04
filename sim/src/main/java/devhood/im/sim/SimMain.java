@@ -5,10 +5,10 @@ import java.util.TimerTask;
 
 import javax.swing.UIManager;
 
+import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Message;
 import devhood.im.sim.ui.MainFrame;
-import devhood.im.sim.ui.event.EventDispatcher;
-import devhood.im.sim.ui.event.Events;
 
 /**
  * Main Class.

@@ -1,4 +1,4 @@
-package devhood.im.sim.ui.event;
+package devhood.im.sim.event;
 
 /**
  * EventObserver - wird bei Events in der Applikation von

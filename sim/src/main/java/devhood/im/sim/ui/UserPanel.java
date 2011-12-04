@@ -1,7 +1,5 @@
 package devhood.im.sim.ui;
 
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
@@ -10,10 +8,10 @@ import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
+import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.Events;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.RegistryService;
-import devhood.im.sim.ui.event.EventDispatcher;
-import devhood.im.sim.ui.event.Events;
 
 /**
  * Panel zur Auswahl der User.

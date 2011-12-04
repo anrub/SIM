@@ -14,12 +14,12 @@ import java.util.List;
 
 import devhood.im.sim.Sim;
 import devhood.im.sim.SimMain;
+import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.EventObserver;
+import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Message;
 import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.service.interfaces.RegistryService;
-import devhood.im.sim.ui.event.EventDispatcher;
-import devhood.im.sim.ui.event.EventObserver;
-import devhood.im.sim.ui.event.Events;
 
 /**
  * Verwaltet das SystemTray.

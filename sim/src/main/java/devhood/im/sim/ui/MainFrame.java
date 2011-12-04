@@ -2,8 +2,6 @@ package devhood.im.sim.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
@@ -16,7 +14,6 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
@@ -25,12 +22,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import devhood.im.sim.Sim;
+import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.EventObserver;
+import devhood.im.sim.event.Events;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.service.interfaces.RegistryService;
-import devhood.im.sim.ui.event.EventDispatcher;
-import devhood.im.sim.ui.event.EventObserver;
-import devhood.im.sim.ui.event.Events;
 
 /**
  * Diese Klasse erzeugt das Hauptfenster der Anwendung.

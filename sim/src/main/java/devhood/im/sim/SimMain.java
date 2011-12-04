@@ -45,7 +45,7 @@ public class SimMain {
 			@Override
 			public void run() {
 
-				if (cnt < 5) {
+				if (cnt < 8) {
 					Message m = new Message();
 					int userid = (int) Math.floor(Math.random() * 5);
 					m.setSender("User " + userid);

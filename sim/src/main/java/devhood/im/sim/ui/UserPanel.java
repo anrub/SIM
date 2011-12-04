@@ -1,10 +1,12 @@
 package devhood.im.sim.ui;
 
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
 
+import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
@@ -14,7 +16,7 @@ import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.Events;
 
 /**
- * Panel zur Auswahl der User. s
+ * Panel zur Auswahl der User.
  * 
  * @author flo
  * 
@@ -33,9 +35,12 @@ public class UserPanel extends JPanel {
 
 	/**
 	 * Initialisiert, füllt das UserPanel.
+	 * 
+	 * TODO Hier regelmäßig die Userliste abrufen und die UI aktualisieren.
 	 */
 	public void init() {
-		setLayout(new GridLayout(10, 1));
+		BoxLayout layout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
+		setLayout(layout);
 
 		List<User> users = registryService.getUsers();
 		for (User user : users) {
@@ -44,6 +49,11 @@ public class UserPanel extends JPanel {
 
 			userCheckBox.addItemListener(new ItemListener() {
 
+				/**
+				 * Jede Checkbox bekommt einen Listener, der anschlägt, wenn Sie
+				 * ausgewählt wurde. Dabei wird Ein Events.USER_SELECTED
+				 * gefeuert.
+				 */
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					if (e.getStateChange() == ItemEvent.SELECTED) {

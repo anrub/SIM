@@ -4,17 +4,21 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
@@ -127,7 +131,8 @@ public class MainFrame implements EventObserver {
 		JPanel userPanel = new UserPanel(registryService);
 
 		userScrollPane = new JScrollPane(userPanel);
-
+		Dimension preferredSize = new Dimension(100, 200);
+		userScrollPane.setPreferredSize(preferredSize);
 	}
 
 	/**
@@ -205,10 +210,14 @@ public class MainFrame implements EventObserver {
 		});
 	}
 
+	/**
+	 * Empfaengt Events von {@link EventDispatcher}.
+	 */
 	@Override
 	public void eventReceived(Events event, Object o) {
 		if (Events.SHOW_FRAME.equals(event)) {
 			frame.setVisible(true);
+			frame.requestFocusInWindow();
 		}
 	}
 
@@ -218,36 +227,79 @@ public class MainFrame implements EventObserver {
 	 * @return layouts.
 	 */
 	public JMenu createLayoutChangingMenu() {
-		JMenu layout = new JMenu("Layout");
-		final JMenuItem r1 = new JMenuItem("Windows Layout");
-		final JMenuItem r2 = new JMenuItem("Java Layout");
+		JMenu layout = new JMenu("Look & Feel");
+		ButtonGroup group = new ButtonGroup();
 
-		ActionListener layoutListener = new ActionListener() {
+		final JRadioButtonMenuItem r1 = new JRadioButtonMenuItem(
+				"Windows Layout");
+		r1.setSelected(true);
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
+		final JRadioButtonMenuItem r2 = new JRadioButtonMenuItem("Java Layout");
+		final JRadioButtonMenuItem r3 = new JRadioButtonMenuItem(
+				"Nimbus Layout");
 
-				try {
-					if (e.getSource() == r1) {
-						UIManager.setLookAndFeel(UIManager
-								.getSystemLookAndFeelClassName());
-						SwingUtilities.updateComponentTreeUI(frame);
+		final JRadioButtonMenuItem r4 = new JRadioButtonMenuItem(
+				"Motif Layout");
+		final JRadioButtonMenuItem r5 = new JRadioButtonMenuItem(
+				"Windows classic Layout");
+			
+		group.add(r1);
+		group.add(r2);
+		group.add(r3);
+		group.add(r4);
+		group.add(r5);
+
+		
+		ItemListener layoutListener = new ItemListener() {
+
+			public void itemStateChanged(java.awt.event.ItemEvent e) {
+
+				Object obj = e.getItemSelectable();
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					try {
+						if (obj == r1) {
+							UIManager.setLookAndFeel(UIManager
+									.getSystemLookAndFeelClassName());
+							SwingUtilities.updateComponentTreeUI(frame);
+						}
+						if (obj == r2) {
+							UIManager.setLookAndFeel(UIManager
+									.getCrossPlatformLookAndFeelClassName());
+							SwingUtilities.updateComponentTreeUI(frame);
+						}
+						if (obj == r3) {
+							UIManager
+									.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+							SwingUtilities.updateComponentTreeUI(frame);
+						}
+						if (obj == r4) {
+							UIManager
+									.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+							SwingUtilities.updateComponentTreeUI(frame);
+						}
+						if (obj == r5) {
+							UIManager
+									.setLookAndFeel("com.sun.java.swing.plaf.motif.WindowsClassicLookAndFeel");
+							SwingUtilities.updateComponentTreeUI(frame);
+						}
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
-					if (e.getSource() == r2) {
-						UIManager.setLookAndFeel(UIManager
-								.getCrossPlatformLookAndFeelClassName());
-						SwingUtilities.updateComponentTreeUI(frame);
-					}
-				} catch (Exception ex) {
-					ex.printStackTrace();
 				}
 			}
 		};
-		r1.addActionListener(layoutListener);
-		r2.addActionListener(layoutListener);
+		r1.addItemListener(layoutListener);
+		r2.addItemListener(layoutListener);
+		r3.addItemListener(layoutListener);
+		r4.addItemListener(layoutListener);
+		r5.addItemListener(layoutListener);
 
+		
 		layout.add(r1);
 		layout.add(r2);
+		layout.add(r3);
+	//	layout.add(r4);
+	//	layout.add(r5);
 
 		return layout;
 	}

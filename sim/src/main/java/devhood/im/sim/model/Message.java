@@ -8,6 +8,9 @@ package devhood.im.sim.model;
  */
 public class Message {
 
+	// TODO MessageType vorsehen, damit werden technische messages wie
+	// statusmeldungen oder binäre messages usw möglich
+
 	/**
 	 * Sender Name.
 	 */

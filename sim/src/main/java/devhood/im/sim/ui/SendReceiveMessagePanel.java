@@ -184,6 +184,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	protected void sendMessage(String toUser) {
 		JPanel p = (JPanel) tabbedPane.getSelectedComponent();
 
+		// TODO fragil - haengt damit direkt mit der ui struktur zusammen
 		JTextComponent timeline = (JTextComponent) ((JViewport) ((JScrollPane) p
 				.getComponent(0)).getComponent(0)).getComponent(0);
 		JTextComponent input = (JTextComponent) ((JViewport) ((JScrollPane) p
@@ -202,11 +203,16 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		// Versand wird asynchron ausgefuehrt, da potentiell langsam und droht
 		// die ui zu blocken.
+		// TODO Fehlerhandling, wenn versand fehlschlaegt?
+		// z.b. in einer liste Worker speichern und via Timer den return type
+		// checken (wenn worker.isDone() == true, isdone ist auch true, wenn
+		// gecancelt, falls einer false ist, eine Warnung in systray erzeugen.
+		// evtl den betroffenen User rot markieren (letzter Versand nicht
+		// erfolgreich)
 		SwingWorker<Boolean, Message> worker = new SwingWorker<Boolean, Message>() {
 
 			@Override
 			protected Boolean doInBackground() throws Exception {
-				// TODO Auto-generated method stub
 				Boolean success = ServiceLocator.getInstance()
 						.getMessageService().sendMessage(newMessage);
 
@@ -463,7 +469,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 							try {
 								Desktop.getDesktop().browse(e.getURL().toURI());
 							} catch (Exception uri) {
-								System.out.println(uri);
+								// TODO Fehlerhandling, wen URI / Browser nicht
+								// geoeffnet werden konnte. Warnung anzeigen.
+								uri.printStackTrace();
 							}
 
 							return null;

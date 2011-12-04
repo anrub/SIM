@@ -44,7 +44,7 @@ import devhood.im.sim.model.Message;
 import devhood.im.sim.service.ServiceLocator;
 
 /**
- * Panel to send messages.
+ * Panel to send and reiceive messages.
  * 
  * @author flo
  * 

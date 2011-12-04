@@ -1,7 +1,7 @@
 package devhood.im.sim.event;
 
 /**
- * Events in der ui.
+ * Events in der Applikation.
  * 
  * @author flo
  * 
@@ -32,7 +32,7 @@ public enum Events {
 	 * nachrichten noch nicht gelesen wurden.
 	 */
 	UNREAD_MESSAGES,
-	
+
 	/**
 	 * Event wird beim logoff geworfen parameter: String username.
 	 */

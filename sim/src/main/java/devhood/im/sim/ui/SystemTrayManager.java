@@ -54,7 +54,7 @@ public class SystemTrayManager implements EventObserver {
 		Image image = Toolkit.getDefaultToolkit().getImage(iconFilename);
 
 		PopupMenu popup = new PopupMenu();
-		systrayIcon = new TrayIcon(image, "The Tip Text", popup);
+		systrayIcon = new TrayIcon(image, Sim.applicationName, popup);
 
 		MenuItem item = new MenuItem("Exit");
 		item.setLabel("Exit");

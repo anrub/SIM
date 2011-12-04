@@ -17,4 +17,12 @@ public interface MessageService {
 	 * @return erfolgreich true false
 	 */
 	public boolean sendMessage(Message m);
+
+	/**
+	 * Empfaengt eine Message.
+	 * 
+	 * @param m
+	 *            Message.
+	 */
+	public void receiveMessage(Message m);
 }

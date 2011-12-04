@@ -8,6 +8,8 @@ import javax.swing.UIManager;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Message;
+import devhood.im.sim.service.ServiceLocator;
+import devhood.im.sim.service.interfaces.MessageService;
 import devhood.im.sim.ui.MainFrame;
 
 /**
@@ -17,6 +19,9 @@ import devhood.im.sim.ui.MainFrame;
  * 
  */
 public class SimMain {
+
+	final private static MessageService messageService = ServiceLocator
+			.getInstance().getMessageService();
 
 	/**
 	 * Main method, starts the program. <br />
@@ -52,7 +57,9 @@ public class SimMain {
 					m.setReceiver(Sim.getUsername());
 
 					m.setText("Dies ist eine Nachricht цдья " + Math.random());
-					EventDispatcher.fireEvent(Events.MESSAGE_RECEIVED, m);
+
+					messageService.receiveMessage(m);
+
 					cnt++;
 				}
 

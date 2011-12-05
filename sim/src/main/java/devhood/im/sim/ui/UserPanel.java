@@ -1,7 +1,9 @@
 package devhood.im.sim.ui;
 
+import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -11,6 +13,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.RegistryService;
@@ -22,7 +25,7 @@ import devhood.im.sim.service.interfaces.RegistryService;
  * @author flo
  * 
  */
-public class UserPanel extends JPanel {
+public class UserPanel extends JPanel implements EventObserver {
 
 	/**
 	 * RegistryService zum Zugriff auf Stammdaten, zb User.
@@ -39,6 +42,11 @@ public class UserPanel extends JPanel {
 	 */
 	private int userLoadPeriod = 10000;
 
+	/**
+	 * Liste der Gruppenchatteilnehmer.
+	 */
+	private List<String> groupChatUsers = new ArrayList<String>();
+
 	public UserPanel(RegistryService registryService) {
 		this.registryService = registryService;
 		init();
@@ -51,15 +59,76 @@ public class UserPanel extends JPanel {
 		BoxLayout layout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
 		setLayout(layout);
 
-		addUsers();
+		syncUsers();
 		startUserRefreshingTimer();
 	}
 
+	@Override
+	public void eventReceived(Events event, Object o) {
+		// TODO Auto-generated method stub
+
+	}
+
 	/**
-	 * Fuegt die Users aus registryService in die Liste ein.
+	 * Checkt ob weitere Checkboxen angehackt sind, wenn ja, wird ein
+	 * Gruppenchat eröffnet oder erweitert.
+	 * 
+	 * @param box
 	 */
-	public void addUsers() {
+	public void userSelected(JCheckBox box) {
+		groupChatUsers = new ArrayList<String>();
+		for (Component c : getComponents()) {
+			if (c instanceof JCheckBox) {
+				JCheckBox b = (JCheckBox) c;
+				if (b.isSelected() && b != box) {
+					groupChatUsers.add(b.getName());
+				}
+			}
+		}
+
+	}
+
+	public void userDeselected(JCheckBox box) {
+		groupChatUsers.remove(box.getName());
+	}
+
+	/**
+	 * Erzeugt einen Namen fuer den Gruppenchat.
+	 * 
+	 * @param usernames
+	 *            List der User
+	 * @return Name.
+	 */
+	public String getGroupChatName(List<String> usernames) {
+		String name = "";
+		for (String u : usernames) {
+			name = name
+					+ u.substring(0,
+							(u.length() > 5 ? u.length() - 2 : u.length()));
+		}
+
+		return name;
+	}
+
+	/**
+	 * Synchronisiert das UserPanel mit den Daten von {@link RegistryService}.
+	 */
+	public void syncUsers() {
 		List<User> users = registryService.getUsers();
+		List<String> usernames = new ArrayList<String>();
+		for (User u : users) {
+			usernames.add(u.getName());
+		}
+
+		for (Component c : getComponents()) {
+			if (c instanceof JCheckBox) {
+				JCheckBox box = (JCheckBox) c;
+				if (!usernames.contains(box.getName())) {
+					remove(c);
+				}
+			}
+		}
+
 		for (User user : users) {
 			JCheckBox userCheckBox = new JCheckBox(user.getName());
 			userCheckBox.setName(user.getName());
@@ -75,12 +144,31 @@ public class UserPanel extends JPanel {
 				public void itemStateChanged(ItemEvent e) {
 					if (e.getStateChange() == ItemEvent.SELECTED) {
 						JCheckBox box = (JCheckBox) e.getSource();
-						EventDispatcher.fireEvent(Events.USER_SELECTED, box);
+						// EventDispatcher.fireEvent(Events.USER_SELECTED, box);
+						userSelected(box);
+					} else if (e.getStateChange() == ItemEvent.DESELECTED) {
+						JCheckBox box = (JCheckBox) e.getSource();
+
+						userDeselected(box);
 					}
 				}
 			});
 
-			add(userCheckBox);
+			boolean isInList = false;
+			for (Component c : getComponents()) {
+				if (c instanceof JCheckBox) {
+					JCheckBox box = (JCheckBox) c;
+					if (c.getName().equals(user.getName())) {
+						isInList = true;
+						break;
+					}
+
+				}
+			}
+			if (!isInList) {
+				add(userCheckBox);
+			}
+
 		}
 	}
 
@@ -93,11 +181,7 @@ public class UserPanel extends JPanel {
 			@Override
 			public void run() {
 				registryService.purgeOfflineUsers();
-
-				removeAll();
-				addUsers();
-				validate();
-				repaint();
+				syncUsers();
 			}
 		};
 

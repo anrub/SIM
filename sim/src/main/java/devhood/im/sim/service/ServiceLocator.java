@@ -62,5 +62,17 @@ public class ServiceLocator {
 		return registryService;
 	}
 
+	public MessageService getMessageService() {
+		return messageService;
+	}
+
+	public void setMessageService(MessageService messageService) {
+		this.messageService = messageService;
+	}
+
+	public void setRegistryService(RegistryService registryService) {
+		this.registryService = registryService;
+	}
+
 	
 }

@@ -19,15 +19,30 @@ public class User {
 	 * letzter zugriff des users.
 	 */
 	private Date lastaccess;
-
+	
 	/**
 	 * address.
 	 */
 	private String address;
 
-	public User(String name, String address, Date lastaccess) {
+	/**
+	 * port für kommunikation
+	 */
+	private int port;
+	
+	
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public User(String name, String address, int port, Date lastaccess) {
 		this.name = name;
 		this.address = address;
+		this.port = port;
 		this.lastaccess = lastaccess;
 	}
 

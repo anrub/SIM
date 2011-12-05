@@ -196,14 +196,12 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		// gecancelt, falls einer false ist, eine Warnung in systray erzeugen.
 		// evtl den betroffenen User rot markieren (letzter Versand nicht
 		// erfolgreich)
-		SwingWorker<Boolean, Message> worker = new SwingWorker<Boolean, Message>() {
+		SwingWorker<Void, Message> worker = new SwingWorker<Void, Message>() {
 
 			@Override
-			protected Boolean doInBackground() throws Exception {
-				Boolean success = ServiceLocator.getInstance()
-						.getMessageService().sendMessage(newMessage);
-
-				return success;
+			protected Void doInBackground() throws Exception {
+				EventDispatcher.fireEvent(Events.MESSAGE_SENT, newMessage);
+				return null;
 			}
 
 			@Override

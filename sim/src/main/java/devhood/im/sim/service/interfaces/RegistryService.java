@@ -13,6 +13,13 @@ import devhood.im.sim.model.User;
 public interface RegistryService {
 
 	/**
+	 * Such einen User anhand seines Namens
+	 * 
+	 * @return User Benutzer oder null
+	 */
+	public User getUser(String name);
+	
+	/**
 	 * Gibt eine Liste von Usern zurueck.
 	 * 
 	 * @return Users
@@ -37,6 +44,7 @@ public interface RegistryService {
 	 */
 	public void logout(String username);
 
+	
 	/**
 	 * Loescht die offline user aus der db.
 	 */

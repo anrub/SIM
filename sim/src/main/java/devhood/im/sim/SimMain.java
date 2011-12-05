@@ -1,5 +1,6 @@
 package devhood.im.sim;
 
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -7,7 +8,9 @@ import java.util.logging.Logger;
 
 import javax.swing.UIManager;
 
+import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.model.Message;
+import devhood.im.sim.service.PeerToPeerMessageService;
 import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.service.interfaces.MessageService;
 import devhood.im.sim.ui.MainFrame;
@@ -24,9 +27,6 @@ import devhood.im.sim.ui.MainFrame;
  * 
  */
 public class SimMain {
-
-	final private static MessageService messageService = ServiceLocator
-			.getInstance().getMessageService();
 
 	private static Logger log = Logger.getLogger(SimMain.class.toString());
 
@@ -59,7 +59,17 @@ public class SimMain {
 		MainFrame mainFrame = new MainFrame();
 		mainFrame.initMainFrame();
 
-		SimMain.startSimulation();
+		// Server für Kommunikation initialisieren
+		try {
+			PeerToPeerMessageService ms = new PeerToPeerMessageService();
+			EventDispatcher.add(ms);
+		} catch (IOException e) {
+			// TODO: Fehlermeldung in Frontend
+			log.log(Level.SEVERE, "Kommunikation (ServerSocket) konnte nicht gestartet werden: "+e.getMessage());
+		}
+		
+		
+		//SimMain.startSimulation();
 	}
 
 	/**
@@ -81,7 +91,7 @@ public class SimMain {
 
 					m.setText("Dies ist eine Nachricht öäüß " + Math.random());
 
-					messageService.receiveMessage(m);
+					//messageService.receiveMessage(m);
 
 					cnt++;
 				} else {

@@ -1,10 +1,19 @@
 package devhood.im.sim.service;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import devhood.im.sim.Sim;
 import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Message;
+import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.MessageService;
 
 /**
@@ -13,47 +22,77 @@ import devhood.im.sim.service.interfaces.MessageService;
  * @author flo
  * 
  */
-public class PeerToPeerMessageService implements MessageService {
+public class PeerToPeerMessageService implements EventObserver, Runnable {
 
 	private Logger log = Logger.getLogger(PeerToPeerMessageService.class
 			.toString());
 
 	/**
-	 * {@inheritDoc}
+	 * Socket für den Server
 	 */
-	@Override
-	public boolean sendMessage(Message m) {
-		log.info("Versuche Msg zu senden: " + m);
+	private ServerSocket serverSocket;
 
-		// TODO Auto-generated method stub
-		return true;
+	/**
+	 * Server Thread
+	 */
+	private Thread thread;
+
+	/**
+	 * Startet Message Server in neuem Thread.
+	 * 
+	 * @throws IOException
+	 *             Exception wenn ServerSocket nicht erzeugt werden kann
+	 */
+	public PeerToPeerMessageService() throws IOException {
+		serverSocket = new ServerSocket();
+		Sim.setPort(serverSocket.getLocalPort());
+		thread = new Thread(this);
+		thread.start();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void receiveMessage(Message m) {
-		boolean valid = validateIncomingMessage(m);
-		if (!valid) {
-			throw new IllegalArgumentException(
-					"Uebergebene Message ist nicht valide! Message: " + m);
+	public void eventReceived(Events event, Object o) {
+		if (Events.MESSAGE_SENT.equals(event)) {
+			Message m = (Message) o;
+			String receiver = m.getReceiver();
+			User user = ServiceLocator.getInstance().getRegistryService().getUser(receiver);
+			
+			Socket socket = null;
+			try {
+				socket = new Socket(user.getAddress(), user.getPort());
+				ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
+				os.writeObject(m);
+				socket.close();
+			} catch (UnknownHostException e) {
+				log.log(Level.SEVERE, "client socket Verbindung Fehler: "+e.getMessage());
+			} catch (IOException e) {
+				log.log(Level.SEVERE, "IOException: "+e.getMessage());
+			}
+			
+		} else if (Events.LOGOUT.equals(event)) {
+			thread.interrupt();
 		}
-
-		EventDispatcher.fireEvent(Events.MESSAGE_RECEIVED, m);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Startet Server und empfängt neue Nachrichten
 	 */
 	@Override
-	public boolean validateIncomingMessage(Message m) {
-		boolean valid = true;
-		if (m == null || m.getReceiver() == null || m.getSender() == null
-				|| m.getText() == null) {
-			valid = false;
+	public void run() {
+		while (!Thread.interrupted()) {
+			try {
+				Socket clientSocket = serverSocket.accept();
+				Thread worker = new Thread(
+						new PeerToPeerMessageServiceReceiver(clientSocket));
+				worker.start();
+			} catch (IOException e) {
+				log.log(Level.SEVERE, "client socket connection error");
+			}
 		}
-		return valid;
 	}
+
 
 }

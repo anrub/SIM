@@ -1,5 +1,9 @@
 package devhood.im.sim.service;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import devhood.im.sim.Sim;
 import devhood.im.sim.service.interfaces.MessageService;
 import devhood.im.sim.service.interfaces.RegistryService;
@@ -13,11 +17,12 @@ import devhood.im.sim.service.interfaces.RegistryService;
  */
 public class ServiceLocator {
 
-	private RegistryService registryService = new InMemoryMockDataRegistryService();
-	// private RegistryService userService = new RegistryServiceSqljet();
-	// private RegistryService userService = new RegistryServiceJdbc();
+	private Logger log = Logger.getLogger(ServiceLocator.class
+			.toString());
+	
+	private RegistryService registryService = null;
 
-	private MessageService messageService = new PeerToPeerMessageService();
+	private MessageService messageService = null;
 
 	private static ServiceLocator instance;
 
@@ -57,12 +62,5 @@ public class ServiceLocator {
 		return registryService;
 	}
 
-	/**
-	 * Gibt den {@link MessageService} zurueck.
-	 * 
-	 * @return {@link MessageService}
-	 */
-	public MessageService getMessageService() {
-		return messageService;
-	}
+	
 }

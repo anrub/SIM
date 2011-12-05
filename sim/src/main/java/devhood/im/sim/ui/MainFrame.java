@@ -291,8 +291,8 @@ public class MainFrame implements EventObserver {
 		layout.add(r1);
 		layout.add(r2);
 		layout.add(r3);
-		// layout.add(r4);
-		// layout.add(r5);
+		layout.add(r4);
+		layout.add(r5);
 
 		return layout;
 	}

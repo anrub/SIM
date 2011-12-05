@@ -52,7 +52,7 @@ public class RegistryServiceJdbc implements RegistryService {
 	 * Erzeugt die Table, falls sie nicht vorhanden ist.
 	 */
 	public void createTable() {
-		String createTableDdl = "CREATE TABLE IF NOT EXISTS users (name TEXT PRIMARY KEY NOT NULL, address TEXT NOT NULL, lastaccess INTEGER NOT NULL)";
+		String createTableDdl = "CREATE TABLE IF NOT EXISTS users (name TEXT PRIMARY KEY NOT NULL, address TEXT NOT NULL, port INTEGER NOT NULL, lastaccess INTEGER NOT NULL)";
 
 		Connection con = null;
 		PreparedStatement pstmt;
@@ -79,6 +79,51 @@ public class RegistryServiceJdbc implements RegistryService {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public User getUser(String name) {
+		createTable();
+		
+		User u = null;
+		Connection con = null;
+		PreparedStatement pstmt;
+		try {
+			con = getConnection();
+			con.setAutoCommit(false);
+
+			pstmt = con.prepareStatement("SELECT * FROM users WHERE name=?");
+			pstmt.setString(1, name);
+			ResultSet resultSet = pstmt.executeQuery();
+			con.commit();
+			if (resultSet.next()) {
+				u = new User(resultSet.getString("name"),
+						resultSet.getString("address"), 
+						resultSet.getInt("port"),
+						new Date(
+								Long.valueOf(resultSet
+										.getLong("lastaccess"))));
+			} else {
+				
+			}
+			pstmt.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (con != null)
+				try {
+					con.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		
+		return u;
+	}
+	
 	@Override
 	public List<User> getUsers() {
 		createTable();
@@ -96,7 +141,9 @@ public class RegistryServiceJdbc implements RegistryService {
 			if (resultSet.next()) {
 				do {
 					User u = new User(resultSet.getString("name"),
-							resultSet.getString("address"), new Date(
+							resultSet.getString("address"), 
+							resultSet.getInt("port"),
+							new Date(
 									Long.valueOf(resultSet
 											.getLong("lastaccess"))));
 
@@ -186,10 +233,11 @@ public class RegistryServiceJdbc implements RegistryService {
 			con = getConnection();
 			con.setAutoCommit(false);
 			pstmt = con
-					.prepareStatement("UPDATE users SET lastaccess=?, address=? WHERE name=?");
+					.prepareStatement("UPDATE users SET lastaccess=?, address=?, port=? WHERE name=?");
 			pstmt.setLong(1, user.getLastaccess().getTime());
 			pstmt.setString(2, user.getAddress());
-			pstmt.setString(3, user.getName());
+			pstmt.setInt(3, user.getPort());
+			pstmt.setString(4, user.getName());
 
 			int rowCount = pstmt.executeUpdate();
 
@@ -198,10 +246,11 @@ public class RegistryServiceJdbc implements RegistryService {
 
 			if (rowCount == 0) {
 				pstmt = con
-						.prepareStatement("INSERT INTO users VALUES (?, ? ,?)");
+						.prepareStatement("INSERT INTO users VALUES (?, ? ,?, ?)");
 				pstmt.setString(1, user.getName());
 				pstmt.setString(2, user.getAddress());
-				pstmt.setLong(3, user.getLastaccess().getTime());
+				pstmt.setInt(3, user.getPort());
+				pstmt.setLong(4, user.getLastaccess().getTime());
 				pstmt.executeUpdate();
 
 				con.commit();

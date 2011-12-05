@@ -1,12 +1,14 @@
 package devhood.im.sim.model;
 
+import java.io.Serializable;
+
 /**
  * Eine Message.
  * 
  * @author flo
  * 
  */
-public class Message {
+public class Message implements Serializable {
 
 	// TODO MessageType vorsehen, damit werden technische messages wie
 	// statusmeldungen oder binäre messages usw möglich

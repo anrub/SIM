@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -40,7 +41,6 @@ import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Message;
-import devhood.im.sim.service.ServiceLocator;
 
 /**
  * Panel to send and receive messages.
@@ -64,6 +64,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * Map von Name Des Tabs -> Texarea der Inputzeile (Text sendne).
 	 */
 	private Map<String, JTextArea> inputTextAreaMap = new HashMap<String, JTextArea>();
+
+	private Map<String, String> tabTitleMessageIdMap = new HashMap<String, String>();
 
 	/**
 	 * DateFormat.
@@ -182,6 +184,16 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		newMessage.setSender(Sim.getUsername());
 		newMessage.setText(input.getText());
 
+		String title = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
+		String messageId = tabTitleMessageIdMap.get(title);
+		if (messageId == null) {
+			String id = UUID.randomUUID().toString();
+			newMessage.setMessageId(id);
+			tabTitleMessageIdMap.put(title, id);
+		} else {
+			newMessage.setMessageId(messageId);
+		}
+
 		timeline.setText(getFormattedMessage(newMessage, timeline.getText()));
 
 		input.setText(null);
@@ -245,10 +257,27 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		} else if (Events.SHOW_MSG_TABBED_PANE.equals(event)) {
 			String name = (String) o;
 			focusTabPane(name);
-		}
+		} else if (Events.GROUP_CHAT.equals(event)) {
+			GroupChatModel m = (GroupChatModel) o;
+			String tabtile = (m.getOldGroupChatName() != null
+					&& m.getOldGroupChatName().length() > 0 ? m
+					.getOldGroupChatName() : m.getGroupChatName());
+
+			int index = tabbedPane.indexOfTab(tabtile);
+			if (index == -1) {
+				addToTabPane(tabtile, null);
+			}else {
+				index = tabbedPane.indexOfTab(tabtile);
+
+				tabtile = m.getGroupChatName();
+				tabbedPane.setTitleAt(index, tabtile);
+	
+			}
+			focusTabPane(tabtile);
+			}
 	}
 
-	/**
+	/**Z
 	 * Verarbeitung einer neuen Nachricht.
 	 * 
 	 * @param m

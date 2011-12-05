@@ -28,6 +28,8 @@ public class Message implements Serializable {
 	 */
 	private String text;
 
+	private String messageId;
+
 	public String getText() {
 		return text;
 	}
@@ -53,8 +55,16 @@ public class Message implements Serializable {
 	}
 
 	public String toString() {
-		return "Sender: " + sender + ", Receiver: " + receiver + ", Text: "
-				+ text;
+		return "Message id: " + messageId + " Sender: " + sender
+				+ ", Receiver: " + receiver + ", Text: " + text;
+	}
+
+	public String getMessageId() {
+		return messageId;
+	}
+
+	public void setMessageId(String messageId) {
+		this.messageId = messageId;
 	}
 
 }

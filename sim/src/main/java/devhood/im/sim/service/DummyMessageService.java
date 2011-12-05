@@ -33,6 +33,7 @@ public class DummyMessageService implements EventObserver, MessageService {
 	 *             Exception wenn ServerSocket nicht erzeugt werden kann
 	 */
 	public DummyMessageService() {
+		EventDispatcher.add(this);
 	}
 
 	/**
@@ -45,7 +46,7 @@ public class DummyMessageService implements EventObserver, MessageService {
 			String receiver = m.getReceiver();
 			User user = ServiceLocator.getInstance().getRegistryService()
 					.getUser(receiver);
-			System.out.println(m);
+			System.out.println("Versuche Message zu senden: " + m);
 		} else if (Events.MESSAGE_RECEIVED.equals(event)) {
 			System.out.println(event);
 		}

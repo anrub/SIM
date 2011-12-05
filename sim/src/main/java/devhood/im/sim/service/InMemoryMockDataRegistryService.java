@@ -26,13 +26,13 @@ public class InMemoryMockDataRegistryService implements RegistryService {
 	 * inmem user liste.
 	 */
 	private List<User> users = new ArrayList<User>();
-	
+
 	@Override
 	public User getUser(String name) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	/**
 	 * Returns the List of available Users. Mock Data.
 	 * 
@@ -42,8 +42,8 @@ public class InMemoryMockDataRegistryService implements RegistryService {
 	public List<User> getUsers() {
 		if (users == null || users.size() == 0) {
 			for (int i = 0; i < 10; i++) {
-				User u = new User("User" + i, "", 0, new Date(1234));
-
+				User u = new User("User" + i, "", 0, new Date(
+						new Date().getTime() + 9999999));
 				users.add(u);
 			}
 		}

@@ -49,8 +49,9 @@ public class SimMain {
 
 		}
 	
-		ServiceLocator.getInstance().setMessageService(new DummyMessageService());
 		ServiceLocator.getInstance().setRegistryService(new InMemoryMockDataRegistryService());
+		ServiceLocator.getInstance().setMessageService(new DummyMessageService());
+		
 		
 		try {
 			UIManager.setLookAndFeel(Sim.lookAndFeel);

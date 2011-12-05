@@ -161,7 +161,7 @@ public class MainFrame implements EventObserver {
 		menuPrivacy = new JMenu("Privat");
 
 		menuNotifications.addSeparator();
-		cbMenuItem = new JCheckBoxMenuItem("Statusänderungen anzeigen");
+		cbMenuItem = new JCheckBoxMenuItem("Statusï¿½nderungen anzeigen");
 		menuNotifications.add(cbMenuItem);
 
 		systrayMenuItem = new JCheckBoxMenuItem("Nachrichten Systray anzeigen");
@@ -171,13 +171,13 @@ public class MainFrame implements EventObserver {
 				"Ungelesene Nachrichten Systray anzeigen");
 		menuNotifications.add(cbMenuItem);
 
-		cbMenuItem = new JCheckBoxMenuItem("Status veröffentlichen");
+		cbMenuItem = new JCheckBoxMenuItem("Status verÃ¶ffentlichen");
 		menuPrivacy.add(cbMenuItem);
-		cbMenuItem = new JCheckBoxMenuItem("Tippstatus veröffentlichen");
+		cbMenuItem = new JCheckBoxMenuItem("Tippstatus verÃ¶ffentlichen");
 		menuPrivacy.add(cbMenuItem);
 
-		menuBar.add(menuNotifications);
-		menuBar.add(menuPrivacy);
+		//menuBar.add(menuNotifications);
+		//menuBar.add(menuPrivacy);
 
 		JMenu layout = createLayoutChangingMenu();
 		menuBar.add(layout);

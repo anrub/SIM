@@ -54,9 +54,9 @@ public class PeerToPeerMessageServiceReceiver implements Runnable {
 				EventDispatcher.fireEvent(Events.MESSAGE_RECEIVED, message);
 			}
 		} catch (IOException e) {
-			log.log(Level.SEVERE, "client socket Verbindung InputStream Fehler: "+e.getMessage());
+			log.log(Level.SEVERE, "client socket Verbindung InputStream Fehler", e);
 		} catch (ClassNotFoundException e) {
-			log.log(Level.SEVERE, "ungültige message empfangen (class not found): "+e.getMessage());
+			log.log(Level.SEVERE, "ungültige message empfangen (class not found)", e);
 		}
 	}
 	

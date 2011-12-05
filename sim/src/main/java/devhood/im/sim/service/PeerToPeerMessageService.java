@@ -44,7 +44,7 @@ public class PeerToPeerMessageService implements EventObserver, Runnable {
 	 *             Exception wenn ServerSocket nicht erzeugt werden kann
 	 */
 	public PeerToPeerMessageService() throws IOException {
-		serverSocket = new ServerSocket();
+		serverSocket = new ServerSocket(0);
 		Sim.setPort(serverSocket.getLocalPort());
 		thread = new Thread(this);
 		thread.start();
@@ -67,9 +67,9 @@ public class PeerToPeerMessageService implements EventObserver, Runnable {
 				os.writeObject(m);
 				socket.close();
 			} catch (UnknownHostException e) {
-				log.log(Level.SEVERE, "client socket Verbindung Fehler: "+e.getMessage());
+				log.log(Level.SEVERE, "message sent - client socket Verbindung Fehler", e);
 			} catch (IOException e) {
-				log.log(Level.SEVERE, "IOException: "+e.getMessage());
+				log.log(Level.SEVERE, "message sent - IOException: ", e);
 			}
 			
 		} else if (Events.LOGOUT.equals(event)) {
@@ -89,7 +89,7 @@ public class PeerToPeerMessageService implements EventObserver, Runnable {
 						new PeerToPeerMessageServiceReceiver(clientSocket));
 				worker.start();
 			} catch (IOException e) {
-				log.log(Level.SEVERE, "client socket connection error");
+				log.log(Level.SEVERE, "client socket connection error", e);
 			}
 		}
 	}

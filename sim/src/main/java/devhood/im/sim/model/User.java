@@ -9,6 +9,7 @@ import java.util.Date;
  * 
  */
 public class User {
+
 	/**
 	 * name of user. to send the messages to the user.
 	 */
@@ -23,6 +24,12 @@ public class User {
 	 * address.
 	 */
 	private String address;
+
+	public User(String name, String address, Date lastaccess) {
+		this.name = name;
+		this.address = address;
+		this.lastaccess = lastaccess;
+	}
 
 	public String getAddress() {
 		return address;

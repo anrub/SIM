@@ -1,5 +1,6 @@
 package devhood.im.sim.service;
 
+import devhood.im.sim.Sim;
 import devhood.im.sim.service.interfaces.MessageService;
 import devhood.im.sim.service.interfaces.RegistryService;
 
@@ -12,8 +13,9 @@ import devhood.im.sim.service.interfaces.RegistryService;
  */
 public class ServiceLocator {
 
-	private RegistryService userService = new InMemoryMockDataRegistryService();
+	private RegistryService registryService = new InMemoryMockDataRegistryService();
 	// private RegistryService userService = new RegistryServiceSqljet();
+	// private RegistryService userService = new RegistryServiceJdbc();
 
 	private MessageService messageService = new PeerToPeerMessageService();
 
@@ -45,7 +47,14 @@ public class ServiceLocator {
 	 * @return {@link RegistryService}.
 	 */
 	public RegistryService getRegistryService() {
-		return userService;
+		if (registryService == null) {
+			RegistryServiceJdbc jdbc = new RegistryServiceJdbc();
+			jdbc.setDriver("org.sqlite.JDBC");
+			jdbc.setUrl("jdbc:sqlite:" + Sim.dbPath);
+
+			registryService = jdbc;
+		}
+		return registryService;
 	}
 
 	/**

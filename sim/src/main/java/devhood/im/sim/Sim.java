@@ -3,6 +3,7 @@ package devhood.im.sim;
 import java.awt.Image;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
 
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
@@ -24,6 +25,8 @@ public class Sim {
 	 */
 	public static String dbPath = "C:/Daten/im/sqlite.db";
 
+	public static String dbFolderHsql = "C:/Daten/im";
+	
 	public static String applicationName = "SIM - S Intstant Messenger";
 
 	public static String username = "flo";
@@ -57,10 +60,7 @@ public class Sim {
 	}
 
 	public static User getUser() {
-		User u = new User();
-		u.setName(username);
-		u.setAddress(getCurrentIp());
-
+		User u = new User(username, getCurrentIp(), new Date());
 		return u;
 
 	}

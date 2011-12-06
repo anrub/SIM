@@ -43,6 +43,7 @@ import devhood.im.sim.model.Message;
 import devhood.im.sim.model.MessageType;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.ServiceLocator;
+import devhood.im.sim.ui.util.ComponentProvider;
 
 /**
  * Panel to send and receive messages.
@@ -212,7 +213,18 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		if (!toUser.equals(streamTabName)) { // Ist dies im Stremtab - nachricht
 												// an alle
-			timeline.setText(getFormattedMessage(newMessage, timeline.getText()));
+
+			if (!isUserOnline(toUser)) {
+				timeline.setText(getFormattedMessage(newMessage,
+						timeline.getText()));
+			} else {
+				Message m = new Message();
+				m.setSender("SIM");
+				m.setText("<i>Tut mir leid, " + toUser + " ist offline</i>");
+				timeline.setText(getFormattedMessage(m,
+						timeline.getText()));
+			}
+
 		}
 
 		input.setText(null);
@@ -243,6 +255,18 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		};
 
 		worker.execute();
+	}
+
+	/**
+	 * Gibt zurueck ob user online ist oder nicht.
+	 * 
+	 * @param user
+	 *            username
+	 * @return return
+	 */
+	public boolean isUserOnline(String user) {
+		return ComponentProvider.getInstance().getUserPanel().getCurrentUsers()
+				.contains(user);
 	}
 
 	/**

@@ -131,7 +131,7 @@ public class MainFrame implements EventObserver {
 	 * Initialies the user scrollpane.
 	 */
 	protected void initUserScrollPane() {
-		JPanel userPanel = new UserPanel(registryService);
+		JPanel userPanel = ComponentProvider.getInstance().getUserPanel();
 
 		userScrollPane = new JScrollPane(userPanel);
 		Dimension preferredSize = new Dimension(100, 200);

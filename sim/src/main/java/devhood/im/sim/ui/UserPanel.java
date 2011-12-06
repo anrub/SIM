@@ -177,4 +177,12 @@ public class UserPanel extends JPanel {
 
 		t.schedule(task, userLoadDelay, userLoadPeriod);
 	}
+
+	public List<String> getCurrentUsers() {
+		return currentUsers;
+	}
+
+	public void setCurrentUsers(List<String> currentUsers) {
+		this.currentUsers = currentUsers;
+	}
 }

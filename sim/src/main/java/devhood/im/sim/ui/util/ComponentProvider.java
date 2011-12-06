@@ -2,7 +2,9 @@ package devhood.im.sim.ui.util;
 
 import java.util.logging.Logger;
 
+import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.ui.SystemTrayManager;
+import devhood.im.sim.ui.UserPanel;
 
 /**
  * ComponentProvider dient als einzige Quelle für Oberflächenkomponenten.
@@ -15,6 +17,8 @@ public class ComponentProvider {
 	private Logger log = Logger.getLogger(ComponentProvider.class.toString());
 
 	private SystemTrayManager systemTrayManager = null;
+
+	private UserPanel userPanel = null;
 
 	private static ComponentProvider instance;
 
@@ -47,6 +51,18 @@ public class ComponentProvider {
 
 	public void setSystemTrayManager(SystemTrayManager systemTrayManager) {
 		this.systemTrayManager = systemTrayManager;
+	}
+
+	public UserPanel getUserPanel() {
+		if (userPanel == null) {
+			userPanel = new UserPanel(ServiceLocator.getInstance()
+					.getRegistryService());
+		}
+		return userPanel;
+	}
+
+	public void setUserPanel(UserPanel userPanel) {
+		this.userPanel = userPanel;
 	}
 
 }

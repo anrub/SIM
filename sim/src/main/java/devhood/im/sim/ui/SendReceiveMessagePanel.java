@@ -65,8 +65,6 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	private Map<String, JTextArea> inputTextAreaMap = new HashMap<String, JTextArea>();
 
-	private Map<String, String> tabTitleMessageIdMap = new HashMap<String, String>();
-
 	/**
 	 * DateFormat.
 	 */
@@ -119,6 +117,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				inputTextAreaMap.remove(title);
 
 				tabbedPane.remove(index);
+				EventDispatcher.fireEvent(Events.UNSELECT_ALL_USERS, null);
 			}
 		});
 		buttonPane.add(closeButton);
@@ -185,14 +184,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		newMessage.setText(input.getText());
 
 		String title = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
-		String messageId = tabTitleMessageIdMap.get(title);
-		if (messageId == null) {
-			String id = UUID.randomUUID().toString();
-			newMessage.setMessageId(id);
-			tabTitleMessageIdMap.put(title, id);
-		} else {
-			newMessage.setMessageId(messageId);
-		}
+		newMessage.setGroupChatmember(title);
 
 		timeline.setText(getFormattedMessage(newMessage, timeline.getText()));
 
@@ -262,23 +254,31 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			String tabtile = (m.getOldGroupChatName() != null
 					&& m.getOldGroupChatName().length() > 0 ? m
 					.getOldGroupChatName() : m.getGroupChatName());
-
+			
 			int index = tabbedPane.indexOfTab(tabtile);
+
 			if (index == -1) {
 				addToTabPane(tabtile, null);
-			}else {
-				index = tabbedPane.indexOfTab(tabtile);
+			} else {
+				JEditorPane pane = nameTextAreaMap.get(tabtile);
+				nameTextAreaMap.remove(tabtile);
+				nameTextAreaMap.put(m.getGroupChatName(), pane);
+
+				JTextArea a = inputTextAreaMap.get(tabtile);
+				inputTextAreaMap.remove(tabtile);
+				inputTextAreaMap.put(m.getGroupChatName(), a);
 
 				tabtile = m.getGroupChatName();
 				tabbedPane.setTitleAt(index, tabtile);
-	
+
 			}
+
 			focusTabPane(tabtile);
-			}
+		}
 	}
 
-	/**Z
-	 * Verarbeitung einer neuen Nachricht.
+	/**
+	 * Z Verarbeitung einer neuen Nachricht.
 	 * 
 	 * @param m
 	 *            Message
@@ -286,6 +286,11 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	protected void processNewMessage(Message m) {
 		String sender = m.getSender();
 		String text = m.getText();
+		String groupChatmembers = m.getGroupChatmember();
+
+		if (groupChatmembers != null && groupChatmembers.length() > 0) {
+			sender = groupChatmembers;
+		}
 
 		JEditorPane textArea = nameTextAreaMap.get(sender);
 

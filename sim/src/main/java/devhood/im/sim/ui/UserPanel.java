@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
@@ -68,12 +69,22 @@ public class UserPanel extends JPanel implements EventObserver {
 
 		syncUsers();
 		startUserRefreshingTimer();
+		EventDispatcher.add(this);
 	}
 
 	@Override
 	public void eventReceived(Events event, Object o) {
-		// TODO Auto-generated method stub
 
+		if (Events.UNSELECT_ALL_USERS.equals(event)) {
+			for (Component c : getComponents()) {
+				if (c instanceof JCheckBox) {
+					JCheckBox b = (JCheckBox) c;
+					b.setSelected(false);
+				}
+			}
+			groupChatUsers.clear();
+			oldGroupChatUsers.clear();
+		}
 	}
 
 	/**
@@ -88,8 +99,8 @@ public class UserPanel extends JPanel implements EventObserver {
 			if (c instanceof JCheckBox) {
 				JCheckBox b = (JCheckBox) c;
 				if (b.isSelected() && !b.getName().equals(Sim.username)) {
-					if (groupChatUsers.contains(b.getName())
-							&& !oldGroupChatUsers.contains(b.getName())) {
+					if (!oldGroupChatUsers.contains(b.getName())
+							&& groupChatUsers.contains(b.getName())) {
 						oldGroupChatUsers.add(b.getName());
 					}
 					if (!groupChatUsers.contains(b.getName())) {
@@ -106,6 +117,8 @@ public class UserPanel extends JPanel implements EventObserver {
 			model.setOldGroupChatUsers(oldGroupChatUsers);
 			EventDispatcher.fireEvent(Events.GROUP_CHAT, model);
 
+			oldGroupChatUsers.clear();
+
 		} else {
 			EventDispatcher.fireEvent(Events.USER_SELECTED, box);
 		}
@@ -113,8 +126,37 @@ public class UserPanel extends JPanel implements EventObserver {
 	}
 
 	public void userDeselected(JCheckBox box) {
-		oldGroupChatUsers.remove(box.getName());
-		groupChatUsers.remove(box.getName());
+		// oldGroupChatUsers.remove(box.getName());
+		// groupChatUsers.remove(box.getName());
+		boolean isAtLeastOneSelected = false;
+
+		for (Component c : getComponents()) {
+			if (c instanceof JCheckBox) {
+				JCheckBox b = (JCheckBox) c;
+				if (b.isSelected()) {
+					isAtLeastOneSelected = true;
+
+					//oldGroupChatUsers = new ArrayList<String>(groupChatUsers);
+
+				} else {
+					if (groupChatUsers.contains(b.getName())) {
+						groupChatUsers.remove(b.getName());
+					}
+				}
+			}
+		}
+		if (!isAtLeastOneSelected) {
+			oldGroupChatUsers.clear();
+		}
+		if (groupChatUsers.size() > 1) {
+			GroupChatModel model = new GroupChatModel();
+			model.setGroupChatName(getGroupChatName(groupChatUsers));
+			model.setOldGroupChatName(getGroupChatName(oldGroupChatUsers));
+			model.setGroupChatUsers(groupChatUsers);
+			model.setOldGroupChatUsers(oldGroupChatUsers);
+			//EventDispatcher.fireEvent(Events.GROUP_CHAT, model);
+			// oldGroupChatUsers.clear();
+		}
 	}
 
 	/**
@@ -125,8 +167,10 @@ public class UserPanel extends JPanel implements EventObserver {
 	 * @return Name.
 	 */
 	public String getGroupChatName(List<String> usernames) {
+		List<String> usernamesCopy = new ArrayList<String>(usernames);
+		Collections.sort(usernamesCopy);
 		String name = "";
-		Iterator<String> it = usernames.iterator();
+		Iterator<String> it = usernamesCopy.iterator();
 		while (it.hasNext()) {
 			name = name + it.next() + (it.hasNext() ? "," : "");
 		}

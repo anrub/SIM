@@ -28,7 +28,7 @@ public class Message implements Serializable {
 	 */
 	private String text;
 
-	private String messageId;
+	private String groupChatMember;
 
 	public String getText() {
 		return text;
@@ -55,16 +55,16 @@ public class Message implements Serializable {
 	}
 
 	public String toString() {
-		return "Message id: " + messageId + " Sender: " + sender
+		return "Groupchat Member: " + groupChatMember + " Sender: " + sender
 				+ ", Receiver: " + receiver + ", Text: " + text;
 	}
 
-	public String getMessageId() {
-		return messageId;
+	public String getGroupChatmember() {
+		return groupChatMember;
 	}
 
-	public void setMessageId(String messageId) {
-		this.messageId = messageId;
+	public void setGroupChatmember(String groupChatMember) {
+		this.groupChatMember = groupChatMember;
 	}
 
 }

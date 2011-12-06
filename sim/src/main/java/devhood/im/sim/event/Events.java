@@ -52,5 +52,9 @@ public enum Events {
 	 * Wird geworfen wenn ein Gruppenchat initiiert oder erweitert wird.
 	 * Parameter String name des Gruppenchats.
 	 */
-	GROUP_CHAT;
+	GROUP_CHAT,
+	/**
+	 * Deselektiert alle User.
+	 */
+	UNSELECT_ALL_USERS;
 }

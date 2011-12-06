@@ -40,6 +40,11 @@ public class SystemTrayManager implements EventObserver {
 	 */
 	private TrayIcon systrayIcon;
 
+	/**
+	 * Sollen systray messages gezeigt werden oder nicht.
+	 */
+	private boolean showSystrayMessages = true;
+
 	public SystemTrayManager() {
 		init();
 		EventDispatcher.add(this);
@@ -101,27 +106,43 @@ public class SystemTrayManager implements EventObserver {
 		if (Events.MESSAGE_RECEIVED.equals(event)) {
 			Message m = (Message) o;
 			if (devhood.im.sim.model.MessageType.ALL.equals(m.getMessageType())) {
-				systrayIcon.displayMessage("Stream: " + m.getSender(),
-						m.getText(), MessageType.INFO);
+				if (!m.getSender().contains(Sim.username)) {
+					displayMessage("Stream: " + m.getSender(), m.getText(),
+							MessageType.INFO);
+				}
 				lastUser = Sim.streamTabName;
 			} else {
-				systrayIcon.displayMessage(m.getSender(), m.getText(),
-						MessageType.INFO);
+				displayMessage(m.getSender(), m.getText(), MessageType.INFO);
 				lastUser = m.getSender();
 			}
 
 		} else if (Events.UNREAD_MESSAGES.equals(event)) {
 			List<String> users = (List<String>) o;
-			systrayIcon.displayMessage("Ungelesene Nachrichten",
-					users.toString(), MessageType.INFO);
+			displayMessage("Ungelesene Nachrichten", users.toString(),
+					MessageType.INFO);
 		} else if (Events.USER_OFFLINE_NOTICE.equals(event)) {
-			systrayIcon.displayMessage("User offline", o.toString(),
-					MessageType.INFO);
+			displayMessage("User offline", o.toString(), MessageType.INFO);
 		} else if (Events.USER_ONLINE_NOTICE.equals(event)) {
-			systrayIcon.displayMessage("User online", o.toString(),
-					MessageType.INFO);
+			displayMessage("User online", o.toString(), MessageType.INFO);
 		}
 
+	}
+
+	/**
+	 * Zeigt die nachricht im systray an, wenn die Option nicht gewählt wurde.
+	 * 
+	 * @param title
+	 *            Titel
+	 * @param message
+	 *            Message
+	 * @param messageType
+	 *            MessageType
+	 */
+	public void displayMessage(String title, String message,
+			MessageType messageType) {
+		if (showSystrayMessages) {
+			systrayIcon.displayMessage(title, message, messageType);
+		}
 	}
 
 	/**
@@ -132,6 +153,14 @@ public class SystemTrayManager implements EventObserver {
 	 */
 	public void addMouseListener(MouseListener listener) {
 		systrayIcon.addMouseListener(listener);
+	}
+
+	public boolean isShowSystrayMessages() {
+		return showSystrayMessages;
+	}
+
+	public void setShowSystrayMessages(boolean showSystrayMessages) {
+		this.showSystrayMessages = showSystrayMessages;
 	}
 
 }

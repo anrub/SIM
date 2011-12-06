@@ -28,6 +28,7 @@ import devhood.im.sim.event.Events;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.service.interfaces.RegistryService;
+import devhood.im.sim.ui.util.ComponentProvider;
 
 /**
  * Diese Klasse erzeugt das Hauptfenster der Anwendung.
@@ -61,7 +62,7 @@ public class MainFrame implements EventObserver {
 	 * Das ist der Service zum Zugriff auf Stammdaten, wie zb verfuegbare User.
 	 */
 	private RegistryService registryService;
-	
+
 	/**
 	 * Interval, in dem der eigene Nutzerstatus in der DB aktualisiert wird.
 	 */
@@ -165,24 +166,31 @@ public class MainFrame implements EventObserver {
 		menuNotifications = new JMenu("Benachrichtigungen");
 		menuPrivacy = new JMenu("Privat");
 
-		menuNotifications.addSeparator();
-		cbMenuItem = new JCheckBoxMenuItem("Status�nderungen anzeigen");
-		menuNotifications.add(cbMenuItem);
+		systrayMenuItem = new JCheckBoxMenuItem("Meldungen im Systray anzeigen");
+		systrayMenuItem.setSelected(true);
+		systrayMenuItem.addItemListener(new ItemListener() {
 
-		systrayMenuItem = new JCheckBoxMenuItem("Nachrichten Systray anzeigen");
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					ComponentProvider.getInstance().getSystemTrayManager()
+							.setShowSystrayMessages(true);
+				} else if (e.getStateChange() == ItemEvent.DESELECTED) {
+					ComponentProvider.getInstance().getSystemTrayManager()
+							.setShowSystrayMessages(false);
+				}
+			}
+		});
+
 		menuNotifications.add(systrayMenuItem);
-
-		cbMenuItem = new JCheckBoxMenuItem(
-				"Ungelesene Nachrichten Systray anzeigen");
-		menuNotifications.add(cbMenuItem);
 
 		cbMenuItem = new JCheckBoxMenuItem("Status veröffentlichen");
 		menuPrivacy.add(cbMenuItem);
 		cbMenuItem = new JCheckBoxMenuItem("Tippstatus veröffentlichen");
 		menuPrivacy.add(cbMenuItem);
 
-		//menuBar.add(menuNotifications);
-		//menuBar.add(menuPrivacy);
+		menuBar.add(menuNotifications);
+		// menuBar.add(menuPrivacy);
 
 		JMenu layout = createLayoutChangingMenu();
 		menuBar.add(layout);
@@ -194,7 +202,8 @@ public class MainFrame implements EventObserver {
 	 * Initialises the system tray functionality.
 	 */
 	protected void initTray() {
-		SystemTrayManager sys = new SystemTrayManager();
+		SystemTrayManager sys = ComponentProvider.getInstance()
+				.getSystemTrayManager();
 
 		sys.addMouseListener(new MouseAdapter() {
 			/**

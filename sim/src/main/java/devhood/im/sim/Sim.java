@@ -34,6 +34,11 @@ public class Sim {
 	public static int port = 0;
 
 	/**
+	 * Name des Tabs in dem der Stream läuft.
+	 */
+	public static String streamTabName = "Stream";
+
+	/**
 	 * Icon der gelesenen Nachrichten.
 	 */
 	public static Image trayIcon = UiUtil.createImage(trayIconPath);

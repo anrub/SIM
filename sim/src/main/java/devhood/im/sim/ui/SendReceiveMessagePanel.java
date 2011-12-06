@@ -55,7 +55,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	/**
 	 * Name des Tabs, in dem die Nachrichten an alle gesendet, empfangen werden.
 	 */
-	private String streamTabName = "Stream";
+	private String streamTabName = Sim.streamTabName;
 
 	/**
 	 * Tabbed pane der einzelnen Konversationen. Eine Konv. pro Tab.
@@ -88,7 +88,11 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		tabbedPane = new JTabbedPane();
 
-		addToTabPane(streamTabName, Sim.applicationName);
+		addToTabPane(
+				streamTabName,
+				Sim.applicationName
+						+ "<br /> "
+						+ "<i>Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i>");
 
 		// Lay out the buttons from left to right.
 		JPanel buttonPane = new JPanel();
@@ -207,7 +211,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		String title = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
 
 		if (!toUser.equals(streamTabName)) { // Ist dies im Stremtab - nachricht
-											// an alle
+												// an alle
 			timeline.setText(getFormattedMessage(newMessage, timeline.getText()));
 		}
 

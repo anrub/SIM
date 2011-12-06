@@ -100,9 +100,16 @@ public class SystemTrayManager implements EventObserver {
 	public void eventReceived(Events event, Object o) {
 		if (Events.MESSAGE_RECEIVED.equals(event)) {
 			Message m = (Message) o;
-			systrayIcon.displayMessage(m.getSender(), m.getText(),
-					MessageType.INFO);
-			lastUser = m.getSender();
+			if (devhood.im.sim.model.MessageType.ALL.equals(m.getMessageType())) {
+				systrayIcon.displayMessage("Stream: " + m.getSender(),
+						m.getText(), MessageType.INFO);
+				lastUser = Sim.streamTabName;
+			} else {
+				systrayIcon.displayMessage(m.getSender(), m.getText(),
+						MessageType.INFO);
+				lastUser = m.getSender();
+			}
+
 		} else if (Events.UNREAD_MESSAGES.equals(event)) {
 			List<String> users = (List<String>) o;
 			systrayIcon.displayMessage("Ungelesene Nachrichten",

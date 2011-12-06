@@ -25,16 +25,14 @@ public class Sim {
 	 */
 	public static String dbPath = "C:/Daten/im/sqlite.db";
 
-	public static String dbFolderHsql = "C:/Daten/im";
-	
 	public static String applicationName = "SIM - S Intstant Messenger";
 
 	public static String username = System.getProperty("user.name");
 
 	public static String trayIconPath = "/images/trayIcon.gif";
-	
+
 	public static int port = 0;
-	
+
 	/**
 	 * Icon der gelesenen Nachrichten.
 	 */
@@ -70,11 +68,11 @@ public class Sim {
 	public static int getPort() {
 		return port;
 	}
-	
+
 	public static void setPort(int p) {
 		port = p;
 	}
-	
+
 	private static String getCurrentIp() {
 		String hostName = null;
 		try {
@@ -99,5 +97,5 @@ public class Sim {
 
 		return myIp;
 	}
-	
+
 }

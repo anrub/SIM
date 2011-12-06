@@ -1,6 +1,7 @@
 package devhood.im.sim.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Eine Message.
@@ -9,10 +10,6 @@ import java.io.Serializable;
  * 
  */
 public class Message implements Serializable {
-
-	// TODO MessageType vorsehen, damit werden technische messages wie
-	// statusmeldungen oder binäre messages usw möglich
-
 	/**
 	 * Sender Name.
 	 */
@@ -21,14 +18,14 @@ public class Message implements Serializable {
 	/**
 	 * Receiver Name.
 	 */
-	private String receiver;
+	private List<String> receiver;
+
+	private MessageType messageType = MessageType.SINGLE;
 
 	/**
 	 * Text der Nachricht.
 	 */
 	private String text;
-
-	private String groupChatMember;
 
 	public String getText() {
 		return text;
@@ -46,25 +43,25 @@ public class Message implements Serializable {
 		this.sender = sender;
 	}
 
-	public String getReceiver() {
-		return receiver;
-	}
-
-	public void setReceiver(String receiver) {
-		this.receiver = receiver;
-	}
-
 	public String toString() {
-		return "Groupchat Member: " + groupChatMember + " Sender: " + sender
+		return "MessageType:" + getMessageType() + ", Sender: " + sender
 				+ ", Receiver: " + receiver + ", Text: " + text;
 	}
 
-	public String getGroupChatmember() {
-		return groupChatMember;
+	public List<String> getReceiver() {
+		return receiver;
 	}
 
-	public void setGroupChatmember(String groupChatMember) {
-		this.groupChatMember = groupChatMember;
+	public void setReceiver(List<String> receiver) {
+		this.receiver = receiver;
+	}
+
+	public MessageType getMessageType() {
+		return messageType;
+	}
+
+	public void setMessageType(MessageType messageType) {
+		this.messageType = messageType;
 	}
 
 }

@@ -1,14 +1,9 @@
 package devhood.im.sim.service;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
+import java.util.List;
 import java.util.logging.Logger;
 
-import devhood.im.sim.Sim;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
@@ -43,9 +38,8 @@ public class DummyMessageService implements EventObserver, MessageService {
 	public void eventReceived(Events event, Object o) {
 		if (Events.MESSAGE_SENT.equals(event)) {
 			Message m = (Message) o;
-			String receiver = m.getReceiver();
-			User user = ServiceLocator.getInstance().getRegistryService()
-					.getUser(receiver);
+			List<String> receiver = m.getReceiver();
+
 			System.out.println("Versuche Message zu senden: " + m);
 		} else if (Events.MESSAGE_RECEIVED.equals(event)) {
 			System.out.println(event);

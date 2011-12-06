@@ -42,7 +42,7 @@ public class InMemoryMockDataRegistryService implements RegistryService {
 	public List<User> getUsers() {
 		if (users == null || users.size() == 0) {
 			for (int i = 0; i < 10; i++) {
-				User u = new User("User" + i, "", 0, new Date(
+				User u = new User("User " + i, "", 0, new Date(
 						new Date().getTime() + 9999999));
 				users.add(u);
 			}

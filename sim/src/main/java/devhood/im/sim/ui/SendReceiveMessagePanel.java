@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -41,6 +40,9 @@ import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Message;
+import devhood.im.sim.model.MessageType;
+import devhood.im.sim.model.User;
+import devhood.im.sim.service.ServiceLocator;
 
 /**
  * Panel to send and receive messages.
@@ -49,6 +51,11 @@ import devhood.im.sim.model.Message;
  * 
  */
 public class SendReceiveMessagePanel extends JPanel implements EventObserver {
+
+	/**
+	 * Name des Tabs, in dem die Nachrichten an alle gesendet, empfangen werden.
+	 */
+	private String streamTabName = "Stream";
 
 	/**
 	 * Tabbed pane der einzelnen Konversationen. Eine Konv. pro Tab.
@@ -81,7 +88,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		tabbedPane = new JTabbedPane();
 
-		addToTabPane("Info", Sim.applicationName);
+		addToTabPane(streamTabName, Sim.applicationName);
 
 		// Lay out the buttons from left to right.
 		JPanel buttonPane = new JPanel();
@@ -117,7 +124,6 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				inputTextAreaMap.remove(title);
 
 				tabbedPane.remove(index);
-				EventDispatcher.fireEvent(Events.UNSELECT_ALL_USERS, null);
 			}
 		});
 		buttonPane.add(closeButton);
@@ -179,13 +185,25 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				.getComponent(1)).getComponent(0)).getComponent(0);
 
 		final Message newMessage = new Message();
-		newMessage.setReceiver(toUser);
+
+		List<String> usernames = new ArrayList<String>();
+		usernames.add(toUser);
+		newMessage.setReceiver(usernames);
 		newMessage.setSender(Sim.getUsername());
 		newMessage.setText(input.getText());
 
-		String title = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
-		newMessage.setGroupChatmember(title);
+		if (toUser.equals(streamTabName)) {
+			newMessage.setMessageType(MessageType.ALL);
+			newMessage.getReceiver().clear();
+			List<User> users = ServiceLocator.getInstance()
+					.getRegistryService().getUsers();
+			for (User user : users) {
+				newMessage.getReceiver().add(user.getName());
+			}
+			System.out.println("Nachricht an alle");
+		}
 
+		String title = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
 		timeline.setText(getFormattedMessage(newMessage, timeline.getText()));
 
 		input.setText(null);
@@ -249,31 +267,6 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		} else if (Events.SHOW_MSG_TABBED_PANE.equals(event)) {
 			String name = (String) o;
 			focusTabPane(name);
-		} else if (Events.GROUP_CHAT.equals(event)) {
-			GroupChatModel m = (GroupChatModel) o;
-			String tabtile = (m.getOldGroupChatName() != null
-					&& m.getOldGroupChatName().length() > 0 ? m
-					.getOldGroupChatName() : m.getGroupChatName());
-			
-			int index = tabbedPane.indexOfTab(tabtile);
-
-			if (index == -1) {
-				addToTabPane(tabtile, null);
-			} else {
-				JEditorPane pane = nameTextAreaMap.get(tabtile);
-				nameTextAreaMap.remove(tabtile);
-				nameTextAreaMap.put(m.getGroupChatName(), pane);
-
-				JTextArea a = inputTextAreaMap.get(tabtile);
-				inputTextAreaMap.remove(tabtile);
-				inputTextAreaMap.put(m.getGroupChatName(), a);
-
-				tabtile = m.getGroupChatName();
-				tabbedPane.setTitleAt(index, tabtile);
-
-			}
-
-			focusTabPane(tabtile);
 		}
 	}
 
@@ -285,11 +278,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	protected void processNewMessage(Message m) {
 		String sender = m.getSender();
-		String text = m.getText();
-		String groupChatmembers = m.getGroupChatmember();
 
-		if (groupChatmembers != null && groupChatmembers.length() > 0) {
-			sender = groupChatmembers;
+		if (MessageType.ALL.equals(m.getMessageType())) {
+			sender = streamTabName;
 		}
 
 		JEditorPane textArea = nameTextAreaMap.get(sender);

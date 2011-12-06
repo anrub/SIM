@@ -1,5 +1,8 @@
 package devhood.im.sim;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -10,9 +13,8 @@ import javax.swing.UIManager;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Message;
-import devhood.im.sim.service.DummyMessageService;
-import devhood.im.sim.service.InMemoryMockDataRegistryService;
-import devhood.im.sim.service.ServiceLocator;
+import devhood.im.sim.model.MessageType;
+import devhood.im.sim.service.PeerToPeerMessageService;
 import devhood.im.sim.ui.MainFrame;
 
 /**
@@ -48,11 +50,14 @@ public class SimMain {
 			}
 
 		}
-	
-		ServiceLocator.getInstance().setRegistryService(new InMemoryMockDataRegistryService());
-		ServiceLocator.getInstance().setMessageService(new DummyMessageService());
-		
-		
+
+		/*
+		 * ServiceLocator.getInstance().setRegistryService( new
+		 * InMemoryMockDataRegistryService());
+		 * ServiceLocator.getInstance().setMessageService( new
+		 * DummyMessageService());
+		 */
+
 		try {
 			UIManager.setLookAndFeel(Sim.lookAndFeel);
 		} catch (Exception e) {
@@ -64,17 +69,18 @@ public class SimMain {
 		mainFrame.initMainFrame();
 
 		// Server für Kommunikation initialisieren
-		/*try {
+
+		try {
 			PeerToPeerMessageService ms = new PeerToPeerMessageService();
 			EventDispatcher.add(ms);
-		} catch (IOException e) {
-			// TODO: Fehlermeldung in Frontend
-			log.log(Level.SEVERE, "Kommunikation (ServerSocket) konnte nicht gestartet werden: "+e.getMessage());
+		} catch (IOException e) { // TODO: Fehlermeldung in Frontend
+			log.log(Level.SEVERE,
+					"Kommunikation (ServerSocket) konnte nicht gestartet werden: "
+							+ e.getMessage());
 		}
-		*/
-		
-		SimMain.startSimulation();
-		
+
+		// SimMain.startSimulation();
+
 	}
 
 	/**
@@ -92,7 +98,12 @@ public class SimMain {
 					Message m = new Message();
 					int userid = (int) Math.floor(Math.random() * 10);
 					m.setSender("User " + userid);
-					m.setReceiver(Sim.getUsername());
+					List<String> users = new ArrayList<String>();
+					users.add(Sim.getUsername());
+					m.setReceiver(users);
+					if (cnt % 2 == 0) {
+						m.setMessageType(MessageType.ALL);
+					}
 
 					m.setText("Dies ist eine Nachricht öäüß " + Math.random());
 

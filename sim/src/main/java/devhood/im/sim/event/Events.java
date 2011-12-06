@@ -47,14 +47,5 @@ public enum Events {
 	 * Event, wird geworfenn wenn User offline gehen und aus der Liste
 	 * verschwinden parameter: String userNotice die angezeigt werden soll.
 	 */
-	USER_OFFLINE_NOTICE,
-	/**
-	 * Wird geworfen wenn ein Gruppenchat initiiert oder erweitert wird.
-	 * Parameter String name des Gruppenchats.
-	 */
-	GROUP_CHAT,
-	/**
-	 * Deselektiert alle User.
-	 */
-	UNSELECT_ALL_USERS;
+	USER_OFFLINE_NOTICE;
 }

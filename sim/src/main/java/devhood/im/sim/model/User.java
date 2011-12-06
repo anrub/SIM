@@ -19,18 +19,22 @@ public class User {
 	 * letzter zugriff des users.
 	 */
 	private Date lastaccess;
-	
+
 	/**
 	 * address.
 	 */
 	private String address;
 
 	/**
+	 * Status des Users;
+	 */
+	private String status;
+
+	/**
 	 * port für kommunikation
 	 */
 	private int port;
-	
-	
+
 	public int getPort() {
 		return port;
 	}
@@ -91,6 +95,14 @@ public class User {
 
 	public void setLastaccess(Date lastaccess) {
 		this.lastaccess = lastaccess;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }

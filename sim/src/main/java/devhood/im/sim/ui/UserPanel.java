@@ -170,6 +170,7 @@ public class UserPanel extends JPanel {
 				removeAll();
 				addUsers();
 				validate();
+				repaint();
 				usersLoaded = true;
 			}
 		};

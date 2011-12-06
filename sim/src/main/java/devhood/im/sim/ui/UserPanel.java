@@ -179,7 +179,17 @@ public class UserPanel extends JPanel {
 	}
 
 	public List<String> getCurrentUsers() {
-		return currentUsers;
+		List<String> users = new ArrayList<String>();
+		if (!usersLoaded) {
+			users = new ArrayList<String>() {
+				public boolean contains(Object o) {
+					return true;
+				};
+			};
+		} else {
+			users = currentUsers;
+		}
+		return users;
 	}
 
 	public void setCurrentUsers(List<String> currentUsers) {

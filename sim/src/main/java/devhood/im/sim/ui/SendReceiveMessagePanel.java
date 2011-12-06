@@ -214,7 +214,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		if (!toUser.equals(streamTabName)) { // Ist dies im Stremtab - nachricht
 												// an alle
 
-			if (!isUserOnline(toUser)) {
+			if (isUserOnline(toUser)) {
 				timeline.setText(getFormattedMessage(newMessage,
 						timeline.getText()));
 			} else {

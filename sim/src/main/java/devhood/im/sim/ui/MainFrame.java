@@ -184,6 +184,25 @@ public class MainFrame implements EventObserver {
 
 		menuNotifications.add(systrayMenuItem);
 
+		systrayMenuItem = new JCheckBoxMenuItem(
+				"Stream Msgs im Systray anzeigen");
+		systrayMenuItem.setSelected(true);
+		systrayMenuItem.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					ComponentProvider.getInstance().getSystemTrayManager()
+							.setShowSystrayMessages(true);
+				} else if (e.getStateChange() == ItemEvent.DESELECTED) {
+					ComponentProvider.getInstance().getSystemTrayManager()
+							.setShowSystrayMessages(false);
+				}
+			}
+		});
+
+		menuNotifications.add(systrayMenuItem);
+
 		cbMenuItem = new JCheckBoxMenuItem("Status veröffentlichen");
 		menuPrivacy.add(cbMenuItem);
 		cbMenuItem = new JCheckBoxMenuItem("Tippstatus veröffentlichen");

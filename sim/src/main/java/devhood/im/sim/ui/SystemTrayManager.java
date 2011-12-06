@@ -45,6 +45,12 @@ public class SystemTrayManager implements EventObserver {
 	 */
 	private boolean showSystrayMessages = true;
 
+	
+	/**
+	 * Zeigt die Stream Meldungen im systray an oder nicht.
+	 */
+	private boolean showStreamInTray = true;
+	
 	public SystemTrayManager() {
 		init();
 		EventDispatcher.add(this);
@@ -106,7 +112,7 @@ public class SystemTrayManager implements EventObserver {
 		if (Events.MESSAGE_RECEIVED.equals(event)) {
 			Message m = (Message) o;
 			if (devhood.im.sim.model.MessageType.ALL.equals(m.getMessageType())) {
-				if (!m.getSender().contains(Sim.username)) {
+				if (!m.getSender().contains(Sim.username) && showStreamInTray) {
 					displayMessage("Stream: " + m.getSender(), m.getText(),
 							MessageType.INFO);
 				}
@@ -161,6 +167,14 @@ public class SystemTrayManager implements EventObserver {
 
 	public void setShowSystrayMessages(boolean showSystrayMessages) {
 		this.showSystrayMessages = showSystrayMessages;
+	}
+
+	public boolean isShowStreamInTray() {
+		return showStreamInTray;
+	}
+
+	public void setShowStreamInTray(boolean showStreamInTray) {
+		this.showStreamInTray = showStreamInTray;
 	}
 
 }

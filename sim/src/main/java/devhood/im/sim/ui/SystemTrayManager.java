@@ -110,6 +110,9 @@ public class SystemTrayManager implements EventObserver {
 		} else if (Events.USER_OFFLINE_NOTICE.equals(event)) {
 			systrayIcon.displayMessage("User offline", o.toString(),
 					MessageType.INFO);
+		} else if (Events.USER_ONLINE_NOTICE.equals(event)) {
+			systrayIcon.displayMessage("User online", o.toString(),
+					MessageType.INFO);
 		}
 
 	}

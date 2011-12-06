@@ -47,5 +47,10 @@ public enum Events {
 	 * Event, wird geworfenn wenn User offline gehen und aus der Liste
 	 * verschwinden parameter: String userNotice die angezeigt werden soll.
 	 */
-	USER_OFFLINE_NOTICE;
+	USER_OFFLINE_NOTICE,
+	/**
+	 * Event, wird geworfenn wenn User online gehen und neu ins Userpanel kommen
+	 * parameter: String userNotice die angezeigt werden soll.
+	 */
+	USER_ONLINE_NOTICE;
 }

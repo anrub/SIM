@@ -192,7 +192,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		newMessage.setSender(Sim.getUsername());
 		newMessage.setText(input.getText());
 
-		if (toUser.equals(streamTabName)) {
+		if (toUser.equals(streamTabName)) { // Ist dies im Stremtab - nachricht
+											// an alle
 			newMessage.setMessageType(MessageType.ALL);
 			newMessage.getReceiver().clear();
 			List<User> users = ServiceLocator.getInstance()
@@ -204,7 +205,11 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		}
 
 		String title = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
-		timeline.setText(getFormattedMessage(newMessage, timeline.getText()));
+
+		if (!toUser.equals(streamTabName)) { // Ist dies im Stremtab - nachricht
+											// an alle
+			timeline.setText(getFormattedMessage(newMessage, timeline.getText()));
+		}
 
 		input.setText(null);
 

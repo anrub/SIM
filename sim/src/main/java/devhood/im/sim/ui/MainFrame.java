@@ -61,6 +61,11 @@ public class MainFrame implements EventObserver {
 	 * Das ist der Service zum Zugriff auf Stammdaten, wie zb verfuegbare User.
 	 */
 	private RegistryService registryService;
+	
+	/**
+	 * Interval, in dem der eigene Nutzerstatus in der DB aktualisiert wird.
+	 */
+	private int initRefreshUserStateInterval = 10000;
 
 	public MainFrame() {
 		registryService = ServiceLocator.getInstance().getRegistryService();
@@ -118,7 +123,7 @@ public class MainFrame implements EventObserver {
 			};
 		};
 
-		t.schedule(task, 0, 10000);
+		t.schedule(task, 0, initRefreshUserStateInterval);
 	}
 
 	/**

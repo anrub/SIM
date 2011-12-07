@@ -314,8 +314,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		// Ein user wurde per UserPanel ausgeawehlt, nun wird das Tab
 		// fokussiert.
 		if (Events.USER_SELECTED.equals(event)) {
-			JCheckBox box = (JCheckBox) o;
-			String text = box.getText();
+			String text = o.toString();
 
 			int index = tabbedPane.indexOfTab(text);
 			if (index == -1) {

@@ -8,7 +8,7 @@ package devhood.im.sim.event;
  */
 public enum Events {
 	/**
-	 * Ein User wurde ausgewaehlt. Parameter JCheckBox checkbox
+	 * Ein User wurde ausgewaehlt. Parameter: String username
 	 */
 	USER_SELECTED,
 

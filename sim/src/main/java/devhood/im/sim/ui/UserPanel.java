@@ -1,7 +1,8 @@
 package devhood.im.sim.ui;
 
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.Cursor;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import devhood.im.sim.Sim;
@@ -128,31 +129,26 @@ public class UserPanel extends JPanel {
 		List<String> userFromDb = new ArrayList<String>();
 
 		for (User user : users) {
-			JCheckBox userCheckBox = new JCheckBox(user.getName());
-			userCheckBox.setName(user.getName());
-			userCheckBox.addItemListener(new ItemListener() {
 
-				/**
-				 * Jede Checkbox bekommt einen Listener, der anschlägt, wenn Sie
-				 * ausgewählt wurde. Dabei wird Ein Events.USER_SELECTED
-				 * gefeuert.
-				 */
+			final JLabel userLabel = new JLabel(user.getName());
+			userLabel.addMouseListener(new MouseAdapter() {
 				@Override
-				public void itemStateChanged(ItemEvent e) {
-					if (e.getStateChange() == ItemEvent.SELECTED) {
-						JCheckBox box = (JCheckBox) e.getSource();
-						EventDispatcher.fireEvent(Events.USER_SELECTED, box);
-					}
+				public void mouseClicked(MouseEvent e) {
+
+					EventDispatcher.fireEvent(Events.USER_SELECTED,
+							userLabel.getText());
+
 				}
+
 			});
-
-			add(userCheckBox);
-
 			userFromDb.add(user.getName());
+			userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			add(userLabel);
 
 		}
 
 		processNewOrRemovedUsers(users, userFromDb);
+
 	}
 
 	/**
@@ -201,4 +197,5 @@ public class UserPanel extends JPanel {
 	public void setCurrentUsers(List<String> currentUsers) {
 		this.currentUsers = currentUsers;
 	}
+
 }

@@ -28,9 +28,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.JTextComponent;
@@ -358,12 +361,18 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			sender = streamTabName;
 		}
 
-		JEditorPane textArea = nameTextAreaMap.get(sender);
+		final JEditorPane textArea = nameTextAreaMap.get(sender);
 
 		if (textArea != null) {
 			String oldText = textArea.getText();
 			textArea.setText(getFormattedMessage(m, oldText));
-			textArea.setCaretPosition(textArea.getDocument().getLength());
+			SwingUtilities.invokeLater(new Runnable() {
+
+				@Override
+				public void run() {
+					moveCaretDown(textArea);
+				}
+			});
 		} else {
 			String textline = getFormattedMessage(m);
 			addToTabPane(sender, textline);
@@ -496,6 +505,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		JPanel textPanel = new JPanel(new BorderLayout());
 
 		JScrollPane timelineScrollPane = createTimelineScrollpane(label, text);
+
 		textPanel.add(timelineScrollPane, BorderLayout.CENTER);
 
 		final JTextArea messageTextArea = new JTextArea(3, 70);
@@ -538,6 +548,18 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		});
 
 		inputTextAreaMap.put(label, messageTextArea);
+	}
+
+
+
+	/**
+	 * Schiebt den Cursor ans Ende des Documents.
+	 * 
+	 * @param textArea
+	 *            textArea.
+	 */
+	public void moveCaretDown(JEditorPane textArea) {
+		textArea.setCaretPosition(textArea.getDocument().getLength());
 	}
 
 

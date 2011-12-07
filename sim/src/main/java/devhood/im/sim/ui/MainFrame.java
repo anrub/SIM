@@ -29,6 +29,7 @@ import devhood.im.sim.model.User;
 import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.service.interfaces.RegistryService;
 import devhood.im.sim.ui.util.ComponentProvider;
+import devhood.im.sim.ui.util.UiUtil;
 
 /**
  * Diese Klasse erzeugt das Hauptfenster der Anwendung.
@@ -79,6 +80,8 @@ public class MainFrame implements EventObserver {
 	 */
 	public void initMainFrame() {
 		frame = new JFrame(Sim.applicationName);
+		
+		frame.setIconImage(UiUtil.createImage("/images/megaphone-icon-64.png"));
 
 		initMenuBar();
 		initUserScrollPane();

@@ -17,11 +17,14 @@ import devhood.im.sim.service.interfaces.RegistryService;
  */
 public class ServiceLocator {
 
-	private Logger log = Logger.getLogger(ServiceLocator.class
-			.toString());
-	
+	private Logger log = Logger.getLogger(ServiceLocator.class.toString());
+
 	private RegistryService registryService = null;
 
+	/**
+	 * MessageService wird nicht mehr verwendet, nur in er lokalen Entwicklung
+	 * zur Simulation.
+	 */
 	private MessageService messageService = null;
 
 	private static ServiceLocator instance;
@@ -62,10 +65,18 @@ public class ServiceLocator {
 		return registryService;
 	}
 
+	/**
+	 * Nur in der lokalen Entwicklung verwenden, sonst
+	 * PeerToPeerMessageReceiver/Sender.
+	 * 
+	 * @return
+	 */
+	@Deprecated
 	public MessageService getMessageService() {
 		return messageService;
 	}
 
+	@Deprecated
 	public void setMessageService(MessageService messageService) {
 		this.messageService = messageService;
 	}
@@ -74,5 +85,4 @@ public class ServiceLocator {
 		this.registryService = registryService;
 	}
 
-	
 }

@@ -14,7 +14,7 @@ import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Message;
 import devhood.im.sim.model.MessageType;
-import devhood.im.sim.service.PeerToPeerMessageService;
+import devhood.im.sim.service.PeerToPeerMessageSender;
 import devhood.im.sim.ui.MainFrame;
 
 /**
@@ -71,7 +71,7 @@ public class SimMain {
 		// Server für Kommunikation initialisieren
 
 		try {
-			PeerToPeerMessageService ms = new PeerToPeerMessageService();
+			PeerToPeerMessageSender ms = new PeerToPeerMessageSender();
 			EventDispatcher.add(ms);
 		} catch (IOException e) { // TODO: Fehlermeldung in Frontend
 			log.log(Level.SEVERE,

@@ -1,4 +1,4 @@
-package devhood.im.sim.service;
+package devhood.im.sim.service.mock;
 
 import java.util.ArrayList;
 import java.util.Date;

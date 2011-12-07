@@ -18,9 +18,9 @@ import devhood.im.sim.model.Message;
  * @author Tobi
  * 
  */
-public class PeerToPeerMessageServiceReceiver implements Runnable {
+public class PeerToPeerMessageReceiver implements Runnable {
 
-	private Logger log = Logger.getLogger(PeerToPeerMessageServiceReceiver.class
+	private Logger log = Logger.getLogger(PeerToPeerMessageReceiver.class
 			.toString());
 
 	/**
@@ -34,7 +34,7 @@ public class PeerToPeerMessageServiceReceiver implements Runnable {
 	 * @param clientSocket
 	 *            aktuelle Client Socket Connection
 	 */
-	public PeerToPeerMessageServiceReceiver(Socket clientSocket) {
+	public PeerToPeerMessageReceiver(Socket clientSocket) {
 		this.clientSocket = clientSocket;
 	}
 

@@ -24,9 +24,9 @@ import devhood.im.sim.service.interfaces.MessageService;
  * @author Tobi, flo
  * 
  */
-public class PeerToPeerMessageService implements EventObserver, Runnable {
+public class PeerToPeerMessageSender implements EventObserver, Runnable {
 
-	private Logger log = Logger.getLogger(PeerToPeerMessageService.class
+	private Logger log = Logger.getLogger(PeerToPeerMessageSender.class
 			.toString());
 
 	/**
@@ -45,7 +45,7 @@ public class PeerToPeerMessageService implements EventObserver, Runnable {
 	 * @throws IOException
 	 *             Exception wenn ServerSocket nicht erzeugt werden kann
 	 */
-	public PeerToPeerMessageService() throws IOException {
+	public PeerToPeerMessageSender() throws IOException {
 		serverSocket = new ServerSocket(0);
 		Sim.setPort(serverSocket.getLocalPort());
 		thread = new Thread(this);
@@ -125,7 +125,7 @@ public class PeerToPeerMessageService implements EventObserver, Runnable {
 			try {
 				Socket clientSocket = serverSocket.accept();
 				Thread worker = new Thread(
-						new PeerToPeerMessageServiceReceiver(clientSocket));
+						new PeerToPeerMessageReceiver(clientSocket));
 				worker.start();
 			} catch (IOException e) {
 				log.log(Level.SEVERE, "client socket connection error", e);

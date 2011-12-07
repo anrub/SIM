@@ -18,6 +18,7 @@ import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.RegistryService;
+import devhood.im.sim.ui.util.UiUtil;
 
 /**
  * Panel zur Auswahl der User. Aktualisiert sich selbst via
@@ -143,6 +144,9 @@ public class UserPanel extends JPanel {
 			});
 			userFromDb.add(user.getName());
 			userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			
+			userLabel.setIcon(UiUtil.createImageIcon("/images/16x16transparent.png", ""));
+			
 			add(userLabel);
 
 		}

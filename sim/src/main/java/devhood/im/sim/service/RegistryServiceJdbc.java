@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import devhood.im.sim.Sim;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.RegistryService;
 
@@ -84,6 +85,9 @@ public class RegistryServiceJdbc implements RegistryService {
 	 */
 	@Override
 	public User getUser(String name) {
+		if ( name.equals(Sim.username)) {
+			return Sim.getUser();
+		}
 		createTable();
 		
 		User u = null;

@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import devhood.im.sim.Sim;
+import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Message;
@@ -56,6 +57,8 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 		threadPool = Executors.newFixedThreadPool(Sim.senderThreads);
 		serverSocket = new ServerSocket(0);
 		Sim.setPort(serverSocket.getLocalPort());
+		EventDispatcher.fireEvent(Events.SERVER_INITIALISED, null);
+		
 		thread = new Thread(this);
 		thread.start();
 	}

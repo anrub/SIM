@@ -52,5 +52,9 @@ public enum Events {
 	 * Event, wird geworfenn wenn User online gehen und neu ins Userpanel kommen
 	 * parameter: String userNotice die angezeigt werden soll.
 	 */
-	USER_ONLINE_NOTICE;
+	USER_ONLINE_NOTICE,
+	/**
+	 * Wird geworfen, wen der Server initialisiert wurde.
+	 */
+	SERVER_INITIALISED;
 }

@@ -87,7 +87,7 @@ public class MainFrame implements EventObserver {
 		initUserScrollPane();
 		initMsgScrollPane();
 		initTray();
-		initRefreshUserState();
+		//initRefreshUserState();
 
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		// frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -250,6 +250,8 @@ public class MainFrame implements EventObserver {
 		if (Events.SHOW_FRAME.equals(event)) {
 			frame.setVisible(true);
 			frame.requestFocusInWindow();
+		}else if ( Events.SERVER_INITIALISED.equals(event)) {
+			initRefreshUserState();
 		}
 	}
 

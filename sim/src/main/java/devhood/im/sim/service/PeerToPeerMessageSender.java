@@ -17,6 +17,7 @@ import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Message;
 import devhood.im.sim.model.MessageType;
+import devhood.im.sim.model.MessagingError;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.MessageService;
 
@@ -58,7 +59,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 		serverSocket = new ServerSocket(0);
 		Sim.setPort(serverSocket.getLocalPort());
 		EventDispatcher.fireEvent(Events.SERVER_INITIALISED, null);
-		
+
 		thread = new Thread(this);
 		thread.start();
 	}
@@ -126,8 +127,13 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 		} catch (UnknownHostException e) {
 			log.log(Level.SEVERE,
 					"message sent - client socket Verbindung Fehler", e);
+			EventDispatcher.fireEvent(Events.MESSAGE_SEND_FAILED,
+					new MessagingError(e, m));
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "message sent - IOException: ", e);
+
+			EventDispatcher.fireEvent(Events.MESSAGE_SEND_FAILED,
+					new MessagingError(e, m));
 		}
 
 	}

@@ -1,6 +1,7 @@
 package devhood.im.sim.ui;
 
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -144,9 +145,9 @@ public class UserPanel extends JPanel {
 			});
 			userFromDb.add(user.getName());
 			userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			
 			userLabel.setIcon(UiUtil.createImageIcon("/images/16x16transparent.png", ""));
 			
+			userLabel.setMinimumSize(new Dimension(100, 20));
 			add(userLabel);
 
 		}

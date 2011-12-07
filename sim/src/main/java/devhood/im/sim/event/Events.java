@@ -54,7 +54,11 @@ public enum Events {
 	 */
 	USER_ONLINE_NOTICE,
 	/**
-	 * Wird geworfen, wen der Server initialisiert wurde.
+	 * Wird geworfen, wen der Server initialisiert wurde. Parameter: null
 	 */
-	SERVER_INITIALISED;
+	SERVER_INITIALISED,
+	/**
+	 * wird geworfen wenn ein Fehler beim senden auftrat parameter: Exception e
+	 */
+	MESSAGE_SEND_FAILED;
 }

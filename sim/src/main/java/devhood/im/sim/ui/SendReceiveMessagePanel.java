@@ -47,6 +47,8 @@ import devhood.im.sim.model.User;
 import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.ui.util.ComponentProvider;
 
+
+
 /**
  * Panel to send and receive messages.
  * 
@@ -85,17 +87,16 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	private List<String> unreadTabsList = new ArrayList<String>();
 
+
+
 	public SendReceiveMessagePanel() {
 		super();
 		setLayout(new BorderLayout());
 
 		tabbedPane = new JTabbedPane();
 
-		addToTabPane(
-				streamTabName,
-				Sim.applicationName
-						+ "<br /> "
-						+ "<i>Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i>");
+		addToTabPane(streamTabName, Sim.applicationName + "<br /> "
+				+ "<i>Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i>");
 
 		// Lay out the buttons from left to right.
 		JPanel buttonPane = new JPanel(new BorderLayout());
@@ -159,6 +160,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		EventDispatcher.add(this);
 	}
 
+
+
 	/**
 	 * Loescht den Text aus der Textarea.
 	 * 
@@ -169,9 +172,10 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		area.setText(null);
 	}
 
+
+
 	/**
-	 * Erzeugt den Timer, der regelmï¿½ï¿½ig checkt ob es ungelesene Nachrichten
-	 * gibt.
+	 * Erzeugt den Timer, der regelmï¿½ï¿½ig checkt ob es ungelesene Nachrichten gibt.
 	 */
 	public void createUnreadMessagesTimer() {
 		Timer t = new Timer("Unread Messages Timer");
@@ -181,14 +185,15 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			public void run() {
 
 				if (unreadTabsList.size() > 0) {
-					EventDispatcher.fireEvent(Events.UNREAD_MESSAGES,
-							unreadTabsList);
+					EventDispatcher.fireEvent(Events.UNREAD_MESSAGES, unreadTabsList);
 				}
 			}
 		};
 
 		t.schedule(task, 0, 20000);
 	}
+
+
 
 	/**
 	 * Gibt den Titel des aktuellen Tabs zurueck.
@@ -205,6 +210,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		return title;
 	}
 
+
+
 	/**
 	 * Versendet die Nachricht, aktualisiert die UI.
 	 */
@@ -212,10 +219,10 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		JPanel p = (JPanel) tabbedPane.getSelectedComponent();
 
 		// TODO fragil - haengt damit direkt mit der ui struktur zusammen
-		JTextComponent timeline = (JTextComponent) ((JViewport) ((JScrollPane) p
-				.getComponent(0)).getComponent(0)).getComponent(0);
-		JTextComponent input = (JTextComponent) ((JViewport) ((JScrollPane) p
-				.getComponent(1)).getComponent(0)).getComponent(0);
+		JTextComponent timeline = (JTextComponent) ((JViewport) ((JScrollPane) p.getComponent(0)).getComponent(0))
+				.getComponent(0);
+		JTextComponent input = (JTextComponent) ((JViewport) ((JScrollPane) p.getComponent(1)).getComponent(0))
+				.getComponent(0);
 
 		final Message newMessage = new Message();
 
@@ -229,8 +236,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 											// an alle
 			newMessage.setMessageType(MessageType.ALL);
 			newMessage.getReceiver().clear();
-			List<User> users = ServiceLocator.getInstance()
-					.getRegistryService().getUsers();
+			List<User> users = ServiceLocator.getInstance().getRegistryService().getUsers();
 			for (User user : users) {
 				newMessage.getReceiver().add(user.getName());
 			}
@@ -243,8 +249,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 												// an alle
 
 			if (isUserOnline(toUser)) {
-				timeline.setText(getFormattedMessage(newMessage,
-						timeline.getText()));
+				timeline.setText(getFormattedMessage(newMessage, timeline.getText()));
 			} else {
 				outputStatusMessage("Tut mir leid, " + toUser + " ist offline", timeline);
 			}
@@ -271,6 +276,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				return null;
 			}
 
+
+
 			@Override
 			protected void done() {
 				// TODO Auto-generated method stub
@@ -281,6 +288,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		worker.execute();
 	}
 
+
+
 	/**
 	 * Gibt zurueck ob user online ist oder nicht.
 	 * 
@@ -289,9 +298,10 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @return return
 	 */
 	public boolean isUserOnline(String user) {
-		return ComponentProvider.getInstance().getUserPanel().getCurrentUsers()
-				.contains(user);
+		return ComponentProvider.getInstance().getUserPanel().getCurrentUsers().contains(user);
 	}
+
+
 
 	/**
 	 * Empfaengt Events.
@@ -315,29 +325,25 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				Message m = (Message) o;
 				processNewMessage(m);
 			} else {
-				throw new IllegalArgumentException("Fuer Event "
-						+ Events.MESSAGE_RECEIVED
-						+ " muss eine Message als Object kkommen! ist aber: "
-						+ o.getClass());
+				throw new IllegalArgumentException("Fuer Event " + Events.MESSAGE_RECEIVED
+						+ " muss eine Message als Object kkommen! ist aber: " + o.getClass());
 			}
 			// Zeigt die Tabbed pane mit dem entsprechenden Namen.
 		} else if (Events.SHOW_MSG_TABBED_PANE.equals(event)) {
 			String name = (String) o;
 			focusTabPane(name);
 			// Meldung dass Benutzer offline oder online ist
-		} else if (Events.USER_OFFLINE_NOTICE.equals(event)
-				|| Events.USER_ONLINE_NOTICE.equals(event)) {
-			String message = "User "
-					+ o
-					+ " ist jetzt "
-					+ (Events.USER_OFFLINE_NOTICE.equals(event) ? "offline"
-							: "online");
+		} else if (Events.USER_OFFLINE_NOTICE.equals(event) || Events.USER_ONLINE_NOTICE.equals(event)) {
+			String message = "User " + o + " ist jetzt "
+					+ (Events.USER_OFFLINE_NOTICE.equals(event) ? "offline" : "online");
 			outputStatusMessage(message, nameTextAreaMap.get(streamTabName));
 			if (nameTextAreaMap.containsKey(o)) {
 				outputStatusMessage(message, nameTextAreaMap.get(o));
 			}
 		}
 	}
+
+
 
 	/**
 	 * Z Verarbeitung einer neuen Nachricht.
@@ -371,6 +377,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	}
 
+
+
 	/**
 	 * Gibt zurueck ob der Tab mit dem Namen derzeit ausgewaehlt ist oder nicht.
 	 * 
@@ -385,19 +393,22 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		return selected == index;
 	}
 
+
+
 	/**
 	 * Gibt eine Statusmessage aus
 	 * 
 	 * @param statusMessage
 	 *            beliebige Statusmeldung
 	 * @param textArea
-	 *            Zieltab für Statusmeldung
+	 *            Zieltab fï¿½r Statusmeldung
 	 */
-	protected void outputStatusMessage(String statusMessage,
-			JTextComponent textArea) {
+	protected void outputStatusMessage(String statusMessage, JTextComponent textArea) {
 		String oldText = textArea.getText();
-		textArea.setText(getFormattedMessage("<i>"+statusMessage+"</i>", oldText));
+		textArea.setText(getFormattedMessage("<i>" + statusMessage + "</i>", oldText));
 	}
+
+
 
 	/**
 	 * Gibt die Message formatiert aus.
@@ -418,6 +429,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		return getFormattedMessage(message, oldText);
 	}
 
+
+
 	/**
 	 * Gibt einen beliebigen Text formatiert aus.
 	 * 
@@ -437,6 +450,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		return newMsg.toString();
 	}
+
+
 
 	/**
 	 * Gibt die Message formatiert aus.
@@ -463,9 +478,10 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			msg.append(c);
 		}
 
-		return "[" + df.format(new Date()) + "] " + m.getSender() + "> "
-				+ msg.toString();
+		return "[" + df.format(new Date()) + "] " + m.getSender() + "> " + msg.toString();
 	}
+
+
 
 	/**
 	 * Fuegt ein SendReceiveMessage Tab fuer diese Konversation ein.
@@ -523,6 +539,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		inputTextAreaMap.put(label, messageTextArea);
 	}
 
+
+
 	/**
 	 * Erzeugt das timeline Scrollpane incl inhalt.
 	 * 
@@ -541,8 +559,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		timelineTextArea.addHyperlinkListener(new HyperlinkListener() {
 
 			/**
-			 * Bei Klick auf einen Link in der Timeline, wird der Browser
-			 * geï¿½ffnet.
+			 * Bei Klick auf einen Link in der Timeline, wird der Browser geï¿½ffnet.
 			 * 
 			 * @param e
 			 *            Event.
@@ -569,6 +586,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 							return null;
 						}
 
+
+
 						@Override
 						protected void done() {
 							// TODO Auto-generated method stub
@@ -585,16 +604,16 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		JScrollPane timelineScrollPane = new JScrollPane(timelineTextArea);
 
-		timelineScrollPane.getVerticalScrollBar().addAdjustmentListener(
-				new AdjustmentListener() {
-					public void adjustmentValueChanged(AdjustmentEvent e) {
-						timelineTextArea.select(
-								timelineTextArea.getHeight() + 1000, 0);
-					}
-				});
+		timelineScrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				e.getAdjustable().setValue(e.getAdjustable().getMaximum());
+			}
+		});
 
 		return timelineScrollPane;
 	}
+
+
 
 	/**
 	 * fokussiert das tabpane mit dem Namen.
@@ -609,6 +628,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		}
 	}
 
+
+
 	/**
 	 * Fokussiert das Feld im Tab mit dem Namen.
 	 * 
@@ -619,9 +640,10 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		inputTextAreaMap.get(name).requestFocusInWindow();
 	}
 
+
+
 	/**
-	 * Setzt das Icon im Tab, so dass es auf ungelesene Nachrichten aufmerksam
-	 * macht.
+	 * Setzt das Icon im Tab, so dass es auf ungelesene Nachrichten aufmerksam macht.
 	 * 
 	 * @param name
 	 *            Name des Tabs.
@@ -635,6 +657,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		tabbedPane.setIconAt(index, Sim.unreadIcon);
 
 	}
+
+
 
 	/**
 	 * Entfernt das Icon vom Tab und setzt das standardicon readicon.

@@ -20,6 +20,8 @@ public class ComponentProvider {
 
 	private UserPanel userPanel = null;
 
+	private SmileyFactory smileyFactory = null;
+
 	private static ComponentProvider instance;
 
 	/**
@@ -40,6 +42,14 @@ public class ComponentProvider {
 	 */
 	private ComponentProvider() {
 
+	}
+
+	public SmileyFactory getSmileyFactory() {
+		if (smileyFactory == null) {
+			smileyFactory = new MozillaSmileyFactory();
+		}
+
+		return smileyFactory;
 	}
 
 	public SystemTrayManager getSystemTrayManager() {

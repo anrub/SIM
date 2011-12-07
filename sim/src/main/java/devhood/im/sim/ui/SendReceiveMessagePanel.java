@@ -484,6 +484,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		for (String c : chunks) {
 			if (c.matches(linkPattern)) {
 				c = "<a href=\"" + c + "\">" + c + "</a>";
+			} else {
+				c = ComponentProvider.getInstance().getSmileyFactory()
+						.applySmiles(c);
 			}
 			msg.append(" ");
 			msg.append(c);

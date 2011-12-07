@@ -22,11 +22,12 @@ SolidCompression=yes
 Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 
 [Files]
-Source: "sim.jar"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../sim/target/sim-{#MyAppVersion}-SNAPSHOT-jar-with-dependencies.jar"; DestDir: "{app}"; DestName: "sim.jar"; Flags: ignoreversion
+Source: "icon.ico"; DestDir: "{app}"; DestName: "icon.ico"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\S Instant Messenger"; Filename: "{sys}\javaw.exe"; Parameters: "-cp sim.jar devhood.im.sim.SimMain -f {code:GetDatabase}"; WorkingDir: "{app}"
-Name: "{userstartup}\S Instant Messenger"; Filename: "{sys}\javaw.exe"; Parameters: "-cp sim.jar devhood.im.sim.SimMain -f {code:GetDatabase}"; WorkingDir: "{app}"
+Name: "{group}\SIM - S Instant Messenger"; Filename: "{sys}\javaw.exe"; Parameters: "-cp sim.jar devhood.im.sim.SimMain -f {code:GetDatabase}"; WorkingDir: "{app}"; IconFilename: "{app}/icon.ico"
+Name: "{userstartup}\SIM - S Instant Messenger"; Filename: "{sys}\javaw.exe"; Parameters: "-cp sim.jar devhood.im.sim.SimMain -f {code:GetDatabase}"; WorkingDir: "{app}"; IconFilename: "{app}/icon.ico"
 
 [Code]
 var

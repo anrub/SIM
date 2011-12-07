@@ -106,7 +106,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				if (tabbedPane.getSelectedIndex() != 0) {
 					String toUser = getCurrentSelectedTabTitle();
 					sendMessage(toUser);
-				}else {
+				} else {
 					sendMessage(streamTabName);
 				}
 			}
@@ -325,6 +325,18 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		} else if (Events.SHOW_MSG_TABBED_PANE.equals(event)) {
 			String name = (String) o;
 			focusTabPane(name);
+			// Meldung dass Benutzer offline oder online ist
+		} else if (Events.USER_OFFLINE_NOTICE.equals(event)
+				|| Events.USER_ONLINE_NOTICE.equals(event)) {
+			String message = "User "
+					+ o
+					+ " ist jetzt "
+					+ (Events.USER_OFFLINE_NOTICE.equals(event) ? "offline"
+							: "online");
+			outputStatusMessage(message, nameTextAreaMap.get(streamTabName));
+			if (nameTextAreaMap.containsKey(o)) {
+				outputStatusMessage(message, nameTextAreaMap.get(o));
+			}
 		}
 	}
 
@@ -375,6 +387,20 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	}
 
 	/**
+	 * Gibt eine Statusmessage aus
+	 * 
+	 * @param statusMessage
+	 *            beliebige Statusmeldung
+	 * @param textArea
+	 *            Zieltab für Statusmeldung
+	 */
+	protected void outputStatusMessage(String statusMessage,
+			JEditorPane textArea) {
+		String oldText = textArea.getText();
+		textArea.setText(getFormattedMessage("<i>"+statusMessage+"</i>", oldText));
+	}
+
+	/**
 	 * Gibt die Message formatiert aus.
 	 * 
 	 * @param username
@@ -386,16 +412,28 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @return formatierter String
 	 */
 	protected String getFormattedMessage(Message m, String oldText) {
+		String message = "";
+		if (m != null) {
+			message += getFormattedMessage(m);
+		}
+		return getFormattedMessage(message, oldText);
+	}
+
+	/**
+	 * Gibt einen beliebigen Text formatiert aus.
+	 * 
+	 * @param message
+	 *            Nachricht als Text
+	 * @param oldText
+	 *            vorhandener Text in der Textarea
+	 * @return formatierter String
+	 */
+	protected String getFormattedMessage(String message, String oldText) {
 		StringBuffer newMsg = new StringBuffer(oldText);
 
 		if (oldText.contains("</body>")) {
 			int index = oldText.indexOf("</body>");
-
-			if (m != null) {
-				newMsg.insert(index, "<br />" + getFormattedMessage(m));
-			} else {
-				newMsg.insert(index, "<br />");
-			}
+			newMsg.insert(index, "<br />" + message);
 		}
 
 		return newMsg.toString();

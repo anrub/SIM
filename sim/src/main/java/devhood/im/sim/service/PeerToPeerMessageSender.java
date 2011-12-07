@@ -6,6 +6,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,12 +42,18 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 	private Thread thread;
 
 	/**
+	 * Threadpool für das versenden
+	 */
+	private Executor threadPool;
+
+	/**
 	 * Startet Message Server in neuem Thread.
 	 * 
 	 * @throws IOException
 	 *             Exception wenn ServerSocket nicht erzeugt werden kann
 	 */
 	public PeerToPeerMessageSender() throws IOException {
+		threadPool = Executors.newFixedThreadPool(10);
 		serverSocket = new ServerSocket(0);
 		Sim.setPort(serverSocket.getLocalPort());
 		thread = new Thread(this);
@@ -82,11 +90,16 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 	 * @param m
 	 *            Message.
 	 */
-	public void sendMessageToAllUsers(Message m) {
+	public void sendMessageToAllUsers(final Message m) {
 		List<User> users = ServiceLocator.getInstance().getRegistryService()
 				.getUsers();
-		for (User user : users) {
-			sendMessage(user, m);
+		for (final User user : users) {
+			threadPool.execute(new Runnable() {
+				@Override
+				public void run() {
+					sendMessage(user, m);
+				}
+			});
 		}
 	}
 
@@ -124,8 +137,8 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 		while (!Thread.interrupted()) {
 			try {
 				Socket clientSocket = serverSocket.accept();
-				Thread worker = new Thread(
-						new PeerToPeerMessageReceiver(clientSocket));
+				Thread worker = new Thread(new PeerToPeerMessageReceiver(
+						clientSocket));
 				worker.start();
 			} catch (IOException e) {
 				log.log(Level.SEVERE, "client socket connection error", e);

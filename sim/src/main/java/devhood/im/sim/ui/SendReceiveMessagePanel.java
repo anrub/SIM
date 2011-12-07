@@ -106,6 +106,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				if (tabbedPane.getSelectedIndex() != 0) {
 					String toUser = getCurrentSelectedTabTitle();
 					sendMessage(toUser);
+				}else {
+					sendMessage(streamTabName);
 				}
 			}
 		});
@@ -123,7 +125,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			}
 		});
 
-		// Schließt das aktuelle Tab.
+		// Schlieï¿½t das aktuelle Tab.
 		JButton closeButton = new JButton("Close");
 		closeButton.addActionListener(new ActionListener() {
 
@@ -166,7 +168,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	}
 
 	/**
-	 * Erzeugt den Timer, der regelmäßig checkt ob es ungelesene Nachrichten
+	 * Erzeugt den Timer, der regelmï¿½ï¿½ig checkt ob es ungelesene Nachrichten
 	 * gibt.
 	 */
 	public void createUnreadMessagesTimer() {
@@ -503,7 +505,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 			/**
 			 * Bei Klick auf einen Link in der Timeline, wird der Browser
-			 * geöffnet.
+			 * geï¿½ffnet.
 			 * 
 			 * @param e
 			 *            Event.
@@ -513,7 +515,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 
-					// Fenster asynchron öffnen, sonst blockt ui.
+					// Fenster asynchron ï¿½ffnen, sonst blockt ui.
 					SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
 						@Override

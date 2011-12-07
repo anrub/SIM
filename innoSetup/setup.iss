@@ -2,6 +2,9 @@
 #define MyAppVersion "0.0.2"
 #define MyAppPublisher "Flo"
 #define MyAppURL "https://github.com/anrub/SIM"
+#define LaunchProgram "Starte S Instant Messenger nach der Installation"
+#define DesktopIcon "Verknüpfung auf dem Desktop"
+#define CreateDesktopIcon "Wollen Sie eine Verknüpfung auf dem Desktop erstellen?"
 
 [Setup]
 AppId={{F3E30478-2D70-4CBC-AB4F-0B7A0A4D44AB}
@@ -25,9 +28,13 @@ Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 Source: "../sim/target/sim-{#MyAppVersion}-SNAPSHOT-jar-with-dependencies.jar"; DestDir: "{app}"; DestName: "sim.jar"; Flags: ignoreversion
 Source: "icon.ico"; DestDir: "{app}"; DestName: "icon.ico"; Flags: ignoreversion
 
+[Tasks]
+Name: "desktopicon"; Description: "{#CreateDesktopIcon}"; GroupDescription: "{#DesktopIcon}"
+
 [Icons]
 Name: "{group}\SIM - S Instant Messenger"; Filename: "{sys}\javaw.exe"; Parameters: "-cp sim.jar devhood.im.sim.SimMain -f {code:GetDatabase}"; WorkingDir: "{app}"; IconFilename: "{app}/icon.ico"
 Name: "{userstartup}\SIM - S Instant Messenger"; Filename: "{sys}\javaw.exe"; Parameters: "-cp sim.jar devhood.im.sim.SimMain -f {code:GetDatabase}"; WorkingDir: "{app}"; IconFilename: "{app}/icon.ico"
+Name: "{userdesktop}\SIM - S Instant Messenger"; Filename: "{sys}\javaw.exe"; Parameters: "-cp sim.jar devhood.im.sim.SimMain -f {code:GetDatabase}"; WorkingDir: "{app}"; IconFilename: "{app}/icon.ico"; Tasks: desktopicon
 
 [Code]
 var
@@ -43,7 +50,7 @@ begin
 
   Page.Add('Speicherort sim.db:',
   'Database File|*.db|All files|*.*',
-  '.db');
+  '.db');             
 
   Page.Values[0] := 'Z:\Webteam\Mitarbeiter\Fuchs\sim.db';
 end;
@@ -54,4 +61,5 @@ begin
   Result := Page.Values[0];
 end;
 
-  
+[Run]
+Filename: "{sys}\javaw.exe"; Parameters: "-cp sim.jar devhood.im.sim.SimMain -f {code:GetDatabase}"; WorkingDir: "{app}"; Description: {#LaunchProgram}; Flags: postinstall shellexec

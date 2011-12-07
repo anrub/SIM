@@ -96,7 +96,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 						+ "<i>Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i>");
 
 		// Lay out the buttons from left to right.
-		JPanel buttonPane = new JPanel();
+		JPanel buttonPane = new JPanel(new BorderLayout());
 
 		JButton sendButton = new JButton("Send");
 		sendButton.addActionListener(new ActionListener() {
@@ -110,8 +110,18 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			}
 		});
 
-		buttonPane.add(sendButton);
-		buttonPane.add(new JButton("Cancel"));
+		buttonPane.add(sendButton, BorderLayout.CENTER);
+
+		JPanel buttonsRight = new JPanel();
+		JButton clearButton = new JButton("Clear");
+
+		clearButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				clearText(nameTextAreaMap.get(getCurrentSelectedTabTitle()));
+			}
+		});
 
 		// Schlieﬂt das aktuelle Tab.
 		JButton closeButton = new JButton("Close");
@@ -131,7 +141,11 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				tabbedPane.remove(index);
 			}
 		});
-		buttonPane.add(closeButton);
+
+		buttonsRight.add(clearButton);
+		buttonsRight.add(closeButton);
+
+		buttonPane.add(buttonsRight, BorderLayout.EAST);
 
 		this.add(tabbedPane, BorderLayout.CENTER);
 		this.add(buttonPane, BorderLayout.PAGE_END);
@@ -139,6 +153,16 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		createUnreadMessagesTimer();
 
 		EventDispatcher.add(this);
+	}
+
+	/**
+	 * Loescht den Text aus der Textarea.
+	 * 
+	 * @param area
+	 *            textarea.
+	 */
+	public void clearText(JTextComponent area) {
+		area.setText(null);
 	}
 
 	/**
@@ -221,8 +245,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				Message m = new Message();
 				m.setSender("SIM");
 				m.setText("<i>Tut mir leid, " + toUser + " ist offline</i>");
-				timeline.setText(getFormattedMessage(m,
-						timeline.getText()));
+				timeline.setText(getFormattedMessage(m, timeline.getText()));
 			}
 
 		}
@@ -366,11 +389,14 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		if (oldText.contains("</body>")) {
 			int index = oldText.indexOf("</body>");
 
-			newMsg.insert(index, "<br />" + getFormattedMessage(m));
+			if (m != null) {
+				newMsg.insert(index, "<br />" + getFormattedMessage(m));
+			} else {
+				newMsg.insert(index, "<br />");
+			}
 		}
 
 		return newMsg.toString();
-
 	}
 
 	/**
@@ -416,7 +442,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		JScrollPane timelineScrollPane = createTimelineScrollpane(label, text);
 		textPanel.add(timelineScrollPane, BorderLayout.CENTER);
 
-		JTextArea messageTextArea = new JTextArea(3, 70);
+		final JTextArea messageTextArea = new JTextArea(3, 70);
 		messageTextArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		messageTextArea.setWrapStyleWord(true);
 		messageTextArea.setLineWrap(true);

@@ -35,6 +35,8 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.JTextComponent;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import devhood.im.sim.Sim;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
@@ -244,10 +246,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				timeline.setText(getFormattedMessage(newMessage,
 						timeline.getText()));
 			} else {
-				Message m = new Message();
-				m.setSender("SIM");
-				m.setText("<i>Tut mir leid, " + toUser + " ist offline</i>");
-				timeline.setText(getFormattedMessage(m, timeline.getText()));
+				outputStatusMessage("Tut mir leid, " + toUser + " ist offline", timeline);
 			}
 
 		}
@@ -395,7 +394,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            Zieltab für Statusmeldung
 	 */
 	protected void outputStatusMessage(String statusMessage,
-			JEditorPane textArea) {
+			JTextComponent textArea) {
 		String oldText = textArea.getText();
 		textArea.setText(getFormattedMessage("<i>"+statusMessage+"</i>", oldText));
 	}
@@ -451,7 +450,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @return formatierter String
 	 */
 	protected String getFormattedMessage(Message m) {
-		String text = m.getText();
+		String text = StringEscapeUtils.escapeHtml4(m.getText());
 		String[] chunks = text.split("\\s");
 		String linkPattern = "((file\\:|mailto\\:|(news|(ht|f)tp(s?))\\://){1}\\S+)";
 		StringBuffer msg = new StringBuffer();

@@ -32,6 +32,8 @@ public class Sim {
 	public static String trayIconPath = "/images/trayIcon.gif";
 
 	public static int port = 0;
+	
+	public static int senderThreads = 10;
 
 	/**
 	 * Name des Tabs in dem der Stream läuft.

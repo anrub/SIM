@@ -1,6 +1,6 @@
 #define MyAppName "S Instant Messenger"
 #define MyAppVersion "0.0.2"
-#define MyAppPublisher "Fuchsi "
+#define MyAppPublisher "Flo"
 #define MyAppURL "https://github.com/anrub/SIM"
 
 [Setup]

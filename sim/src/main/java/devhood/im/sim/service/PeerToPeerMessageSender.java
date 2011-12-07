@@ -53,7 +53,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 	 *             Exception wenn ServerSocket nicht erzeugt werden kann
 	 */
 	public PeerToPeerMessageSender() throws IOException {
-		threadPool = Executors.newFixedThreadPool(10);
+		threadPool = Executors.newFixedThreadPool(Sim.senderThreads);
 		serverSocket = new ServerSocket(0);
 		Sim.setPort(serverSocket.getLocalPort());
 		thread = new Thread(this);

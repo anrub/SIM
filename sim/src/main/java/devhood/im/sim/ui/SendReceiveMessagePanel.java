@@ -342,6 +342,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 			final MessagingError error = (MessagingError) o;
 			if (MessageType.SINGLE.equals(error.getMessage().getMessageType())) {
+				// Muss per invokeLater auf dem Swing Event Dispatcher Thread ausgeführt werden siehe
+				// http://docs.oracle.com/javase/tutorial/uiswing/concurrency/dispatch.html
+				// http://tips4java.wordpress.com/2008/10/22/text-area-scrolling/
 				SwingUtilities.invokeLater(new Runnable() {
 
 					@Override

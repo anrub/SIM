@@ -20,7 +20,7 @@ public class MessagingError {
 	private Message message;
 
 	public MessagingError() {
-		// TODO Auto-generated constructor stub
+
 	}
 
 	public MessagingError(Exception e, Message m) {

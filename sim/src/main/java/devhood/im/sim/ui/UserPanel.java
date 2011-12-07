@@ -52,8 +52,6 @@ public class UserPanel extends JPanel {
 	 */
 	private boolean usersLoaded;
 
-	private boolean userProcessecd;
-
 	public UserPanel(RegistryService registryService) {
 		this.registryService = registryService;
 		init();
@@ -178,6 +176,14 @@ public class UserPanel extends JPanel {
 		t.schedule(task, userLoadDelay, userLoadPeriod);
 	}
 
+	/**
+	 * Gibt die aktuellen User zurueck. Falls bisher noch keine USer geladen
+	 * wurden, wird eine Liste zurueckgegeben, die bei contains immer true
+	 * zurueck gibt. (Da noch nicht klar ist, ob der User vorhanden ist oder
+	 * nicht, hacky).
+	 * 
+	 * @return list von usern.
+	 */
 	public List<String> getCurrentUsers() {
 		List<String> users = new ArrayList<String>();
 		if (!usersLoaded) {

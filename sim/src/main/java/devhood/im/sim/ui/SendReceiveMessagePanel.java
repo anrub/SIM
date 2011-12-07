@@ -363,6 +363,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		if (textArea != null) {
 			String oldText = textArea.getText();
 			textArea.setText(getFormattedMessage(m, oldText));
+			textArea.setCaretPosition(textArea.getDocument().getLength());
 		} else {
 			String textline = getFormattedMessage(m);
 			addToTabPane(sender, textline);
@@ -603,12 +604,6 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		nameTextAreaMap.put(label, timelineTextArea);
 
 		JScrollPane timelineScrollPane = new JScrollPane(timelineTextArea);
-
-		timelineScrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-			public void adjustmentValueChanged(AdjustmentEvent e) {
-				e.getAdjustable().setValue(e.getAdjustable().getMaximum());
-			}
-		});
 
 		return timelineScrollPane;
 	}

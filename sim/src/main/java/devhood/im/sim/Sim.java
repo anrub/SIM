@@ -39,7 +39,7 @@ public class Sim {
 	public static String streamTabName = "Stream";
 
 	/**
-	 * Icon der gelesenen Nachrichten.
+	 * Systray Icon.
 	 */
 	public static Image trayIcon = UiUtil.createImage(trayIconPath);
 

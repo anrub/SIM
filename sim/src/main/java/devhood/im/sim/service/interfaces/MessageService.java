@@ -8,6 +8,7 @@ import devhood.im.sim.model.Message;
  * @author flo
  * 
  */
+@Deprecated
 public interface MessageService {
 	/**
 	 * Versenet die MEssage .

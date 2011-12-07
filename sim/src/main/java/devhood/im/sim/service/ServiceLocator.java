@@ -1,7 +1,5 @@
 package devhood.im.sim.service;
 
-import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import devhood.im.sim.Sim;

@@ -205,7 +205,7 @@ public class RegistryServiceJdbc implements RegistryService {
 			con.setAutoCommit(false);
 			pstmt = con
 					.prepareStatement("DELETE FROM users where lastaccess < ?");
-			pstmt.setLong(1, new Date().getTime() - (60 * 1000 * 1));
+			pstmt.setLong(1, new Date().getTime() - (60 * 5000 * 1));
 			pstmt.executeUpdate();
 
 			con.commit();

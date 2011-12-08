@@ -57,7 +57,7 @@ public class Sim {
 	
 		
 	/**
-	 * Name des Tabs in dem der Stream läuft.
+	 * Name des Tabs in dem der Stream lï¿½uft.
 	 */
 	public static String streamTabName = "Stream";
 

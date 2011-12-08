@@ -1,5 +1,6 @@
 package devhood.im.sim.ui;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
@@ -131,29 +132,53 @@ public class UserPanel extends JPanel {
 		List<String> userFromDb = new ArrayList<String>();
 
 		for (User user : users) {
-
-			final JLabel userLabel = new JLabel(user.getName());
-			userLabel.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-
-					EventDispatcher.fireEvent(Events.USER_SELECTED,
-							userLabel.getText());
-
-				}
-
-			});
 			userFromDb.add(user.getName());
-			userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			userLabel.setIcon(UiUtil.createImageIcon("/images/16x16transparent.png", ""));
-			
-			userLabel.setMinimumSize(new Dimension(100, 20));
+			final JLabel userLabel = createUserLabel(user);
 			add(userLabel);
 
 		}
 
 		processNewOrRemovedUsers(users, userFromDb);
 
+	}
+
+	/**
+	 * Erzeugt das Label zur anzeige des Benutzers.
+	 * 
+	 * @param user
+	 *            User.
+	 * @return Label
+	 */
+	public JLabel createUserLabel(User user) {
+		final JLabel userLabel = new JLabel(user.getName());
+		userLabel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+
+				EventDispatcher.fireEvent(Events.USER_SELECTED,
+						userLabel.getText());
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				JLabel l = (JLabel) e.getSource();
+				l.setForeground(Color.RED);
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				JLabel l = (JLabel) e.getSource();
+				l.setForeground(Color.BLACK);
+			}
+
+		});
+		userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		userLabel.setIcon(UiUtil.createImageIcon(
+				"/images/16x16transparent.png", ""));
+		userLabel.setMinimumSize(new Dimension(100, 20));
+
+		return userLabel;
 	}
 
 	/**

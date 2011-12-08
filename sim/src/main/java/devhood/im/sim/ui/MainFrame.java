@@ -79,15 +79,16 @@ public class MainFrame implements EventObserver {
 	 * Initialises the main frame.
 	 */
 	public void initMainFrame() {
-		frame = new JFrame(Sim.applicationName + " - " + Sim.username);
-		
+		frame = new JFrame(Sim.applicationName + " (Build: " + Sim.getBuildDate()
+				+ ") - " + Sim.username);
+
 		frame.setIconImage(UiUtil.createImage("/images/megaphone-icon-64.png"));
 
 		initMenuBar();
 		initUserScrollPane();
 		initMsgScrollPane();
 		initTray();
-		//initRefreshUserState();
+		// initRefreshUserState();
 
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		// frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -250,7 +251,7 @@ public class MainFrame implements EventObserver {
 		if (Events.SHOW_FRAME.equals(event)) {
 			frame.setVisible(true);
 			frame.requestFocusInWindow();
-		}else if ( Events.SERVER_INITIALISED.equals(event)) {
+		} else if (Events.SERVER_INITIALISED.equals(event)) {
 			initRefreshUserState();
 		}
 	}

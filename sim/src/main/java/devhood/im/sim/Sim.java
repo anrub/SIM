@@ -1,8 +1,12 @@
 package devhood.im.sim;
 
 import java.awt.Image;
+import java.io.File;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.ImageIcon;
@@ -32,7 +36,7 @@ public class Sim {
 	public static String trayIconPath = "/images/trayIcon.gif";
 
 	public static int port = 0;
-	
+
 	public static int senderThreads = 10;
 
 	/**
@@ -103,6 +107,22 @@ public class Sim {
 		}
 
 		return myIp;
+	}
+
+	public static String getBuildDate() {
+		String buildDate = "";
+		try {
+			URL url = Sim.class.getResource("/");
+			File f = new File(url.toURI());
+			Date lastMod = new Date(f.lastModified());
+			DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+
+			buildDate = df.format(lastMod);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return buildDate;
 	}
 
 }

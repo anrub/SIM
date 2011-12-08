@@ -40,7 +40,7 @@ public class Sim {
 	public static int senderThreads = 10;
 
 	/**
-	 * Name des Tabs in dem der Stream läuft.
+	 * Name des Tabs in dem der Stream lï¿½uft.
 	 */
 	public static String streamTabName = "Stream";
 
@@ -107,22 +107,6 @@ public class Sim {
 		}
 
 		return myIp;
-	}
-
-	public static String getBuildDate() {
-		String buildDate = "";
-		try {
-			URL url = Sim.class.getResource("/");
-			File f = new File(url.toURI());
-			Date lastMod = new Date(f.lastModified());
-			DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-
-			buildDate = df.format(lastMod);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return buildDate;
 	}
 
 }

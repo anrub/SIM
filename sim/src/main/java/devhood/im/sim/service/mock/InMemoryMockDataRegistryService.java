@@ -43,7 +43,7 @@ public class InMemoryMockDataRegistryService implements RegistryService {
 		if (users == null || users.size() == 0) {
 			for (int i = 0; i < 10; i++) {
 				User u = new User("User " + i, "", 0, new Date(
-						new Date().getTime() + 9999999));
+						new Date().getTime() + 9999999), null);
 				users.add(u);
 			}
 		}
@@ -69,7 +69,7 @@ public class InMemoryMockDataRegistryService implements RegistryService {
 	 */
 	@Override
 	public void logout(String username) {
-		User u = new User(username, "", 0, new Date());
+		User u = new User(username, "", 0, new Date(), null);
 
 		users.remove(u);
 	}

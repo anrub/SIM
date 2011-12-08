@@ -5,14 +5,24 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.security.Key;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.crypto.Cipher;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
 import devhood.im.sim.model.User;
+import devhood.im.sim.service.PeerToPeerMessageSender;
 import devhood.im.sim.ui.util.UiUtil;
 
 /**
@@ -24,6 +34,10 @@ import devhood.im.sim.ui.util.UiUtil;
  * 
  */
 public class Sim {
+	
+	private static Logger log = Logger.getLogger(PeerToPeerMessageSender.class
+			.toString());
+	
 	/**
 	 * Pfad zur Registry db.
 	 */
@@ -38,7 +52,10 @@ public class Sim {
 	public static int port = 0;
 
 	public static int senderThreads = 10;
-
+	
+	public static KeyPair keyPair = null;
+	
+		
 	/**
 	 * Name des Tabs in dem der Stream l�uft.
 	 */
@@ -72,7 +89,7 @@ public class Sim {
 	}
 
 	public static User getUser() {
-		User u = new User(username, getCurrentIp(), getPort(), new Date());
+		User u = new User(username, getCurrentIp(), getPort(), new Date(), getKeyPair().getPublic());
 		return u;
 	}
 
@@ -109,4 +126,35 @@ public class Sim {
 		return myIp;
 	}
 
+	public static String getBuildDate() {
+		String buildDate = "";
+		try {
+			URL url = Sim.class.getResource("/");
+			File f = new File(url.toURI());
+			Date lastMod = new Date(f.lastModified());
+			DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+
+			buildDate = df.format(lastMod);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return buildDate;
+	}
+
+	public static KeyPair getKeyPair() {
+		if(keyPair==null) {
+			KeyPairGenerator kpg;
+			try {
+				kpg = KeyPairGenerator.getInstance("RSA");
+				kpg.initialize(2048);
+				keyPair = kpg.generateKeyPair();
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return keyPair;
+	}
+	
 }

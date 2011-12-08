@@ -2,14 +2,24 @@ package devhood.im.sim.service;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 
 import devhood.im.sim.Sim;
 import devhood.im.sim.event.EventDispatcher;
@@ -116,13 +126,39 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 	 *            Message
 	 */
 	public void sendMessage(User user, Message m) {
-
 		Socket socket = null;
+
 		try {
 			socket = new Socket(user.getAddress(), user.getPort());
-			ObjectOutputStream os = new ObjectOutputStream(
-					socket.getOutputStream());
-			os.writeObject(m);
+
+			OutputStream os = socket.getOutputStream();
+
+			try {
+				// temporaeren AES Key erzeugen
+				KeyGenerator keygen = KeyGenerator.getInstance("AES");
+				SecureRandom random = new SecureRandom();
+				keygen.init(random);
+				SecretKey key = keygen.generateKey();
+
+				// mit RSA verschluesseln und an empfaenger senden
+				Cipher cipher = Cipher.getInstance("RSA");
+				cipher.init(Cipher.WRAP_MODE, user.getPublicKey());
+				byte[] encryptedAesKey = cipher.wrap(key);
+				os.write(encryptedAesKey);
+
+				// eigentliche Nachricht mit AES verschluesseln
+				cipher = Cipher.getInstance("AES");
+				cipher.init(Cipher.ENCRYPT_MODE, key);
+				os = new CipherOutputStream(os, cipher);
+			} catch (Exception e) {
+				log.log(Level.SEVERE, "verschluesselung fehlgeschlagen", e);
+			}
+
+			// message object senden
+			ObjectOutputStream obs = new ObjectOutputStream(os);
+			obs.writeObject(m); 
+			obs.flush();
+			obs.close();
 			socket.close();
 		} catch (UnknownHostException e) {
 			log.log(Level.SEVERE,

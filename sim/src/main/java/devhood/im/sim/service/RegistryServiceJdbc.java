@@ -1,5 +1,11 @@
 package devhood.im.sim.service;
 
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.EncodedKeySpec;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -53,7 +59,7 @@ public class RegistryServiceJdbc implements RegistryService {
 	 * Erzeugt die Table, falls sie nicht vorhanden ist.
 	 */
 	public void createTable() {
-		String createTableDdl = "CREATE TABLE IF NOT EXISTS users (name TEXT PRIMARY KEY NOT NULL, address TEXT NOT NULL, port INTEGER NOT NULL, lastaccess INTEGER NOT NULL)";
+		String createTableDdl = "CREATE TABLE IF NOT EXISTS users (name TEXT PRIMARY KEY NOT NULL, address TEXT NOT NULL, port INTEGER NOT NULL, lastaccess INTEGER NOT NULL, publickey BLOB NOT NULL)";
 
 		Connection con = null;
 		PreparedStatement pstmt;
@@ -85,11 +91,11 @@ public class RegistryServiceJdbc implements RegistryService {
 	 */
 	@Override
 	public User getUser(String name) {
-		if ( name.equals(Sim.username)) {
+		if (name.equals(Sim.username)) {
 			return Sim.getUser();
 		}
 		createTable();
-		
+
 		User u = null;
 		Connection con = null;
 		PreparedStatement pstmt;
@@ -102,14 +108,14 @@ public class RegistryServiceJdbc implements RegistryService {
 			ResultSet resultSet = pstmt.executeQuery();
 			con.commit();
 			if (resultSet.next()) {
+
 				u = new User(resultSet.getString("name"),
-						resultSet.getString("address"), 
-						resultSet.getInt("port"),
-						new Date(
-								Long.valueOf(resultSet
-										.getLong("lastaccess"))));
+						resultSet.getString("address"),
+						resultSet.getInt("port"), new Date(
+								Long.valueOf(resultSet.getLong("lastaccess"))),
+						getPublicKey(resultSet.getBytes("publickey")));
 			} else {
-				
+
 			}
 			pstmt.close();
 
@@ -124,10 +130,10 @@ public class RegistryServiceJdbc implements RegistryService {
 					e.printStackTrace();
 				}
 		}
-		
+
 		return u;
 	}
-	
+
 	@Override
 	public List<User> getUsers() {
 		createTable();
@@ -145,11 +151,11 @@ public class RegistryServiceJdbc implements RegistryService {
 			if (resultSet.next()) {
 				do {
 					User u = new User(resultSet.getString("name"),
-							resultSet.getString("address"), 
-							resultSet.getInt("port"),
-							new Date(
+							resultSet.getString("address"),
+							resultSet.getInt("port"), new Date(
 									Long.valueOf(resultSet
-											.getLong("lastaccess"))));
+											.getLong("lastaccess"))),
+							getPublicKey(resultSet.getBytes("publickey")));
 
 					users.add(u);
 				} while (resultSet.next());
@@ -237,11 +243,12 @@ public class RegistryServiceJdbc implements RegistryService {
 			con = getConnection();
 			con.setAutoCommit(false);
 			pstmt = con
-					.prepareStatement("UPDATE users SET lastaccess=?, address=?, port=? WHERE name=?");
+					.prepareStatement("UPDATE users SET lastaccess=?, address=?, port=?, publickey=? WHERE name=?");
 			pstmt.setLong(1, user.getLastaccess().getTime());
 			pstmt.setString(2, user.getAddress());
 			pstmt.setInt(3, user.getPort());
-			pstmt.setString(4, user.getName());
+			pstmt.setBytes(4, user.getPublicKey().getEncoded());
+			pstmt.setString(5, user.getName());
 
 			int rowCount = pstmt.executeUpdate();
 
@@ -250,11 +257,12 @@ public class RegistryServiceJdbc implements RegistryService {
 
 			if (rowCount == 0) {
 				pstmt = con
-						.prepareStatement("INSERT INTO users VALUES (?, ? ,?, ?)");
+						.prepareStatement("INSERT INTO users VALUES (?, ? ,?, ?, ?)");
 				pstmt.setString(1, user.getName());
 				pstmt.setString(2, user.getAddress());
 				pstmt.setInt(3, user.getPort());
 				pstmt.setLong(4, user.getLastaccess().getTime());
+				pstmt.setBytes(5, user.getPublicKey().getEncoded());
 				pstmt.executeUpdate();
 
 				con.commit();
@@ -306,4 +314,15 @@ public class RegistryServiceJdbc implements RegistryService {
 		this.url = url;
 	}
 
+	private PublicKey getPublicKey(byte[] publicKeyRaw) {
+		PublicKey publicKey = null;
+		try {
+			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+			EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyRaw);
+			publicKey = keyFactory.generatePublic(publicKeySpec);
+		} catch (Exception e) {
+
+		}
+		return publicKey;
+	}
 }

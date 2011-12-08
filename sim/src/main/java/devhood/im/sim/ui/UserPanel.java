@@ -74,7 +74,7 @@ public class UserPanel extends JPanel {
 	}
 
 	/**
-	 * Verarbeitet die USer und pr�ft ob sie bereits vorhanden, oder neu, oder
+	 * Verarbeitet die USer und prüft ob sie bereits vorhanden, oder neu, oder
 	 * nicht mehr vorhanden sind.
 	 * 
 	 * @param users
@@ -116,11 +116,11 @@ public class UserPanel extends JPanel {
 
 		if (offlineUsers.size() > 0) {
 			EventDispatcher.fireEvent(Events.USER_OFFLINE_NOTICE,
-					offlineUsers.toString());
+					offlineUsers);
 		}
 		if (newUsers.size() > 0) {
 			EventDispatcher.fireEvent(Events.USER_ONLINE_NOTICE,
-					newUsers.toString());
+					newUsers);
 
 		}
 	}

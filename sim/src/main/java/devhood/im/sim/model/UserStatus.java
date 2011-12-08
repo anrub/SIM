@@ -1,5 +1,6 @@
 package devhood.im.sim.model;
 
+import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.Map;
  * @author flo
  * 
  */
-public enum UserStatus {
+public enum UserStatus implements Serializable {
 
 	/**
 	 * Benutzer ist verfuegbar.
@@ -48,7 +49,7 @@ public enum UserStatus {
 	public static UserStatus get(String text) {
 		return lookup.get(text);
 	}
-	
+
 	public String toString() {
 		return text;
 	}

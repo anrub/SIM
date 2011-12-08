@@ -152,20 +152,30 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				new UserStatus[] { UserStatus.AVAILABLE, UserStatus.BUSY,
 						UserStatus.NOT_AVAILABLE });
 
-		//statusComboBox.setEditable(true);
+		// statusComboBox.setEditable(true);
 		statusComboBox.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JComboBox box = (JComboBox)e.getSource();
-				UserStatus status = (UserStatus)box.getSelectedItem();
-				
+				JComboBox box = (JComboBox) e.getSource();
+				UserStatus status = (UserStatus) box.getSelectedItem();
+
 				Sim.getCurrentUser().setStatusType(status);
-				
+				Message statusMessage = new Message();
+				statusMessage.setMessageType(MessageType.USER_STATUS);
+				statusMessage.setUserStatus(status);
+				statusMessage.setSender(Sim.getCurrentUser().getName());
+
+				List<User> users = ServiceLocator.getInstance()
+						.getRegistryService().getUsers();
+				for (User user : users) {
+					statusMessage.getReceiver().add(user.getName());
+				}
+
+				EventDispatcher.fireEvent(Events.MESSAGE_SENT, statusMessage);
 			}
 		});
-		
-		
+
 		buttonsRight.add(statusComboBox);
 		buttonsRight.add(clearButton);
 		buttonsRight.add(closeButton);
@@ -356,9 +366,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 					+ (Events.USER_OFFLINE_NOTICE.equals(event) ? "offline"
 							: "online");
 			outputStatusMessage(message, nameTextAreaMap.get(streamTabName));
-			if (nameTextAreaMap.containsKey(o)) {
-				outputStatusMessage(message, nameTextAreaMap.get(o));
-			}
+
+			outputStatusMessage(message, (List<String>) o);
+
 		} else if (Events.MESSAGE_SEND_FAILED.equals(event)) {
 
 			final MessagingError error = (MessagingError) o;
@@ -395,21 +405,36 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		if (MessageType.ALL.equals(m.getMessageType())) {
 			sender = streamTabName;
 		}
+		if (MessageType.USER_STATUS.equals(m.getMessageType())) {
+			// Wenn eine Statusnachricht von sich selbst kommt, nicht
+			// verarbeiten
+			if (Sim.getCurrentUser().getName().equals(m.getSender())) {
+				return;
+			}
 
-		final JEditorPane textArea = nameTextAreaMap.get(sender);
+			List<String> tabs = new ArrayList<String>();
+			tabs.add(streamTabName);
+			tabs.add(sender);
 
-		if (textArea != null) {
-			String oldText = textArea.getText();
-			textArea.setText(getFormattedMessage(m, oldText));
-			moveCaretDown(textArea);
-		} else {
-			String textline = getFormattedMessage(m);
-			addToTabPane(sender, textline);
+			String statusMessage = getFormattedUserStatusMessage(m);
+			outputStatusMessage(statusMessage, tabs);
 		}
+		if (!MessageType.USER_STATUS.equals(m.getMessageType())) {
+			final JEditorPane textArea = nameTextAreaMap.get(sender);
 
-		// Icon auf ungelesen setzten, falls tab derzeit nicht ausgewaehlt.
-		if (!isTabSelected(sender)) {
-			setIconToUnreadMessages(sender);
+			if (textArea != null) {
+				String oldText = textArea.getText();
+				textArea.setText(getFormattedMessage(m, oldText));
+				moveCaretDown(textArea);
+			} else {
+				String textline = getFormattedMessage(m);
+				addToTabPane(sender, textline);
+			}
+
+			// Icon auf ungelesen setzten, falls tab derzeit nicht ausgewaehlt.
+			if (!isTabSelected(sender)) {
+				setIconToUnreadMessages(sender);
+			}
 		}
 
 		System.out.println("Message: " + m + ", received.");
@@ -443,6 +468,23 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		String oldText = textArea.getText();
 		textArea.setText(getFormattedMessage("<i>" + statusMessage + "</i>",
 				oldText));
+	}
+
+	/**
+	 * GIbt die Nachricht in den Tabs aus.
+	 * 
+	 * @param statusMessage
+	 *            Nachricht
+	 * @param tabs
+	 *            Liste von Tabs
+	 */
+	protected void outputStatusMessage(String statusMessage, List<String> tabs) {
+		for (String tab : tabs) {
+			JEditorPane textArea = nameTextAreaMap.get(tab);
+			if (textArea != null) {
+				outputStatusMessage(statusMessage, textArea);
+			}
+		}
 	}
 
 	/**
@@ -521,6 +563,21 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		return "<span style=\"color:" + colorHexValue + "\">["
 				+ df.format(new Date()) + "] " + m.getSender() + "></span> "
 				+ msg.toString();
+	}
+
+	/**
+	 * Gibt die USerstatus message zurueck.
+	 * 
+	 * @param m
+	 *            Message
+	 * @return string msg.
+	 */
+	protected String getFormattedUserStatusMessage(Message m) {
+		String msg = m.getSender() + " ist jetzt ";
+		msg = msg + " " + m.getUserStatus().getText();
+		msg = "<i>" + msg + "</i>";
+
+		return msg;
 	}
 
 	/**

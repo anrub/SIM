@@ -1,6 +1,7 @@
 package devhood.im.sim.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,10 +17,18 @@ public class Message implements Serializable {
 	private String sender;
 
 	/**
+	 * Status des Senders.
+	 */
+	private UserStatus userStatus = UserStatus.AVAILABLE;
+
+	/**
 	 * Receiver Name.
 	 */
-	private List<String> receiver;
+	private List<String> receiver = new ArrayList<String>();
 
+	/**
+	 * Typ der Message.
+	 */
 	private MessageType messageType = MessageType.SINGLE;
 
 	/**
@@ -62,6 +71,14 @@ public class Message implements Serializable {
 
 	public void setMessageType(MessageType messageType) {
 		this.messageType = messageType;
+	}
+
+	public UserStatus getUserStatus() {
+		return userStatus;
+	}
+
+	public void setUserStatus(UserStatus userStatus) {
+		this.userStatus = userStatus;
 	}
 
 }

@@ -54,6 +54,11 @@ public class SystemTrayManager implements EventObserver {
 	 */
 	private boolean showStreamInTray = true;
 	
+	/**
+	 * Zeigt die Statusmeldungen im Tray an oder nicht.
+	 */
+	private boolean showStatusInTray = true;
+	
 	public SystemTrayManager() {
 		init();
 		EventDispatcher.add(this);
@@ -73,7 +78,7 @@ public class SystemTrayManager implements EventObserver {
 		item.addActionListener(new ActionListener() {
 
 			/**
-			 * Bei click auf Exit, Anwendung schließen.
+			 * Bei click auf Exit, Anwendung schlieï¿½en.
 			 */
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -139,9 +144,14 @@ public class SystemTrayManager implements EventObserver {
 							MessageType.INFO);
 				}
 				lastUser = Sim.streamTabName;
-			} else {
+			} else if ( devhood.im.sim.model.MessageType.SINGLE.equals(m.getMessageType())){
 				displayMessage(m.getSender(), m.getText(), MessageType.INFO);
 				lastUser = m.getSender();
+			}else if ( devhood.im.sim.model.MessageType.USER_STATUS.equals(m.getMessageType()) && showStatusInTray) {
+				if ( !Sim.getCurrentUser().getName().equals(m.getSender())) {
+					displayMessage(m.getSender(), m.getUserStatus().getText(), MessageType.INFO);
+					lastUser = m.getSender();				
+				}
 			}
 
 		} else if (Events.UNREAD_MESSAGES.equals(event)) {
@@ -157,7 +167,7 @@ public class SystemTrayManager implements EventObserver {
 	}
 
 	/**
-	 * Zeigt die nachricht im systray an, wenn die Option nicht gewählt wurde.
+	 * Zeigt die nachricht im systray an, wenn die Option nicht gewï¿½hlt wurde.
 	 * 
 	 * @param title
 	 *            Titel
@@ -197,6 +207,14 @@ public class SystemTrayManager implements EventObserver {
 
 	public void setShowStreamInTray(boolean showStreamInTray) {
 		this.showStreamInTray = showStreamInTray;
+	}
+
+	public boolean isShowStatusInTray() {
+		return showStatusInTray;
+	}
+
+	public void setShowStatusInTray(boolean showStatusInTray) {
+		this.showStatusInTray = showStatusInTray;
 	}
 
 }

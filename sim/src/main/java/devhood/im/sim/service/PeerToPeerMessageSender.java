@@ -44,7 +44,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 			.toString());
 
 	/**
-	 * Socket für den Server
+	 * Socket fï¿½r den Server
 	 */
 	private ServerSocket serverSocket;
 
@@ -54,7 +54,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 	private Thread thread;
 
 	/**
-	 * Threadpool für das versenden
+	 * Threadpool fï¿½r das versenden
 	 */
 	private Executor threadPool;
 
@@ -89,9 +89,9 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 							.getRegistryService().getUser(singleReceiver);
 					sendMessage(user, m);
 				}
-			} else if (MessageType.ALL.equals(m.getMessageType())) {
+			} else if (MessageType.ALL.equals(m.getMessageType()) || MessageType.USER_STATUS.equals(m.getMessageType())) {
 				sendMessageToAllUsers(m);
-			}
+			} 
 
 		} else if (Events.LOGOUT.equals(event)) {
 			thread.interrupt();
@@ -175,7 +175,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 	}
 
 	/**
-	 * Startet Server und empfängt neue Nachrichten
+	 * Startet Server und empfï¿½ngt neue Nachrichten
 	 */
 	@Override
 	public void run() {

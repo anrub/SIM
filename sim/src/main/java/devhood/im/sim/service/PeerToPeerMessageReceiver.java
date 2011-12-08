@@ -1,6 +1,5 @@
 package devhood.im.sim.service;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -11,7 +10,6 @@ import java.util.logging.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
 
 import devhood.im.sim.Sim;
 import devhood.im.sim.event.EventDispatcher;
@@ -19,7 +17,7 @@ import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Message;
 
 /**
- * Bekommt vom ServerSocket eine neue Verbindung zu einem Client und empfängt
+ * Bekommt vom ServerSocket eine neue Verbindung zu einem Client und empfï¿½ngt
  * eine neue Message
  * 
  * @author Tobi
@@ -31,7 +29,7 @@ public class PeerToPeerMessageReceiver implements Runnable {
 			.toString());
 
 	/**
-	 * Socket für den Server
+	 * Socket fï¿½r den Server
 	 */
 	private Socket clientSocket;
 
@@ -46,7 +44,7 @@ public class PeerToPeerMessageReceiver implements Runnable {
 	}
 
 	/**
-	 * Empfängt neue Nachricht eines Clients
+	 * Empfï¿½ngt neue Nachricht eines Clients
 	 */
 	@Override
 	public void run() {
@@ -78,7 +76,7 @@ public class PeerToPeerMessageReceiver implements Runnable {
 			clientSocket.close();
 			if (validateIncomingMessage(message) == false) {
 				log.log(Level.SEVERE,
-						"ungültige message empfangen (validation)");
+						"ungÃ¼ltige message empfangen (validation)");
 			} else {
 				EventDispatcher.fireEvent(Events.MESSAGE_RECEIVED, message);
 			}
@@ -88,14 +86,13 @@ public class PeerToPeerMessageReceiver implements Runnable {
 					"client socket Verbindung InputStream Fehler", e);
 		} catch (ClassNotFoundException e) {
 			log.log(Level.SEVERE,
-					"ungültige message empfangen (class not found)", e);
+					"ungï¿½ltige message empfangen (class not found)", e);
 		}
 	}
 
 	private boolean validateIncomingMessage(Message m) {
 		boolean valid = true;
-		if (m == null || m.getReceiver() == null || m.getSender() == null
-				|| m.getText() == null) {
+		if (m == null || m.getReceiver() == null || m.getSender() == null) {
 			valid = false;
 		}
 		return valid;

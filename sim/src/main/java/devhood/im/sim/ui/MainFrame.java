@@ -216,6 +216,22 @@ public class MainFrame implements EventObserver {
 
 		menuNotifications.add(systrayMenuItem);
 
+		
+		systrayMenuItem = new JCheckBoxMenuItem("Status Msgs im Systray anzeigen");
+		systrayMenuItem.setSelected(true);
+		systrayMenuItem.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					ComponentProvider.getInstance().getSystemTrayManager().setShowStatusInTray(true);
+				} else if (e.getStateChange() == ItemEvent.DESELECTED) {
+					ComponentProvider.getInstance().getSystemTrayManager().setShowStatusInTray(false);
+				}
+			}
+		});
+		
+		menuNotifications.add(systrayMenuItem);
 		cbMenuItem = new JCheckBoxMenuItem("Status veröffentlichen");
 		menuPrivacy.add(cbMenuItem);
 		cbMenuItem = new JCheckBoxMenuItem("Tippstatus veröffentlichen");

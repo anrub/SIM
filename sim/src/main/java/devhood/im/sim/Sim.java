@@ -1,15 +1,11 @@
 package devhood.im.sim;
 
 import java.awt.Image;
-import java.io.File;
 import java.net.InetAddress;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
 

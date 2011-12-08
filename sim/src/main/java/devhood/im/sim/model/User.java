@@ -1,5 +1,6 @@
 package devhood.im.sim.model;
 
+import java.security.PublicKey;
 import java.util.Date;
 
 /**
@@ -29,6 +30,20 @@ public class User {
 	 * Status des Users;
 	 */
 	private String status;
+	
+	/**
+	 * public key eines users
+	 */
+	private PublicKey publicKey;
+	
+
+	public PublicKey getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(PublicKey publicKey) {
+		this.publicKey = publicKey;
+	}
 
 	/**
 	 * port für kommunikation
@@ -43,11 +58,12 @@ public class User {
 		this.port = port;
 	}
 
-	public User(String name, String address, int port, Date lastaccess) {
+	public User(String name, String address, int port, Date lastaccess, PublicKey publicKey) {
 		this.name = name;
 		this.address = address;
 		this.port = port;
 		this.lastaccess = lastaccess;
+		this.publicKey = publicKey;
 	}
 
 	public String getAddress() {

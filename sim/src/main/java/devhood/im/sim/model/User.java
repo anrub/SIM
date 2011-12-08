@@ -27,15 +27,14 @@ public class User {
 	private String address;
 
 	/**
-	 * Status des Users;
+	 * UserStatus des Users.
 	 */
-	private String status;
-	
+	private UserStatus statusType;
+
 	/**
 	 * public key eines users
 	 */
 	private PublicKey publicKey;
-	
 
 	public PublicKey getPublicKey() {
 		return publicKey;
@@ -46,7 +45,7 @@ public class User {
 	}
 
 	/**
-	 * port für kommunikation
+	 * port fï¿½r kommunikation
 	 */
 	private int port;
 
@@ -58,12 +57,14 @@ public class User {
 		this.port = port;
 	}
 
-	public User(String name, String address, int port, Date lastaccess, PublicKey publicKey) {
+	public User(String name, String address, int port, Date lastaccess,
+			PublicKey publicKey, String statusType) {
 		this.name = name;
 		this.address = address;
 		this.port = port;
 		this.lastaccess = lastaccess;
 		this.publicKey = publicKey;
+		this.statusType = UserStatus.get(statusType);
 	}
 
 	public String getAddress() {
@@ -113,12 +114,12 @@ public class User {
 		this.lastaccess = lastaccess;
 	}
 
-	public String getStatus() {
-		return status;
+	public UserStatus getStatusType() {
+		return statusType;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setStatusType(UserStatus statusType) {
+		this.statusType = statusType;
 	}
 
 }

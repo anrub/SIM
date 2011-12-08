@@ -19,6 +19,7 @@ import devhood.im.sim.Sim;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.User;
+import devhood.im.sim.model.UserStatus;
 import devhood.im.sim.service.interfaces.RegistryService;
 import devhood.im.sim.ui.util.UiUtil;
 
@@ -62,7 +63,7 @@ public class UserPanel extends JPanel {
 	}
 
 	/**
-	 * Initialisiert, füllt das UserPanel.
+	 * Initialisiert, fï¿½llt das UserPanel.
 	 */
 	public void init() {
 		BoxLayout layout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
@@ -73,7 +74,7 @@ public class UserPanel extends JPanel {
 	}
 
 	/**
-	 * Verarbeitet die USer und prüft ob sie bereits vorhanden, oder neu, oder
+	 * Verarbeitet die USer und prï¿½ft ob sie bereits vorhanden, oder neu, oder
 	 * nicht mehr vorhanden sind.
 	 * 
 	 * @param users
@@ -95,7 +96,7 @@ public class UserPanel extends JPanel {
 			}
 
 			if (!currentUsers.contains(u.getName())) {
-				if (!Sim.username.equals(u.getName())) {
+				if (!Sim.getCurrentUser().getName().equals(u.getName())) {
 					newUsers.add(u.getName());
 				}
 				currentUsers.add(u.getName());
@@ -106,7 +107,7 @@ public class UserPanel extends JPanel {
 		while (it.hasNext()) {
 			String user = it.next();
 			if (!usersFromDb.contains(user)) {
-				if (!Sim.username.equals(user)) {
+				if (!Sim.getCurrentUser().getName().equals(user)) {
 					offlineUsers.add(user);
 				}
 				it.remove();
@@ -174,8 +175,17 @@ public class UserPanel extends JPanel {
 
 		});
 		userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		userLabel.setIcon(UiUtil.createImageIcon(
-				"/images/16x16transparent.png", ""));
+		if (UserStatus.AVAILABLE.equals(user.getStatusType())) {
+			userLabel.setIcon(UiUtil.createImageIcon(
+					"/images/bullet_ball_glass_green.png", ""));
+		} else if (UserStatus.BUSY.equals(user.getStatusType())) {
+			userLabel.setIcon(UiUtil.createImageIcon(
+					"/images/bullet_ball_glass_yellow.png", ""));
+		} else if (UserStatus.NOT_AVAILABLE.equals(user.getStatusType())) {
+			userLabel.setIcon(UiUtil.createImageIcon(
+					"/images/bullet_ball_glass_red.png", ""));
+		}
+
 		userLabel.setMinimumSize(new Dimension(100, 20));
 
 		return userLabel;

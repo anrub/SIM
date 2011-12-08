@@ -42,7 +42,7 @@ public class SimMain {
 		if (args.length > 0) {
 			for (int i = 0; i < args.length; i++) {
 				if ("-n".equals(args[i]) && i + 1 < args.length) {
-					Sim.username = args[i + 1];
+					Sim.getCurrentUser().setName(args[i + 1]);
 				}
 				if ("-f".equals(args[i]) && i + 1 < args.length) {
 					Sim.dbPath = args[i + 1];
@@ -99,7 +99,7 @@ public class SimMain {
 					int userid = (int) Math.floor(Math.random() * 10);
 					m.setSender("User " + userid);
 					List<String> users = new ArrayList<String>();
-					users.add(Sim.getUsername());
+					users.add(Sim.getCurrentUser().getName());
 					m.setReceiver(users);
 					if (cnt % 2 == 0) {
 						m.setMessageType(MessageType.ALL);

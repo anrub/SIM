@@ -59,7 +59,7 @@ public class RegistryServiceJdbc implements RegistryService {
 	 * Erzeugt die Table, falls sie nicht vorhanden ist.
 	 */
 	public void createTable() {
-		String createTableDdl = "CREATE TABLE IF NOT EXISTS users (name TEXT PRIMARY KEY NOT NULL, address TEXT NOT NULL, port INTEGER NOT NULL, lastaccess INTEGER NOT NULL, publickey BLOB NOT NULL)";
+		String createTableDdl = "CREATE TABLE IF NOT EXISTS users (name TEXT PRIMARY KEY NOT NULL, address TEXT NOT NULL, port INTEGER NOT NULL, lastaccess INTEGER NOT NULL, publickey BLOB NOT NULL, statusType TEXT NOT NULL)";
 
 		Connection con = null;
 		PreparedStatement pstmt;
@@ -91,8 +91,8 @@ public class RegistryServiceJdbc implements RegistryService {
 	 */
 	@Override
 	public User getUser(String name) {
-		if (name.equals(Sim.username)) {
-			return Sim.getUser();
+		if (name.equals(Sim.getCurrentUser().getName())) {
+			return Sim.getCurrentUser();
 		}
 		createTable();
 
@@ -113,7 +113,8 @@ public class RegistryServiceJdbc implements RegistryService {
 						resultSet.getString("address"),
 						resultSet.getInt("port"), new Date(
 								Long.valueOf(resultSet.getLong("lastaccess"))),
-						getPublicKey(resultSet.getBytes("publickey")));
+						getPublicKey(resultSet.getBytes("publickey")),
+						resultSet.getString("statusType"));
 			} else {
 
 			}
@@ -155,7 +156,8 @@ public class RegistryServiceJdbc implements RegistryService {
 							resultSet.getInt("port"), new Date(
 									Long.valueOf(resultSet
 											.getLong("lastaccess"))),
-							getPublicKey(resultSet.getBytes("publickey")));
+							getPublicKey(resultSet.getBytes("publickey")),
+							resultSet.getString("statusType"));
 
 					users.add(u);
 				} while (resultSet.next());
@@ -243,12 +245,14 @@ public class RegistryServiceJdbc implements RegistryService {
 			con = getConnection();
 			con.setAutoCommit(false);
 			pstmt = con
-					.prepareStatement("UPDATE users SET lastaccess=?, address=?, port=?, publickey=? WHERE name=?");
+					.prepareStatement("UPDATE users SET lastaccess=?, address=?, port=?, publickey=?, statusType=? WHERE name=?");
 			pstmt.setLong(1, user.getLastaccess().getTime());
 			pstmt.setString(2, user.getAddress());
 			pstmt.setInt(3, user.getPort());
 			pstmt.setBytes(4, user.getPublicKey().getEncoded());
-			pstmt.setString(5, user.getName());
+			pstmt.setString(5, user.getStatusType().getText());
+
+			pstmt.setString(6, user.getName());
 
 			int rowCount = pstmt.executeUpdate();
 
@@ -257,12 +261,14 @@ public class RegistryServiceJdbc implements RegistryService {
 
 			if (rowCount == 0) {
 				pstmt = con
-						.prepareStatement("INSERT INTO users VALUES (?, ? ,?, ?, ?)");
+						.prepareStatement("INSERT INTO users VALUES (?, ? ,?, ?, ?,?)");
 				pstmt.setString(1, user.getName());
 				pstmt.setString(2, user.getAddress());
 				pstmt.setInt(3, user.getPort());
 				pstmt.setLong(4, user.getLastaccess().getTime());
 				pstmt.setBytes(5, user.getPublicKey().getEncoded());
+				pstmt.setString(6, user.getStatusType().getText());
+
 				pstmt.executeUpdate();
 
 				con.commit();

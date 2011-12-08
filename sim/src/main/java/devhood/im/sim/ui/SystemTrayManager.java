@@ -77,7 +77,7 @@ public class SystemTrayManager implements EventObserver {
 			 */
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				registryService.logout(Sim.username);
+				registryService.logout(Sim.getCurrentUser().getName());
 				System.exit(0);
 
 			}
@@ -134,7 +134,7 @@ public class SystemTrayManager implements EventObserver {
 		if (Events.MESSAGE_RECEIVED.equals(event)) {
 			Message m = (Message) o;
 			if (devhood.im.sim.model.MessageType.ALL.equals(m.getMessageType())) {
-				if (!m.getSender().contains(Sim.username) && showStreamInTray) {
+				if (!m.getSender().contains(Sim.getCurrentUser().getName()) && showStreamInTray) {
 					displayMessage("Stream: " + m.getSender(), m.getText(),
 							MessageType.INFO);
 				}

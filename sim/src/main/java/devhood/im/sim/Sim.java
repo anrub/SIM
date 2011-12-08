@@ -5,23 +5,19 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.crypto.Cipher;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
 import devhood.im.sim.model.User;
+import devhood.im.sim.model.UserStatus;
 import devhood.im.sim.service.PeerToPeerMessageSender;
 import devhood.im.sim.ui.util.UiUtil;
 
@@ -34,10 +30,10 @@ import devhood.im.sim.ui.util.UiUtil;
  * 
  */
 public class Sim {
-	
+
 	private static Logger log = Logger.getLogger(PeerToPeerMessageSender.class
 			.toString());
-	
+
 	/**
 	 * Pfad zur Registry db.
 	 */
@@ -45,17 +41,14 @@ public class Sim {
 
 	public static String applicationName = "SIM - S Intstant Messenger";
 
-	public static String username = System.getProperty("user.name");
-
 	public static String trayIconPath = "/images/trayIcon.gif";
 
 	public static int port = 0;
 
 	public static int senderThreads = 10;
-	
+
 	public static KeyPair keyPair = null;
-	
-		
+
 	/**
 	 * Name des Tabs in dem der Stream l�uft.
 	 */
@@ -84,13 +77,19 @@ public class Sim {
 	public static String lookAndFeel = UIManager
 			.getSystemLookAndFeelClassName();
 
-	public static String getUsername() {
-		return username;
-	}
+	private static User currentUser;
 
-	public static User getUser() {
-		User u = new User(username, getCurrentIp(), getPort(), new Date(), getKeyPair().getPublic());
-		return u;
+	public static User getCurrentUser() {
+		String username = System.getProperty("user.name");
+
+		if (currentUser == null) {
+			String x = UserStatus.AVAILABLE.toString();
+			currentUser = new User(username, getCurrentIp(), getPort(),
+					new Date(), getKeyPair().getPublic(),
+					UserStatus.AVAILABLE.getText());
+		}
+
+		return currentUser;
 	}
 
 	public static int getPort() {
@@ -143,7 +142,7 @@ public class Sim {
 	}
 
 	public static KeyPair getKeyPair() {
-		if(keyPair==null) {
+		if (keyPair == null) {
 			KeyPairGenerator kpg;
 			try {
 				kpg = KeyPairGenerator.getInstance("RSA");
@@ -153,8 +152,8 @@ public class Sim {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return keyPair;
 	}
-	
+
 }

@@ -6,6 +6,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -85,7 +86,7 @@ public class MainFrame implements EventObserver {
 	 * Initialises the main frame.
 	 */
 	public void initMainFrame() {
-		frame = new JFrame(Sim.applicationName + " - " + Sim.username);
+		frame = new JFrame(Sim.applicationName + " - " + Sim.getCurrentUser().getName());
 
 		frame.setIconImage(UiUtil.createImage("/images/megaphone-icon-64.png"));
 
@@ -129,7 +130,8 @@ public class MainFrame implements EventObserver {
 		Timer t = new Timer();
 		TimerTask task = new TimerTask() {
 			public void run() {
-				User u = Sim.getUser();
+				User u = Sim.getCurrentUser();
+				u.setLastaccess(new Date());
 				registryService.refresh(u);
 			};
 		};

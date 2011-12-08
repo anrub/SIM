@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.User;
+import devhood.im.sim.model.UserStatus;
 import devhood.im.sim.service.interfaces.RegistryService;
 
 /**
@@ -43,7 +44,8 @@ public class InMemoryMockDataRegistryService implements RegistryService {
 		if (users == null || users.size() == 0) {
 			for (int i = 0; i < 10; i++) {
 				User u = new User("User " + i, "", 0, new Date(
-						new Date().getTime() + 9999999), null);
+						new Date().getTime() + 9999999), null,
+						UserStatus.AVAILABLE.getText());
 				users.add(u);
 			}
 		}
@@ -69,7 +71,8 @@ public class InMemoryMockDataRegistryService implements RegistryService {
 	 */
 	@Override
 	public void logout(String username) {
-		User u = new User(username, "", 0, new Date(), null);
+		User u = new User(username, "", 0, new Date(), null,
+				UserStatus.AVAILABLE.getText());
 
 		users.remove(u);
 	}

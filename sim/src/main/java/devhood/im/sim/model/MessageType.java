@@ -14,5 +14,9 @@ public enum MessageType {
 	/**
 	 * Nachricht an alle.
 	 */
-	ALL;
+	ALL,
+	/**
+	 * Eine Statusbenachrichtigung eines Benutzers.
+	 */
+	USER_STATUS;
 }

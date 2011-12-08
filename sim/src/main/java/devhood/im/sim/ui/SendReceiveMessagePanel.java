@@ -19,6 +19,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -35,17 +36,16 @@ import javax.swing.text.DefaultCaret;
 import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import devhood.im.sim.Sim;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
-import devhood.im.sim.model.Color;
 import devhood.im.sim.model.Message;
 import devhood.im.sim.model.MessageType;
 import devhood.im.sim.model.MessagingError;
 import devhood.im.sim.model.User;
+import devhood.im.sim.model.UserStatus;
 import devhood.im.sim.service.ServiceLocator;
 import devhood.im.sim.ui.util.ComponentProvider;
 
@@ -148,6 +148,25 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			}
 		});
 
+		JComboBox statusComboBox = new JComboBox(
+				new UserStatus[] { UserStatus.AVAILABLE, UserStatus.BUSY,
+						UserStatus.NOT_AVAILABLE });
+
+		//statusComboBox.setEditable(true);
+		statusComboBox.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JComboBox box = (JComboBox)e.getSource();
+				UserStatus status = (UserStatus)box.getSelectedItem();
+				
+				Sim.getCurrentUser().setStatusType(status);
+				
+			}
+		});
+		
+		
+		buttonsRight.add(statusComboBox);
 		buttonsRight.add(clearButton);
 		buttonsRight.add(closeButton);
 
@@ -224,7 +243,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		List<String> usernames = new ArrayList<String>();
 		usernames.add(toUser);
 		newMessage.setReceiver(usernames);
-		newMessage.setSender(Sim.getUsername());
+		newMessage.setSender(Sim.getCurrentUser().getName());
 		newMessage.setText(input.getText());
 
 		if (toUser.equals(streamTabName)) { // Ist dies im Stremtab - nachricht
@@ -345,7 +364,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			final MessagingError error = (MessagingError) o;
 			if (MessageType.SINGLE.equals(error.getMessage().getMessageType())) {
 				// Muss per invokeLater auf dem Swing Event Dispatcher Thread
-				// ausgeführt werden siehe
+				// ausgefï¿½hrt werden siehe
 				// http://docs.oracle.com/javase/tutorial/uiswing/concurrency/dispatch.html
 				// http://tips4java.wordpress.com/2008/10/22/text-area-scrolling/
 				SwingUtilities.invokeLater(new Runnable() {

@@ -687,7 +687,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            textArea.
 	 */
 	public void moveCaretDown(final JEditorPane textArea) {
-
+		textArea.setCaretPosition(textArea.getDocument().getLength());
 	}
 
 	/**

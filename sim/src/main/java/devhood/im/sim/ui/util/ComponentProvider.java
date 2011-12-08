@@ -21,6 +21,8 @@ public class ComponentProvider {
 	private UserPanel userPanel = null;
 
 	private SmileyFactory smileyFactory = null;
+	
+	private UserColorFactory userColorFactory = null;
 
 	private static ComponentProvider instance;
 
@@ -50,6 +52,14 @@ public class ComponentProvider {
 		}
 
 		return smileyFactory;
+	}
+	
+	public UserColorFactory getUserColorFactory() {
+		if (userColorFactory == null) {
+			userColorFactory = new UserColorFactory();
+		}
+
+		return userColorFactory;
 	}
 
 	public SystemTrayManager getSystemTrayManager() {

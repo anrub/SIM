@@ -41,6 +41,7 @@ import devhood.im.sim.Sim;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
+import devhood.im.sim.model.Color;
 import devhood.im.sim.model.Message;
 import devhood.im.sim.model.MessageType;
 import devhood.im.sim.model.MessagingError;
@@ -477,9 +478,15 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	protected String getFormattedMessage(Message m) {
 		String text = StringEscapeUtils.escapeHtml4(m.getText());
+		String sender = m.getSender();
+		String colorHexValue = "#000000";
 		String[] chunks = text.split("\\s");
 		String linkPattern = "((file\\:|mailto\\:|(news|(ht|f)tp(s?))\\://){1}\\S+)";
 		StringBuffer msg = new StringBuffer();
+
+		/* Farbe des Benutzers ermitteln. */
+		colorHexValue = ComponentProvider.getInstance().getUserColorFactory()
+				.getOrReservUserColor(sender).getHexValue();
 
 		for (String c : chunks) {
 			if (c.matches(linkPattern)) {
@@ -492,7 +499,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			msg.append(c);
 		}
 
-		return "[" + df.format(new Date()) + "] " + m.getSender() + "> "
+		return "<span style=\"color:" + colorHexValue + "\">["
+				+ df.format(new Date()) + "] " + m.getSender() + "></span> "
 				+ msg.toString();
 	}
 

@@ -1,5 +1,6 @@
 package devhood.im.sim.ui;
 
+import java.awt.CheckboxMenuItem;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -8,6 +9,8 @@ import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseListener;
 import java.util.List;
 
@@ -79,8 +82,27 @@ public class SystemTrayManager implements EventObserver {
 
 			}
 		});
-
 		popup.add(item);
+		
+		
+		CheckboxMenuItem systrayMessages = new CheckboxMenuItem("Systray Messages verbergen");
+		systrayMessages.setState(false);
+		
+		systrayMessages.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if ( e.getStateChange() == ItemEvent.DESELECTED) {
+					showSystrayMessages = false;
+				}else if ( e.getStateChange() == ItemEvent.SELECTED) {
+					showSystrayMessages = true;
+				}
+	
+			}
+		});
+		
+		popup.add(systrayMessages);
+		
 		try {
 			tray.add(systrayIcon);
 		} catch (Exception e) {

@@ -79,7 +79,7 @@ public class MainFrame implements EventObserver {
 	 * Initialises the main frame.
 	 */
 	public void initMainFrame() {
-		frame = new JFrame(Sim.applicationName);
+		frame = new JFrame(Sim.applicationName + " - " + Sim.username);
 		
 		frame.setIconImage(UiUtil.createImage("/images/megaphone-icon-64.png"));
 

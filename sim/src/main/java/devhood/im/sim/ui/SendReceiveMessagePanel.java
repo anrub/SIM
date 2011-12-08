@@ -486,7 +486,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		/* Farbe des Benutzers ermitteln. */
 		colorHexValue = ComponentProvider.getInstance().getUserColorFactory()
-				.getOrReservUserColor(sender).getHexValue();
+				.getOrReserveUserColor(sender).getHexValue();
 
 		for (String c : chunks) {
 			if (c.matches(linkPattern)) {

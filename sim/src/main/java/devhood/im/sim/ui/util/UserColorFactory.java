@@ -1,6 +1,3 @@
-/**
- * 
- */
 package devhood.im.sim.ui.util;
 
 import java.util.ArrayList;
@@ -12,7 +9,9 @@ import java.util.Map;
 import devhood.im.sim.model.Color;
 
 /**
- * 
+ * Die UserColorFactory hält für die User eine Farbe vor. Über die Methode
+ * getOrReserveUserColor(userName) kann man sich zu einem User den gespeicherten
+ * Farbwert ausgeben lassen oder einen noch verfügbaren reservieren.
  * 
  * @author Schiefele.Andreas
  */
@@ -24,17 +23,19 @@ public class UserColorFactory {
 	private List<Color> colors = new ArrayList<Color>();
 
 	/**
-	 * Map von Name des Users(Name des Tabs) -> Farbe.
+	 * Map von Name des Users -> Farbe.
 	 */
 	private Map<String, Color> userColors = new HashMap<String, Color>();
 
 	public UserColorFactory() {
-		for (Color color: Color.values()){
-			if (!color.equals(Color.BLACK)){
+		// Verfügbare Farben eintragen (außer Schwarz).
+		for (Color color : Color.values()) {
+			if (!color.equals(Color.BLACK)) {
 				colors.add(color);
 			}
 		}
-		
+
+		// Farbenreihenfolge zufällig vergeben.
 		Collections.shuffle(colors);
 	}
 
@@ -45,14 +46,17 @@ public class UserColorFactory {
 	 * @param userName
 	 * @return
 	 */
-	public Color getOrReservUserColor(String userName) {
+	public Color getOrReserveUserColor(String userName) {
 
 		if (userColors.containsKey(userName)) {
+			// Wenn dieser User bereits eine Farbe besitzt.
 			return userColors.get(userName);
 		} else {
+			// Wenn es noch keine Farbe für diesen User gibt dann eine
+			// reservieren.
 			Color userColor = generateUserColor(userName);
 			userColors.put(userName, userColor);
-			
+
 			return userColor;
 		}
 	}
@@ -66,6 +70,8 @@ public class UserColorFactory {
 	 */
 	private Color generateUserColor(String userName) {
 
+		// Anhand der Anzahl an verfügbaren und reservierten Farben ermitteln
+		// wie oft eine Farbe vorkommen darf.
 		int colorRepetition = userColors.size() / colors.size();
 
 		for (Color color : colors) {
@@ -77,6 +83,7 @@ public class UserColorFactory {
 			if (!userColors.isEmpty()) {
 				for (Color userColor : userColors.values()) {
 					if (userColor.equals(color)) {
+						//Wenn Farbe schon mal gewählt wurde.
 						colorCounter++;
 					}
 				}
@@ -84,11 +91,10 @@ public class UserColorFactory {
 				// Prüfen ob die Farbe benutzt werden darf.
 				if (colorRepetition == colorCounter) {
 					newUserColor = color;
-					
+
 					return newUserColor;
 				}
 
-				
 			} else {
 				// Wenn noch kein User eine Farbe hat.
 				return color;

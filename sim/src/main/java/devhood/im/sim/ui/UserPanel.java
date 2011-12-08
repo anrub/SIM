@@ -174,6 +174,7 @@ public class UserPanel extends JPanel {
 			}
 
 		});
+		userLabel.setToolTipText(user.getStatusType().getText());
 		userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		if (UserStatus.AVAILABLE.equals(user.getStatusType())) {
 			userLabel.setIcon(UiUtil.createImageIcon(

@@ -41,16 +41,28 @@ public class Sim {
 
 	public static String applicationName = "SIM - S Intstant Messenger";
 
+	/**
+	 * Pfad zum Trayicon.
+	 */
 	public static String trayIconPath = "/images/trayIcon.gif";
 
+	/**
+	 * Port auf dem der Server lauscht. 0 sucht einen freien Port.
+	 */
 	public static int port = 0;
 
+	/**
+	 * Anzahl der Threads zum versenden der Messages.
+	 */
 	public static int senderThreads = 10;
 
+	/**
+	 * Keypair zur Ver/Entschluesselung der Messages.
+	 */
 	public static KeyPair keyPair = null;
 
 	/**
-	 * Name des Tabs in dem der Stream l�uft.
+	 * Name des Tabs in dem der Stream läuft.
 	 */
 	public static String streamTabName = "Stream";
 
@@ -77,8 +89,16 @@ public class Sim {
 	public static String lookAndFeel = UIManager
 			.getSystemLookAndFeelClassName();
 
+	/**
+	 * Eigener User.
+	 */
 	private static User currentUser;
 
+	/**
+	 * Gibt den eigenen Benutzer zurueck.
+	 * 
+	 * @return eigener User.
+	 */
 	public static User getCurrentUser() {
 		String username = System.getProperty("user.name");
 
@@ -87,19 +107,20 @@ public class Sim {
 			currentUser = new User(username, getCurrentIp(), getPort(),
 					new Date(), getKeyPair().getPublic(),
 					UserStatus.AVAILABLE.getText());
+		} else {
+			currentUser.setAddress(getCurrentIp());
+			currentUser.setPort(getPort());
+			currentUser.setPublicKey(getKeyPair().getPublic());
 		}
 
 		return currentUser;
 	}
 
-	public static int getPort() {
-		return port;
-	}
-
-	public static void setPort(int p) {
-		port = p;
-	}
-
+	/**
+	 * Ermittelt die aktuelle IP..
+	 * 
+	 * @return ip
+	 */
 	private static String getCurrentIp() {
 		String hostName = null;
 		try {
@@ -125,22 +146,11 @@ public class Sim {
 		return myIp;
 	}
 
-	public static String getBuildDate() {
-		String buildDate = "";
-		try {
-			URL url = Sim.class.getResource("/");
-			File f = new File(url.toURI());
-			Date lastMod = new Date(f.lastModified());
-			DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-
-			buildDate = df.format(lastMod);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return buildDate;
-	}
-
+	/**
+	 * Gibt das KeyPair fuer die Verschluesselung der Messages zurueck.
+	 * 
+	 * @return KeyPair
+	 */
 	public static KeyPair getKeyPair() {
 		if (keyPair == null) {
 			KeyPairGenerator kpg;
@@ -154,6 +164,14 @@ public class Sim {
 		}
 
 		return keyPair;
+	}
+
+	public static int getPort() {
+		return port;
+	}
+
+	public static void setPort(int p) {
+		port = p;
 	}
 
 }

@@ -92,9 +92,9 @@ public class SystemTrayManager implements EventObserver {
 			
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if ( e.getStateChange() == ItemEvent.DESELECTED) {
+				if ( e.getStateChange() == ItemEvent.SELECTED) {
 					showSystrayMessages = false;
-				}else if ( e.getStateChange() == ItemEvent.SELECTED) {
+				}else if ( e.getStateChange() == ItemEvent.DESELECTED) {
 					showSystrayMessages = true;
 				}
 	

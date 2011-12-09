@@ -46,7 +46,7 @@ public class YahooSmileyFactory implements SmileyFactory {
 		if (c.equalsIgnoreCase(":\"&gt;") || c.equalsIgnoreCase(":-\"&gt;")) {
 			icon = getClass().getResource("/images/yahoo_smileys/08.gif").toString();
 		}
-		if (c.equalsIgnoreCase(":-p") || c.equalsIgnoreCase(":p") || c.equalsIgnoreCase(";-p") || c.equalsIgnoreCase(";p")) {
+		if (c.equalsIgnoreCase(":-p") || c.equalsIgnoreCase(":p") || c.equalsIgnoreCase(";-p") || c.equalsIgnoreCase(";p") || c.equalsIgnoreCase(";)p") || c.equalsIgnoreCase(";-)p") || c.equalsIgnoreCase(":)p") || c.equalsIgnoreCase(":-)p")) {
 			icon = getClass().getResource("/images/yahoo_smileys/09.gif").toString();
 		}
 		if (c.equalsIgnoreCase(":*") || c.equalsIgnoreCase(":-*")) {
@@ -106,7 +106,7 @@ public class YahooSmileyFactory implements SmileyFactory {
 		if (c.equalsIgnoreCase("[-(")) {
 			icon = getClass().getResource("/images/yahoo_smileys/28.gif").toString();
 		}
-		if (c.equalsIgnoreCase(":)")) {
+		if (c.equalsIgnoreCase(":o)")) {
 			icon = getClass().getResource("/images/yahoo_smileys/29.gif").toString();
 		}
 		if (c.equalsIgnoreCase("8-}")) {
@@ -214,9 +214,10 @@ public class YahooSmileyFactory implements SmileyFactory {
 		if (c.equalsIgnoreCase("(%)")) {
 			icon = getClass().getResource("/images/yahoo_smileys/64.gif").toString();
 		}
+		/* Animation broken,... vieleicht statisch?
 		if (c.equalsIgnoreCase(":-@")) {
 			icon = getClass().getResource("/images/yahoo_smileys/76.gif").toString();
-		}
+		}*/
 		if (c.equalsIgnoreCase("^:)^") || c.equalsIgnoreCase("^:-)^")) {
 			icon = getClass().getResource("/images/yahoo_smileys/77.gif").toString();
 		}

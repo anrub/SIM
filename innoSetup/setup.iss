@@ -1,5 +1,5 @@
 #define MyAppName "S Instant Messenger"
-#define MyAppVersion "0.0.3"
+#define MyAppVersion "0.0.4"
 #define MyAppPublisher "Flo"
 #define MyAppURL "https://github.com/anrub/SIM"
 #define LaunchProgram "Starte S Instant Messenger nach der Installation"

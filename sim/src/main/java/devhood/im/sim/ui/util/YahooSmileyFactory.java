@@ -31,7 +31,7 @@ public class YahooSmileyFactory implements SmileyFactory {
 		if (c.equalsIgnoreCase(";)") || c.equalsIgnoreCase(";-)")) {
 			icon = getClass().getResource("/images/yahoo_smileys/03.gif").toString();
 		}
-		if (c.equalsIgnoreCase(":-D") || c.equalsIgnoreCase(":D")) {
+		if (c.equals(":-D") || c.equals(":D")) {
 			icon = getClass().getResource("/images/yahoo_smileys/04.gif").toString();
 		}
 		if (c.equalsIgnoreCase(";;)") || c.equalsIgnoreCase(";;-)")) {
@@ -85,7 +85,7 @@ public class YahooSmileyFactory implements SmileyFactory {
 		if (c.equalsIgnoreCase("0:-)") || c.equalsIgnoreCase("0:)") || c.equalsIgnoreCase("O:-)") || c.equalsIgnoreCase("O:)")) {
 			icon = getClass().getResource("/images/yahoo_smileys/21.gif").toString();
 		}
-		if (c.equalsIgnoreCase(":-B") || c.equalsIgnoreCase(":B") || c.equalsIgnoreCase("8)") || c.equalsIgnoreCase("8-)")) {
+		if (c.equals(":-B") || c.equals(":B") || c.equals("8)") || c.equals("8-)")) {
 			icon = getClass().getResource("/images/yahoo_smileys/22.gif").toString();
 		}
 		if (c.equalsIgnoreCase("=;") || c.equalsIgnoreCase("=;-")) {
@@ -106,7 +106,7 @@ public class YahooSmileyFactory implements SmileyFactory {
 		if (c.equalsIgnoreCase("[-(")) {
 			icon = getClass().getResource("/images/yahoo_smileys/28.gif").toString();
 		}
-		if (c.equalsIgnoreCase(":o)")) {
+		if (c.equalsIgnoreCase(":)")) {
 			icon = getClass().getResource("/images/yahoo_smileys/29.gif").toString();
 		}
 		if (c.equalsIgnoreCase("8-}")) {
@@ -124,7 +124,7 @@ public class YahooSmileyFactory implements SmileyFactory {
 		if (c.equalsIgnoreCase("#-o") || c.equalsIgnoreCase("#o")) {
 			icon = getClass().getResource("/images/yahoo_smileys/34.gif").toString();
 		}
-		if (c.equalsIgnoreCase("=D&gt;")) {
+		if (c.equals("=D&gt;")) {
 			icon = getClass().getResource("/images/yahoo_smileys/35.gif").toString();
 		}
 		if (c.equalsIgnoreCase(":@)")) {
@@ -166,7 +166,7 @@ public class YahooSmileyFactory implements SmileyFactory {
 		if (c.equalsIgnoreCase("&gt;-)")) {
 			icon = getClass().getResource("/images/yahoo_smileys/48.gif").toString();
 		}
-		if (c.equalsIgnoreCase(":-L")) {
+		if (c.equals(":-L")) {
 			icon = getClass().getResource("/images/yahoo_smileys/49.gif").toString();
 		}
 		if (c.equalsIgnoreCase("&lt;):)") || c.equalsIgnoreCase("&lt;):-)")) {
@@ -196,10 +196,10 @@ public class YahooSmileyFactory implements SmileyFactory {
 		if (c.equalsIgnoreCase("[-X")) {
 			icon = getClass().getResource("/images/yahoo_smileys/58.gif").toString();
 		}
-		if (c.equalsIgnoreCase("\\:D/") || c.equalsIgnoreCase("\\:-D/")) {
+		if (c.equals("\\:D/") || c.equals("\\:-D/")) {
 			icon = getClass().getResource("/images/yahoo_smileys/59.gif").toString();
 		}
-		if (c.equalsIgnoreCase("&gt;:D&lt;") || c.equalsIgnoreCase("&gt;:-D&lt;")) {
+		if (c.equals("&gt;:D&lt;") || c.equals("&gt;:-D&lt;")) {
 			icon = getClass().getResource("/images/yahoo_smileys/60.gif").toString();
 		}
 		if (c.equalsIgnoreCase("o-&gt;)")) {
@@ -235,10 +235,10 @@ public class YahooSmileyFactory implements SmileyFactory {
 		if (c.equalsIgnoreCase("~X(") || c.equalsIgnoreCase("~X-(")) {
 			icon = getClass().getResource("/images/yahoo_smileys/102.gif").toString();
 		}
-		if (c.equalsIgnoreCase(":-h") || c.equalsIgnoreCase(":-)h")) {
+		if (c.equals(":-h") || c.equals(":-)h")) {
 			icon = getClass().getResource("/images/yahoo_smileys/103.gif").toString();
 		}
-		if (c.equalsIgnoreCase(":-t")) {
+		if (c.equals(":-t")) {
 			icon = getClass().getResource("/images/yahoo_smileys/104.gif").toString();
 		}
 		if (c.equalsIgnoreCase("8-&gt;")) {
@@ -262,10 +262,10 @@ public class YahooSmileyFactory implements SmileyFactory {
 		if (c.equalsIgnoreCase("\\m/")) {
 			icon = getClass().getResource("/images/yahoo_smileys/111.gif").toString();
 		}
-		if (c.equalsIgnoreCase(":-q")) {
+		if (c.equals(":-q")) {
 			icon = getClass().getResource("/images/yahoo_smileys/112.gif").toString();
 		}
-		if (c.equalsIgnoreCase(":-bd") || c.equalsIgnoreCase(":)bd") || c.equalsIgnoreCase(":-)bd") || c.equalsIgnoreCase("b:)d") || c.equalsIgnoreCase("b:-)d")) {
+		if (c.equals(":-bd") || c.equals(":)bd") || c.equals(":-)bd") || c.equals("b:)d") || c.equals("b:-)d")) {
 			icon = getClass().getResource("/images/yahoo_smileys/113.gif").toString();
 		}
 		if (c.equalsIgnoreCase("^#(^") || c.equalsIgnoreCase("#(^^")) {

@@ -441,9 +441,6 @@ public class YahooSmileyFactory implements SmileyFactory {
 			icon = getClass().getResource(
 					"/images/yahoo_smileys/141.gif").toString();
 		}
-		if (!StringUtils.isEmpty(icon)) {
-			smile = "<img src=\"" + icon + " \"></img>";
-		}
 
 		return smile;
 	}

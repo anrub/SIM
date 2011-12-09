@@ -273,71 +273,75 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		JTextComponent input = (JTextComponent) ((JViewport) ((JScrollPane) p
 				.getComponent(1)).getComponent(0)).getComponent(0);
 
-		final Message newMessage = new Message();
+		if (!input.getText().trim().isEmpty()){
+			final Message newMessage = new Message();
 
-		List<String> usernames = new ArrayList<String>();
-		usernames.add(toUser);
-		newMessage.setReceiver(usernames);
-		newMessage.setSender(Sim.getCurrentUser().getName());
-		newMessage.setText(input.getText());
+			List<String> usernames = new ArrayList<String>();
+			usernames.add(toUser);
+			newMessage.setReceiver(usernames);
+			newMessage.setSender(Sim.getCurrentUser().getName());
+			newMessage.setText(input.getText());
 
-		if (toUser.equals(streamTabName)) { // Ist dies im Stremtab - nachricht
-											// an alle
-			newMessage.setMessageType(MessageType.ALL);
-			newMessage.getReceiver().clear();
-			List<User> users = ServiceLocator.getInstance()
-					.getRegistryService().getUsers();
-			for (User user : users) {
-				newMessage.getReceiver().add(user.getName());
-			}
-			System.out.println("Nachricht an alle");
-		}
-
-		String title = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
-
-		if (!toUser.equals(streamTabName)) { // Ist dies im Stremtab - nachricht
+			if (toUser.equals(streamTabName)) { // Ist dies im Stremtab - nachricht
 												// an alle
-
-			if (isUserOnline(toUser)) {
-				timeline.setText(getFormattedMessage(newMessage,
-						timeline.getText()));
-			} else {
-				outputStatusMessage("Tut mir leid, " + toUser + " ist offline",
-						timeline);
+				newMessage.setMessageType(MessageType.ALL);
+				newMessage.getReceiver().clear();
+				List<User> users = ServiceLocator.getInstance()
+						.getRegistryService().getUsers();
+				for (User user : users) {
+					newMessage.getReceiver().add(user.getName());
+				}
+				System.out.println("Nachricht an alle");
 			}
 
+			String title = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
+
+			if (!toUser.equals(streamTabName)) { // Ist dies im Stremtab - nachricht
+													// an alle
+
+				if (isUserOnline(toUser)) {
+					timeline.setText(getFormattedMessage(newMessage,
+							timeline.getText()));
+				} else {
+					outputStatusMessage("Tut mir leid, " + toUser + " ist offline",
+							timeline);
+				}
+
+			}
+
+			input.setText(null);
+
+			moveCaretDown((JEditorPane) timeline);
+
+			input.requestFocusInWindow();
+
+			// Versand wird asynchron ausgefuehrt, da potentiell langsam und droht
+			// die ui zu blocken.
+			// TODO Fehlerhandling, wenn versand fehlschlaegt?
+			// z.b. in einer liste Worker speichern und via Timer den return type
+			// checken (wenn worker.isDone() == true, isdone ist auch true, wenn
+			// gecancelt, falls einer false ist, eine Warnung in systray erzeugen.
+			// evtl den betroffenen User rot markieren (letzter Versand nicht
+			// erfolgreich)
+			SwingWorker<Void, Message> worker = new SwingWorker<Void, Message>() {
+
+				@Override
+				protected Void doInBackground() throws Exception {
+					EventDispatcher.fireEvent(Events.MESSAGE_SENT, newMessage);
+					return null;
+				}
+
+				@Override
+				protected void done() {
+					// TODO Auto-generated method stub
+					super.done();
+				}
+			};
+
+			worker.execute();
+		}else{
+			input.setText(null);
 		}
-
-		input.setText(null);
-
-		moveCaretDown((JEditorPane) timeline);
-
-		input.requestFocusInWindow();
-
-		// Versand wird asynchron ausgefuehrt, da potentiell langsam und droht
-		// die ui zu blocken.
-		// TODO Fehlerhandling, wenn versand fehlschlaegt?
-		// z.b. in einer liste Worker speichern und via Timer den return type
-		// checken (wenn worker.isDone() == true, isdone ist auch true, wenn
-		// gecancelt, falls einer false ist, eine Warnung in systray erzeugen.
-		// evtl den betroffenen User rot markieren (letzter Versand nicht
-		// erfolgreich)
-		SwingWorker<Void, Message> worker = new SwingWorker<Void, Message>() {
-
-			@Override
-			protected Void doInBackground() throws Exception {
-				EventDispatcher.fireEvent(Events.MESSAGE_SENT, newMessage);
-				return null;
-			}
-
-			@Override
-			protected void done() {
-				// TODO Auto-generated method stub
-				super.done();
-			}
-		};
-
-		worker.execute();
 	}
 
 	/**

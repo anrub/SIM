@@ -8,6 +8,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -94,6 +97,19 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		tabbedPane = new JTabbedPane();
 
+		tabbedPane.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(e.getClickCount()==2) {
+					int index = tabbedPane.getSelectedIndex();
+					if (index == 0) {
+						return;
+					}
+					closeTab(index);
+				}
+			}
+		});
+		
 		addToTabPane(
 				streamTabName,
 				Sim.applicationName
@@ -141,13 +157,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				if (index == 0) {
 					return;
 				}
-				String title = getCurrentSelectedTabTitle();
-				nameTextAreaMap.remove(title);
-				inputTextAreaMap.remove(title);
-
-				tabbedPane.remove(index);
-
-				addKeyboardShortcuts(tabbedPane);
+				closeTab(index);
 			}
 		});
 
@@ -231,12 +241,24 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	protected String getCurrentSelectedTabTitle() {
 		int index = tabbedPane.getSelectedIndex();
-
-		Component c = tabbedPane.getComponentAt(index);
-
 		String title = tabbedPane.getTitleAt(index);
-
 		return title;
+	}
+
+	/**
+	 * Schlieﬂt den Tab mit dem angegebenen index:
+	 * 
+	 * @param index
+	 *            tab
+	 */
+	protected void closeTab(int index) {
+		String title = tabbedPane.getTitleAt(index);
+		nameTextAreaMap.remove(title);
+		inputTextAreaMap.remove(title);
+
+		tabbedPane.remove(index);
+
+		addKeyboardShortcuts(tabbedPane);
 	}
 
 	/**

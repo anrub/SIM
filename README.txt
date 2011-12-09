@@ -5,3 +5,4 @@ Verwendet folgende Frameworks:
 Apache commons-lang 3.1 http://commons.apache.org/lang/
 SQLiteJDBC 3.6.16 http://www.xerial.org/trac/Xerial/wiki/SQLiteJDBC
 
+Yahoo Smilie Pack

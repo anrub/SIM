@@ -48,7 +48,7 @@ public class ComponentProvider {
 
 	public SmileyFactory getSmileyFactory() {
 		if (smileyFactory == null) {
-			smileyFactory = new MozillaSmileyFactory();
+			smileyFactory = new YahooSmileyFactory();
 		}
 
 		return smileyFactory;

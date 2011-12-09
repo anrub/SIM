@@ -28,6 +28,7 @@ import javax.swing.JTextArea;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.JComboBox.KeySelectionManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.HyperlinkEvent;
@@ -145,6 +146,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				inputTextAreaMap.remove(title);
 
 				tabbedPane.remove(index);
+
+				addKeyboardShortcuts(tabbedPane);
 			}
 		});
 
@@ -634,7 +637,47 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			}
 		});
 
+		addKeyboardShortcuts(tabbedPane);
+
 		inputTextAreaMap.put(label, messageTextArea);
+	}
+
+	/**
+	 * Fuegt die Shortcuts ALT+1-9 zum tabpane hinzu. Damit kann man per alt+1-9
+	 * zwischen den tabs umschalten.
+	 * 
+	 * @param tabbedPane
+	 *            tabbedpane
+	 */
+	public void addKeyboardShortcuts(JTabbedPane tabbedPane) {
+		if (tabbedPane.getTabCount() >= 1) {
+			tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+		}
+		if (tabbedPane.getTabCount() >= 2) {
+			tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
+		}
+		if (tabbedPane.getTabCount() >= 3) {
+			tabbedPane.setMnemonicAt(2, KeyEvent.VK_3);
+		}
+		if (tabbedPane.getTabCount() >= 4) {
+			tabbedPane.setMnemonicAt(3, KeyEvent.VK_4);
+		}
+		if (tabbedPane.getTabCount() >= 5) {
+			tabbedPane.setMnemonicAt(4, KeyEvent.VK_5);
+		}
+		if (tabbedPane.getTabCount() >= 6) {
+			tabbedPane.setMnemonicAt(6, KeyEvent.VK_6);
+		}
+		if (tabbedPane.getTabCount() >= 7) {
+			tabbedPane.setMnemonicAt(7, KeyEvent.VK_7);
+		}
+		if (tabbedPane.getTabCount() >= 8) {
+			tabbedPane.setMnemonicAt(8, KeyEvent.VK_8);
+		}
+		if (tabbedPane.getTabCount() >= 9) {
+			tabbedPane.setMnemonicAt(9, KeyEvent.VK_9);
+		}
+
 	}
 
 	/**
@@ -644,7 +687,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            textArea.
 	 */
 	public void moveCaretDown(final JEditorPane textArea) {
-
+		textArea.setCaretPosition(textArea.getDocument().getLength());
 	}
 
 	/**

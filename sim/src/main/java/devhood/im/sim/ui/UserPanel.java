@@ -6,130 +6,60 @@ import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import devhood.im.sim.Sim;
+import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
-import devhood.im.sim.service.interfaces.RegistryService;
+import devhood.im.sim.service.interfaces.UserChangeListener;
+import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.util.UiUtil;
 
 /**
- * Panel zur Auswahl der User. Aktualisiert sich selbst via
- * {@link RegistryService}.
+ * Panel zur Auswahl der User. Aktualisiert sich selbst via {@link UserService}.
  * 
  * @author flo
  * 
  */
+@Named("userPanel")
 public class UserPanel extends JPanel {
-
-	/**
-	 * Aktuelle Usernamen im Panel.
-	 */
-	private List<String> currentUsers = new ArrayList<String>();
 
 	/**
 	 * RegistryService zum Zugriff auf Stammdaten, zb User.
 	 */
-	private RegistryService registryService;
+	@Inject
+	private UserService userService;
+
+	@Inject
+	private SimConfiguration simConfiguration;
 
 	/**
-	 * Laedt User 1 Sekunden nach dem Start.
-	 */
-	private int userLoadDelay = 1000;
-
-	/**
-	 * Laedt User alle 10 Sekunden.
-	 */
-	private int userLoadPeriod = 10000;
-
-	/**
-	 * true wenn user min. einmal refresht wurden.
-	 */
-	private boolean usersLoaded;
-
-	public UserPanel(RegistryService registryService) {
-		this.registryService = registryService;
-		init();
-	}
-
-	/**
-	 * Initialisiert, f�llt das UserPanel.
+	 * Initialisiert, füllt das UserPanel.
 	 */
 	public void init() {
 		BoxLayout layout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
 		setLayout(layout);
 
 		addUsers();
-		startUserRefreshingTimer();
-	}
-
-	/**
-	 * Verarbeitet die USer und prüft ob sie bereits vorhanden, oder neu, oder
-	 * nicht mehr vorhanden sind.
-	 * 
-	 * @param users
-	 *            aktuelle USer aus der dB.
-	 */
-	public void processNewOrRemovedUsers(List<User> users,
-			List<String> usersFromDb) {
-		if (!usersLoaded) {
-			return;
-		}
-
-		List<String> newUsers = new ArrayList<String>();
-		List<String> offlineUsers = new ArrayList<String>();
-
-		for (User u : users) {
-			if (currentUsers.size() == 0) {
-				currentUsers.add(u.getName());
-				continue;
-			}
-
-			if (!currentUsers.contains(u.getName())) {
-				if (!Sim.getCurrentUser().getName().equals(u.getName())) {
-					newUsers.add(u.getName());
-				}
-				currentUsers.add(u.getName());
-			}
-		}
-
-		Iterator<String> it = currentUsers.iterator();
-		while (it.hasNext()) {
-			String user = it.next();
-			if (!usersFromDb.contains(user)) {
-				if (!Sim.getCurrentUser().getName().equals(user)) {
-					offlineUsers.add(user);
-				}
-				it.remove();
-			}
-		}
-
-		if (offlineUsers.size() > 0) {
-			EventDispatcher.fireEvent(Events.USER_OFFLINE_NOTICE,
-					offlineUsers);
-		}
-		if (newUsers.size() > 0) {
-			EventDispatcher.fireEvent(Events.USER_ONLINE_NOTICE,
-					newUsers);
-
-		}
+		setUserChangeListener();
+		startRefreshUsers();
 	}
 
 	/**
 	 * Fuegt die Users aus registryService in die Liste ein.
 	 */
 	public void addUsers() {
-		List<User> users = registryService.getUsers();
+		List<User> users = userService.getUsers();
 		List<String> userFromDb = new ArrayList<String>();
 
 		for (User user : users) {
@@ -138,13 +68,10 @@ public class UserPanel extends JPanel {
 			add(userLabel);
 
 		}
-
-		processNewOrRemovedUsers(users, userFromDb);
-
 	}
 
 	/**
-	 * Erzeugt das Label zur anzeige des Benutzers.
+	 * Erzeugt das Label zur Anzeige des Benutzers im UserPanel.
 	 * 
 	 * @param user
 	 *            User.
@@ -193,50 +120,51 @@ public class UserPanel extends JPanel {
 	}
 
 	/**
-	 * Startet den Thread, der die User liste aktuell haelt.
+	 * Fuegt den {@link UserChangeListener} an, der auf hinzufuegen/entfernen
+	 * von Usern reagiert.
 	 */
-	public void startUserRefreshingTimer() {
-		Timer t = new Timer("Load Users Timer");
-		TimerTask task = new TimerTask() {
+	public void setUserChangeListener() {
+
+		userService.addUserChangeListener(new UserChangeListener() {
+
 			@Override
-			public void run() {
-				registryService.purgeOfflineUsers();
-
-				removeAll();
-				addUsers();
-				validate();
-				repaint();
-				usersLoaded = true;
+			public void userRemoved(List<User> user) {
+				EventDispatcher.fireEvent(Events.USER_OFFLINE_NOTICE, user);
+				refreshUi();
 			}
-		};
 
-		t.schedule(task, userLoadDelay, userLoadPeriod);
+			@Override
+			public void userAdded(List<User> user) {
+				EventDispatcher.fireEvent(Events.USER_ONLINE_NOTICE, user);
+				refreshUi();
+			}
+		});
 	}
 
 	/**
-	 * Gibt die aktuellen User zurueck. Falls bisher noch keine USer geladen
-	 * wurden, wird eine Liste zurueckgegeben, die bei contains immer true
-	 * zurueck gibt. (Da noch nicht klar ist, ob der User vorhanden ist oder
-	 * nicht, hacky).
-	 * 
-	 * @return list von usern.
+	 * Aktualisiert regelmaessig das UserPanel mit den aktuellen Daten aus dem
+	 * {@link UserService}.
 	 */
-	public List<String> getCurrentUsers() {
-		List<String> users = new ArrayList<String>();
-		if (!usersLoaded) {
-			users = new ArrayList<String>() {
-				public boolean contains(Object o) {
-					return true;
-				};
-			};
-		} else {
-			users = currentUsers;
-		}
-		return users;
+	public void startRefreshUsers() {
+		Timer t = new Timer("UI: Refresh UserPanel Timer");
+		TimerTask task = new TimerTask() {
+
+			@Override
+			public void run() {
+				refreshUi();
+			}
+		};
+		t.schedule(task, simConfiguration.getUserLoadDelay(),
+				simConfiguration.getUserLoadPeriod());
 	}
 
-	public void setCurrentUsers(List<String> currentUsers) {
-		this.currentUsers = currentUsers;
+	/**
+	 * Aktualisiert das UserPanel.
+	 */
+	public void refreshUi() {
+		removeAll();
+		addUsers();
+		validate();
+		repaint();
 	}
-
 }

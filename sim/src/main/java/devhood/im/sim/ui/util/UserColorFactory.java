@@ -6,15 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Named;
+
 import devhood.im.sim.model.Color;
 
 /**
- * Die UserColorFactory hält für die User eine Farbe vor. Über die Methode
+ * Die UserColorFactory hï¿½lt fï¿½r die User eine Farbe vor. ï¿½ber die Methode
  * getOrReserveUserColor(userName) kann man sich zu einem User den gespeicherten
- * Farbwert ausgeben lassen oder einen noch verfügbaren reservieren.
+ * Farbwert ausgeben lassen oder einen noch verfï¿½gbaren reservieren.
  * 
  * @author Schiefele.Andreas
  */
+@Named("userColorFactory")
 public class UserColorFactory {
 
 	/**
@@ -28,19 +31,19 @@ public class UserColorFactory {
 	private Map<String, Color> userColors = new HashMap<String, Color>();
 
 	public UserColorFactory() {
-		// Verfügbare Farben eintragen (außer Schwarz).
+		// Verfï¿½gbare Farben eintragen (auï¿½er Schwarz).
 		for (Color color : Color.values()) {
 			if (!color.equals(Color.BLACK)) {
 				colors.add(color);
 			}
 		}
 
-		// Farbenreihenfolge zufällig vergeben.
+		// Farbenreihenfolge zufï¿½llig vergeben.
 		Collections.shuffle(colors);
 	}
 
 	/**
-	 * Gibt für den User die reservierte Farbe zurück. Wenn keine Farbe bisher
+	 * Gibt fï¿½r den User die reservierte Farbe zurï¿½ck. Wenn keine Farbe bisher
 	 * reserviert wurde wird dies nun getan.
 	 * 
 	 * @param userName
@@ -52,7 +55,7 @@ public class UserColorFactory {
 			// Wenn dieser User bereits eine Farbe besitzt.
 			return userColors.get(userName);
 		} else {
-			// Wenn es noch keine Farbe für diesen User gibt dann eine
+			// Wenn es noch keine Farbe fï¿½r diesen User gibt dann eine
 			// reservieren.
 			Color userColor = generateUserColor(userName);
 			userColors.put(userName, userColor);
@@ -62,7 +65,7 @@ public class UserColorFactory {
 	}
 
 	/**
-	 * Gibt eine verfügbare Farbe zurück.
+	 * Gibt eine verfï¿½gbare Farbe zurï¿½ck.
 	 * 
 	 * @param userName
 	 *            Der Name des Users.
@@ -70,7 +73,7 @@ public class UserColorFactory {
 	 */
 	private Color generateUserColor(String userName) {
 
-		// Anhand der Anzahl an verfügbaren und reservierten Farben ermitteln
+		// Anhand der Anzahl an verfï¿½gbaren und reservierten Farben ermitteln
 		// wie oft eine Farbe vorkommen darf.
 		int colorRepetition = userColors.size() / colors.size();
 
@@ -79,16 +82,16 @@ public class UserColorFactory {
 
 			int colorCounter = 0;
 
-			// Prüfen ob schon ein User eingetragen wurde.
+			// Prï¿½fen ob schon ein User eingetragen wurde.
 			if (!userColors.isEmpty()) {
 				for (Color userColor : userColors.values()) {
 					if (userColor.equals(color)) {
-						//Wenn Farbe schon mal gewählt wurde.
+						// Wenn Farbe schon mal gewï¿½hlt wurde.
 						colorCounter++;
 					}
 				}
 
-				// Prüfen ob die Farbe benutzt werden darf.
+				// Prï¿½fen ob die Farbe benutzt werden darf.
 				if (colorRepetition == colorCounter) {
 					newUserColor = color;
 

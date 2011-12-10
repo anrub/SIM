@@ -6,33 +6,26 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import devhood.im.sim.Sim;
+import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
-import devhood.im.sim.model.User;
-import devhood.im.sim.service.ServiceLocator;
-import devhood.im.sim.service.interfaces.RegistryService;
-import devhood.im.sim.ui.util.ComponentProvider;
+import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.util.UiUtil;
-
-
 
 /**
  * Diese Klasse erzeugt das Hauptfenster der Anwendung.
@@ -40,12 +33,22 @@ import devhood.im.sim.ui.util.UiUtil;
  * @author flo
  * 
  */
+@Named("mainFrame")
 public class MainFrame implements EventObserver {
 
 	/**
 	 * Das ist der main frame.
 	 */
 	private JFrame frame;
+
+	@Inject
+	private SystemTrayManager systemTrayManager;
+
+	/**
+	 * Das UserPanel.
+	 */
+	@Inject
+	private UserPanel userPanel;
 
 	/**
 	 * Das ist das Scrollpane, in dem die User stehen.
@@ -55,6 +58,7 @@ public class MainFrame implements EventObserver {
 	/**
 	 * Das ist das Scrollpane, in dem Messages empfangen, versendet werden.
 	 */
+	@Inject
 	private SendReceiveMessagePanel timelinePanel;
 
 	/**
@@ -65,34 +69,27 @@ public class MainFrame implements EventObserver {
 	/**
 	 * Das ist der Service zum Zugriff auf Stammdaten, wie zb verfuegbare User.
 	 */
-	private RegistryService registryService;
+	@Inject
+	private UserService userService;
 
-	/**
-	 * Interval, in dem der eigene Nutzerstatus in der DB aktualisiert wird.
-	 */
-	private int initRefreshUserStateInterval = 10000;
-
-
+	@Inject
+	private SimConfiguration simConfiguration;
 
 	public MainFrame() {
-		registryService = ServiceLocator.getInstance().getRegistryService();
-
 		EventDispatcher.add(this);
 	}
-
-
 
 	/**
 	 * Initialises the main frame.
 	 */
 	public void initMainFrame() {
-		frame = new JFrame(Sim.applicationName + " - " + Sim.getCurrentUser().getName());
+		frame = new JFrame(simConfiguration.getApplicationName() + " - "
+				+ simConfiguration.getUsername());
 
 		frame.setIconImage(UiUtil.createImage("/images/megaphone-icon-64.png"));
 
 		initMenuBar();
 		initUserScrollPane();
-		initMsgScrollPane();
 		initTray();
 		// initRefreshUserState();
 
@@ -102,7 +99,8 @@ public class MainFrame implements EventObserver {
 		frame.setLayout(new BorderLayout());
 
 		// Create a split pane with the two scroll panes in it.
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, userScrollPane, timelinePanel);
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+				userScrollPane, timelinePanel);
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setDividerLocation(150);
 
@@ -121,49 +119,14 @@ public class MainFrame implements EventObserver {
 
 	}
 
-
-
-	/**
-	 * Aktualisiert den eigenen Nutzerstatus in der DB.
-	 */
-	protected void initRefreshUserState() {
-		Timer t = new Timer();
-		TimerTask task = new TimerTask() {
-			public void run() {
-				User u = Sim.getCurrentUser();
-				u.setLastaccess(new Date());
-				registryService.refresh(u);
-			};
-		};
-
-		t.schedule(task, 0, initRefreshUserStateInterval);
-	}
-
-
-
 	/**
 	 * Initialies the user scrollpane.
 	 */
 	protected void initUserScrollPane() {
-		JPanel userPanel = ComponentProvider.getInstance().getUserPanel();
-
 		userScrollPane = new JScrollPane(userPanel);
 		Dimension preferredSize = new Dimension(100, 200);
 		userScrollPane.setPreferredSize(preferredSize);
 	}
-
-
-
-	/**
-	 * Initialies the messsaging scrollpane.
-	 */
-	protected void initMsgScrollPane() {
-		SendReceiveMessagePanel p = new SendReceiveMessagePanel();
-
-		timelinePanel = p;
-	}
-
-
 
 	/**
 	 * Initialies Menubar.
@@ -191,46 +154,47 @@ public class MainFrame implements EventObserver {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
-					ComponentProvider.getInstance().getSystemTrayManager().setShowSystrayMessages(true);
+					simConfiguration.setShowSystrayMessages(true);
 				} else if (e.getStateChange() == ItemEvent.DESELECTED) {
-					ComponentProvider.getInstance().getSystemTrayManager().setShowSystrayMessages(false);
+					simConfiguration.setShowSystrayMessages(false);
 				}
 			}
 		});
 
 		menuNotifications.add(systrayMenuItem);
 
-		systrayMenuItem = new JCheckBoxMenuItem("Stream Msgs im Systray anzeigen");
+		systrayMenuItem = new JCheckBoxMenuItem(
+				"Stream Msgs im Systray anzeigen");
 		systrayMenuItem.setSelected(true);
 		systrayMenuItem.addItemListener(new ItemListener() {
 
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
-					ComponentProvider.getInstance().getSystemTrayManager().setShowSystrayMessages(true);
+					simConfiguration.setShowSystrayMessages(true);
 				} else if (e.getStateChange() == ItemEvent.DESELECTED) {
-					ComponentProvider.getInstance().getSystemTrayManager().setShowSystrayMessages(false);
+					simConfiguration.setShowSystrayMessages(false);
 				}
 			}
 		});
 
 		menuNotifications.add(systrayMenuItem);
 
-		
-		systrayMenuItem = new JCheckBoxMenuItem("Status Msgs im Systray anzeigen");
+		systrayMenuItem = new JCheckBoxMenuItem(
+				"Status Msgs im Systray anzeigen");
 		systrayMenuItem.setSelected(true);
 		systrayMenuItem.addItemListener(new ItemListener() {
 
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
-					ComponentProvider.getInstance().getSystemTrayManager().setShowStatusInTray(true);
+					simConfiguration.setShowStatusInTray(true);
 				} else if (e.getStateChange() == ItemEvent.DESELECTED) {
-					ComponentProvider.getInstance().getSystemTrayManager().setShowStatusInTray(false);
+					simConfiguration.setShowStatusInTray(false);
 				}
 			}
 		});
-		
+
 		menuNotifications.add(systrayMenuItem);
 		cbMenuItem = new JCheckBoxMenuItem("Status veröffentlichen");
 		menuPrivacy.add(cbMenuItem);
@@ -246,15 +210,11 @@ public class MainFrame implements EventObserver {
 		frame.setJMenuBar(menuBar);
 	}
 
-
-
 	/**
 	 * Initialises the system tray functionality.
 	 */
 	protected void initTray() {
-		SystemTrayManager sys = ComponentProvider.getInstance().getSystemTrayManager();
-
-		sys.addMouseListener(new MouseAdapter() {
+		systemTrayManager.addMouseListener(new MouseAdapter() {
 			/**
 			 * Macht den Frame nach click auf das TrayIcon wieder sichtbar.
 			 */
@@ -269,8 +229,6 @@ public class MainFrame implements EventObserver {
 		});
 	}
 
-
-
 	/**
 	 * Empfaengt Events von {@link EventDispatcher}.
 	 */
@@ -279,12 +237,8 @@ public class MainFrame implements EventObserver {
 		if (Events.SHOW_FRAME.equals(event)) {
 			frame.setVisible(true);
 			frame.requestFocusInWindow();
-		} else if (Events.SERVER_INITIALISED.equals(event)) {
-			initRefreshUserState();
 		}
 	}
-
-
 
 	/**
 	 * Erzeugt das Menu zum aendern des layouts.
@@ -295,14 +249,17 @@ public class MainFrame implements EventObserver {
 		JMenu layout = new JMenu("Look & Feel");
 		ButtonGroup group = new ButtonGroup();
 
-		final JRadioButtonMenuItem r1 = new JRadioButtonMenuItem("Windows Layout");
+		final JRadioButtonMenuItem r1 = new JRadioButtonMenuItem(
+				"Windows Layout");
 		r1.setSelected(true);
 
 		final JRadioButtonMenuItem r2 = new JRadioButtonMenuItem("Java Layout");
-		final JRadioButtonMenuItem r3 = new JRadioButtonMenuItem("Nimbus Layout");
+		final JRadioButtonMenuItem r3 = new JRadioButtonMenuItem(
+				"Nimbus Layout");
 
 		final JRadioButtonMenuItem r4 = new JRadioButtonMenuItem("Motif Layout");
-		final JRadioButtonMenuItem r5 = new JRadioButtonMenuItem("Windows classic Layout");
+		final JRadioButtonMenuItem r5 = new JRadioButtonMenuItem(
+				"Windows classic Layout");
 
 		group.add(r1);
 		group.add(r2);
@@ -318,23 +275,28 @@ public class MainFrame implements EventObserver {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					try {
 						if (obj == r1) {
-							UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+							UIManager.setLookAndFeel(UIManager
+									.getSystemLookAndFeelClassName());
 							SwingUtilities.updateComponentTreeUI(frame);
 						}
 						if (obj == r2) {
-							UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+							UIManager.setLookAndFeel(UIManager
+									.getCrossPlatformLookAndFeelClassName());
 							SwingUtilities.updateComponentTreeUI(frame);
 						}
 						if (obj == r3) {
-							UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+							UIManager
+									.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 							SwingUtilities.updateComponentTreeUI(frame);
 						}
 						if (obj == r4) {
-							UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+							UIManager
+									.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
 							SwingUtilities.updateComponentTreeUI(frame);
 						}
 						if (obj == r5) {
-							UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.WindowsClassicLookAndFeel");
+							UIManager
+									.setLookAndFeel("com.sun.java.swing.plaf.motif.WindowsClassicLookAndFeel");
 							SwingUtilities.updateComponentTreeUI(frame);
 						}
 					} catch (Exception ex) {

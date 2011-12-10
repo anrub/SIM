@@ -1,6 +1,5 @@
 package devhood.im.sim;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -10,11 +9,15 @@ import java.util.logging.Logger;
 
 import javax.swing.UIManager;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import devhood.im.sim.config.SimConfiguration;
+import devhood.im.sim.controller.SimControl;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Message;
 import devhood.im.sim.model.MessageType;
-import devhood.im.sim.service.PeerToPeerMessageSender;
 import devhood.im.sim.ui.MainFrame;
 
 /**
@@ -39,48 +42,51 @@ public class SimMain {
 	 *            arguments
 	 */
 	public static void main(String[] args) {
+		String username = System.getProperty("user.name");
 		if (args.length > 0) {
 			for (int i = 0; i < args.length; i++) {
 				if ("-n".equals(args[i]) && i + 1 < args.length) {
-					Sim.getCurrentUser().setName(args[i + 1]);
+					username = args[i + 1];
 				}
 				if ("-f".equals(args[i]) && i + 1 < args.length) {
-					Sim.dbPath = args[i + 1];
+					System.setProperty("sim.jdbcDbPath", args[i + 1]);
 				}
 			}
 
 		}
 
-		/*
-		 * ServiceLocator.getInstance().setRegistryService( new
-		 * InMemoryMockDataRegistryService());
-		 * ServiceLocator.getInstance().setMessageService( new
-		 * DummyMessageService());
-		 */
+		System.setProperty("sim.username", username);
 
 		try {
-			UIManager.setLookAndFeel(Sim.lookAndFeel);
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 			log.log(Level.WARNING,
 					"Konnte System default Look n Feel nicht laden, benutzte Java default.",
 					e);
 		}
-		MainFrame mainFrame = new MainFrame();
-		mainFrame.initMainFrame();
+		SimMain main = new SimMain();
 
-		// Server für Kommunikation initialisieren
-
-		try {
-			PeerToPeerMessageSender ms = new PeerToPeerMessageSender();
-			EventDispatcher.add(ms);
-		} catch (IOException e) { // TODO: Fehlermeldung in Frontend
-			log.log(Level.SEVERE,
-					"Kommunikation (ServerSocket) konnte nicht gestartet werden: "
-							+ e.getMessage());
-		}
-
+		main.startup();
 		// SimMain.startSimulation();
 
+	}
+
+	/**
+	 * Startet den {@link ApplicationContext} und zeigt das {@link MainFrame}
+	 * an.
+	 */
+	public void startup() {
+		try {
+			ApplicationContext context = new ClassPathXmlApplicationContext(
+					"applicationContext.xml");
+
+			MainFrame mainFrame = (MainFrame) context.getBean("mainFrame");
+			mainFrame.initMainFrame();
+
+		} catch (Exception e) {
+			log.log(Level.SEVERE,
+					"Applikation konnte nicht gestartet werden: ", e);
+		}
 	}
 
 	/**
@@ -99,13 +105,13 @@ public class SimMain {
 					int userid = (int) Math.floor(Math.random() * 10);
 					m.setSender("User " + userid);
 					List<String> users = new ArrayList<String>();
-					users.add(Sim.getCurrentUser().getName());
+					// users.add(Sim.getCurrentUser().getName());
 					m.setReceiver(users);
 					if (cnt % 2 == 0) {
 						m.setMessageType(MessageType.ALL);
 					}
 
-					m.setText("Dies ist eine Nachricht öäüß " + Math.random());
+					m.setText("Dies ist eine Nachricht ï¿½ï¿½ï¿½ï¿½ " + Math.random());
 
 					EventDispatcher.fireEvent(Events.MESSAGE_RECEIVED, m);
 

@@ -6,19 +6,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
+import devhood.im.sim.dao.interfaces.UserDao;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
-import devhood.im.sim.service.interfaces.RegistryService;
 
 /**
- * InMemory {@link RegistryService} mit Dummy Usern.
+ * InMemory {@link UserDao} mit Dummy Usern.
  * 
  * @author flo
  * 
  */
-public class InMemoryMockDataRegistryService implements RegistryService {
+public class InMemoryMockDataRegistryService implements UserDao {
 
 	private Logger log = Logger.getLogger(InMemoryMockDataRegistryService.class
 			.toString());

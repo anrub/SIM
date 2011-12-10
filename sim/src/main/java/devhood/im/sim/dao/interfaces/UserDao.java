@@ -1,4 +1,4 @@
-package devhood.im.sim.service.interfaces;
+package devhood.im.sim.dao.interfaces;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import devhood.im.sim.model.User;
  * @author flo
  * 
  */
-public interface RegistryService {
+public interface UserDao {
 
 	/**
 	 * Such einen User anhand seines Namens

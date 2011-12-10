@@ -1,7 +1,7 @@
 package devhood.im.sim.event;
 
 /**
- * Events in der Applikation. ASDASDASD.
+ * Events in der Applikation.
  * 
  * @author flo
  * 
@@ -11,12 +11,6 @@ public enum Events {
 	 * Ein User wurde ausgewaehlt. Parameter: String username
 	 */
 	USER_SELECTED,
-
-	/**
-	 * Eine neue Nachricht wurde gesendet. Parameter: Message message
-	 */
-	MESSAGE_SENT,
-
 	/**
 	 * Eine neue Nachricht wurde empfangen. Parameter: Message message
 	 */

@@ -36,26 +36,10 @@ public class User {
 	 */
 	private PublicKey publicKey;
 
-	public PublicKey getPublicKey() {
-		return publicKey;
-	}
-
-	public void setPublicKey(PublicKey publicKey) {
-		this.publicKey = publicKey;
-	}
-
 	/**
-	 * port f�r kommunikation
+	 * Port für kommunikation.
 	 */
 	private int port;
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
-	}
 
 	public User(String name, String address, int port, Date lastaccess,
 			PublicKey publicKey, String statusType) {
@@ -67,22 +51,9 @@ public class User {
 		this.statusType = UserStatus.get(statusType);
 	}
 
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
+	/**
+	 * Equals prueft auf die Gleichheit des Usernamens.
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
@@ -106,6 +77,34 @@ public class User {
 		return name.hashCode();
 	}
 
+	public String toString() {
+		return name;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public Date getLastaccess() {
 		return lastaccess;
 	}
@@ -120,6 +119,14 @@ public class User {
 
 	public void setStatusType(UserStatus statusType) {
 		this.statusType = statusType;
+	}
+
+	public PublicKey getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(PublicKey publicKey) {
+		this.publicKey = publicKey;
 	}
 
 }

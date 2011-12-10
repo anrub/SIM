@@ -1,10 +1,8 @@
-package devhood.im.sim.service;
+package devhood.im.sim.dao;
 
 import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.EncodedKeySpec;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,12 +13,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import devhood.im.sim.Sim;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.springframework.beans.factory.annotation.Value;
+
+import devhood.im.sim.config.SimConfiguration;
+import devhood.im.sim.dao.interfaces.UserDao;
 import devhood.im.sim.model.User;
-import devhood.im.sim.service.interfaces.RegistryService;
 
 /**
- * {@link RegistryService} Implementierung via JDBC.
+ * {@link UserDao} Implementierung via JDBC.
  * 
  * users Tabelle:
  * 
@@ -29,14 +32,20 @@ import devhood.im.sim.service.interfaces.RegistryService;
  * @author flo
  * 
  */
-public class RegistryServiceJdbc implements RegistryService {
+@Named("registryServiceJdbc")
+public class SqliteUserDao implements UserDao {
 	private String username = "sa";
 	private String password = "";
-	private String driver;
 
-	private String url;
+	private String driver = "org.sqlite.JDBC";
 
-	public RegistryServiceJdbc() {
+	@Value("#{systemProperties['sim.jdbcDbPath']}")
+	private String dbPath;
+
+	@Inject
+	private SimConfiguration simConfiguration;
+
+	public SqliteUserDao() {
 
 	}
 
@@ -49,7 +58,7 @@ public class RegistryServiceJdbc implements RegistryService {
 			e.printStackTrace();
 		}
 
-		Connection connection = DriverManager.getConnection(url, username,
+		Connection connection = DriverManager.getConnection(getUrl(), username,
 				password);
 
 		return connection;
@@ -91,8 +100,8 @@ public class RegistryServiceJdbc implements RegistryService {
 	 */
 	@Override
 	public User getUser(String name) {
-		if (name.equals(Sim.getCurrentUser().getName())) {
-			return Sim.getCurrentUser();
+		if (name.equals(simConfiguration.getUsername())) {
+			return simConfiguration.getCurrentUser();
 		}
 		createTable();
 
@@ -304,20 +313,8 @@ public class RegistryServiceJdbc implements RegistryService {
 		this.password = password;
 	}
 
-	public String getDriver() {
-		return driver;
-	}
-
-	public void setDriver(String driver) {
-		this.driver = driver;
-	}
-
 	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
+		return "jdbc:sqlite:" + dbPath;
 	}
 
 	private PublicKey getPublicKey(byte[] publicKeyRaw) {
@@ -330,5 +327,13 @@ public class RegistryServiceJdbc implements RegistryService {
 
 		}
 		return publicKey;
+	}
+
+	public String getDbPath() {
+		return dbPath;
+	}
+
+	public void setDbPath(String dbPath) {
+		this.dbPath = dbPath;
 	}
 }

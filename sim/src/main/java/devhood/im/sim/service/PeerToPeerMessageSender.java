@@ -6,8 +6,6 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -18,10 +16,14 @@ import java.util.logging.Logger;
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-import devhood.im.sim.Sim;
+import org.springframework.context.ApplicationContext;
+
+import devhood.im.sim.config.SimConfiguration;
+import devhood.im.sim.dao.interfaces.UserDao;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
@@ -29,7 +31,8 @@ import devhood.im.sim.model.Message;
 import devhood.im.sim.model.MessageType;
 import devhood.im.sim.model.MessagingError;
 import devhood.im.sim.model.User;
-import devhood.im.sim.service.interfaces.MessageService;
+import devhood.im.sim.service.interfaces.MessageCallback;
+import devhood.im.sim.service.interfaces.MessageSender;
 
 /**
  * Peer to Peer Implementierung des {@link MessageService}. Dieser Service
@@ -38,10 +41,24 @@ import devhood.im.sim.service.interfaces.MessageService;
  * @author Tobi, flo
  * 
  */
-public class PeerToPeerMessageSender implements EventObserver, Runnable {
+@Named("peerToPeerMessageSender")
+public class PeerToPeerMessageSender implements EventObserver, Runnable,
+		MessageSender {
 
 	private Logger log = Logger.getLogger(PeerToPeerMessageSender.class
 			.toString());
+
+	@Inject
+	private PeerToPeerMessageReceiver messageReceiver;
+
+	@Inject
+	private UserDao userDao;
+
+	@Inject
+	private ApplicationContext context;
+
+	@Inject
+	private SimConfiguration simConfiguration;
 
 	/**
 	 * Socket f�r den Server
@@ -58,20 +75,26 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 	 */
 	private Executor threadPool;
 
+	private MessageCallback messageCallback;
+
 	/**
 	 * Startet Message Server in neuem Thread.
 	 * 
 	 * @throws IOException
 	 *             Exception wenn ServerSocket nicht erzeugt werden kann
 	 */
-	public PeerToPeerMessageSender() throws IOException {
-		threadPool = Executors.newFixedThreadPool(Sim.senderThreads);
+
+	public void init() throws IOException {
+		threadPool = Executors.newFixedThreadPool(simConfiguration
+				.getSenderThreads());
 		serverSocket = new ServerSocket(0);
-		Sim.setPort(serverSocket.getLocalPort());
+		simConfiguration.setPort(serverSocket.getLocalPort());
+
 		EventDispatcher.fireEvent(Events.SERVER_INITIALISED, null);
 
 		thread = new Thread(this);
 		thread.start();
+
 	}
 
 	/**
@@ -79,21 +102,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 	 */
 	@Override
 	public void eventReceived(Events event, Object o) {
-		if (Events.MESSAGE_SENT.equals(event)) {
-			Message m = (Message) o;
-			List<String> receiver = m.getReceiver();
-			if (MessageType.SINGLE.equals(m.getMessageType())) {
-				if (receiver.size() == 1) {
-					String singleReceiver = receiver.get(0);
-					User user = ServiceLocator.getInstance()
-							.getRegistryService().getUser(singleReceiver);
-					sendMessage(user, m);
-				}
-			} else if (MessageType.ALL.equals(m.getMessageType()) || MessageType.USER_STATUS.equals(m.getMessageType())) {
-				sendMessageToAllUsers(m);
-			} 
-
-		} else if (Events.LOGOUT.equals(event)) {
+		if (Events.LOGOUT.equals(event)) {
 			thread.interrupt();
 		}
 	}
@@ -105,8 +114,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 	 *            Message.
 	 */
 	public void sendMessageToAllUsers(final Message m) {
-		List<User> users = ServiceLocator.getInstance().getRegistryService()
-				.getUsers();
+		List<User> users = userDao.getUsers();
 		for (final User user : users) {
 			threadPool.execute(new Runnable() {
 				@Override
@@ -156,7 +164,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 
 			// message object senden
 			ObjectOutputStream obs = new ObjectOutputStream(os);
-			obs.writeObject(m); 
+			obs.writeObject(m);
 			obs.flush();
 			obs.close();
 			socket.close();
@@ -182,13 +190,24 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable {
 		while (!Thread.interrupted()) {
 			try {
 				Socket clientSocket = serverSocket.accept();
-				Thread worker = new Thread(new PeerToPeerMessageReceiver(
-						clientSocket));
+				PeerToPeerMessageReceiver msgRec = (PeerToPeerMessageReceiver) context
+						.getBean("peerToPeerMessageReceiver");
+				msgRec.setClientSocket(clientSocket);
+				msgRec.setMessageCallback(messageCallback);
+				Thread worker = new Thread(msgRec);
 				worker.start();
 			} catch (IOException e) {
 				log.log(Level.SEVERE, "client socket connection error", e);
 			}
 		}
+	}
+
+	public MessageCallback getMessageCallback() {
+		return messageCallback;
+	}
+
+	public void setMessageCallback(MessageCallback messageCallback) {
+		this.messageCallback = messageCallback;
 	}
 
 }

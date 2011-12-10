@@ -14,13 +14,15 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseListener;
 import java.util.List;
 
-import devhood.im.sim.Sim;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Message;
-import devhood.im.sim.service.ServiceLocator;
-import devhood.im.sim.service.interfaces.RegistryService;
+import devhood.im.sim.service.interfaces.UserService;
 
 /**
  * Verwaltet das SystemTray.
@@ -28,6 +30,7 @@ import devhood.im.sim.service.interfaces.RegistryService;
  * @author flo
  * 
  */
+@Named("systemTrayManager")
 public class SystemTrayManager implements EventObserver {
 
 	/**
@@ -35,42 +38,27 @@ public class SystemTrayManager implements EventObserver {
 	 */
 	private String lastUser;
 
-	private RegistryService registryService = ServiceLocator.getInstance()
-			.getRegistryService();
+	@Inject
+	private UserService userService;
 
 	/**
 	 * Referenz auf das TrayIcon.
 	 */
 	private TrayIcon systrayIcon;
 
-	/**
-	 * Sollen systray messages gezeigt werden oder nicht.
-	 */
-	private boolean showSystrayMessages = true;
-
-	
-	/**
-	 * Zeigt die Stream Meldungen im systray an oder nicht.
-	 */
-	private boolean showStreamInTray = true;
-	
-	/**
-	 * Zeigt die Statusmeldungen im Tray an oder nicht.
-	 */
-	private boolean showStatusInTray = true;
-	
-	public SystemTrayManager() {
-		init();
-		EventDispatcher.add(this);
-	}
+	@Inject
+	private SimConfiguration simConfiguration;
 
 	public void init() {
+		EventDispatcher.add(this);
+
 		final SystemTray tray = SystemTray.getSystemTray();
 
-		Image trayIcon = Sim.trayIcon;
+		Image trayIcon = simConfiguration.getTrayIcon();
 
 		PopupMenu popup = new PopupMenu();
-		systrayIcon = new TrayIcon(trayIcon, Sim.applicationName, popup);
+		systrayIcon = new TrayIcon(trayIcon,
+				simConfiguration.getApplicationName(), popup);
 
 		MenuItem item = new MenuItem("Exit");
 		item.setLabel("Exit");
@@ -82,32 +70,32 @@ public class SystemTrayManager implements EventObserver {
 			 */
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				registryService.logout(Sim.getCurrentUser().getName());
+				userService.logout(simConfiguration.getUsername());
 				System.exit(0);
 
 			}
 		});
 		popup.add(item);
-		
-		
-		CheckboxMenuItem systrayMessages = new CheckboxMenuItem("Systray Messages verbergen");
+
+		CheckboxMenuItem systrayMessages = new CheckboxMenuItem(
+				"Systray Messages verbergen");
 		systrayMessages.setState(false);
-		
+
 		systrayMessages.addItemListener(new ItemListener() {
-			
+
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if ( e.getStateChange() == ItemEvent.SELECTED) {
-					showSystrayMessages = false;
-				}else if ( e.getStateChange() == ItemEvent.DESELECTED) {
-					showSystrayMessages = true;
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					simConfiguration.setShowSystrayMessages(false);
+				} else if (e.getStateChange() == ItemEvent.DESELECTED) {
+					simConfiguration.setShowSystrayMessages(true);
 				}
-	
+
 			}
 		});
-		
+
 		popup.add(systrayMessages);
-		
+
 		try {
 			tray.add(systrayIcon);
 		} catch (Exception e) {
@@ -139,18 +127,22 @@ public class SystemTrayManager implements EventObserver {
 		if (Events.MESSAGE_RECEIVED.equals(event)) {
 			Message m = (Message) o;
 			if (devhood.im.sim.model.MessageType.ALL.equals(m.getMessageType())) {
-				if (!m.getSender().contains(Sim.getCurrentUser().getName()) && showStreamInTray) {
+				if (!m.getSender().contains(simConfiguration.getUsername())
+						&& simConfiguration.isShowStreamInTray()) {
 					displayMessage("Stream: " + m.getSender(), m.getText(),
 							MessageType.INFO);
 				}
-				lastUser = Sim.streamTabName;
-			} else if ( devhood.im.sim.model.MessageType.SINGLE.equals(m.getMessageType())){
+				lastUser = simConfiguration.getStreamTabName();
+			} else if (devhood.im.sim.model.MessageType.SINGLE.equals(m
+					.getMessageType())) {
 				displayMessage(m.getSender(), m.getText(), MessageType.INFO);
 				lastUser = m.getSender();
-			}else if ( devhood.im.sim.model.MessageType.USER_STATUS.equals(m.getMessageType()) && showStatusInTray) {
-				if ( !Sim.getCurrentUser().getName().equals(m.getSender())) {
-					displayMessage(m.getSender(), m.getUserStatus().getText(), MessageType.INFO);
-					lastUser = m.getSender();				
+			} else if (devhood.im.sim.model.MessageType.USER_STATUS.equals(m
+					.getMessageType()) && simConfiguration.isShowStatusInTray()) {
+				if (!simConfiguration.getUsername().equals(m.getSender())) {
+					displayMessage(m.getSender(), m.getUserStatus().getText(),
+							MessageType.INFO);
+					lastUser = m.getSender();
 				}
 			}
 
@@ -178,7 +170,7 @@ public class SystemTrayManager implements EventObserver {
 	 */
 	public void displayMessage(String title, String message,
 			MessageType messageType) {
-		if (showSystrayMessages) {
+		if (simConfiguration.isShowSystrayMessages()) {
 			systrayIcon.displayMessage(title, message, messageType);
 		}
 	}
@@ -191,30 +183,6 @@ public class SystemTrayManager implements EventObserver {
 	 */
 	public void addMouseListener(MouseListener listener) {
 		systrayIcon.addMouseListener(listener);
-	}
-
-	public boolean isShowSystrayMessages() {
-		return showSystrayMessages;
-	}
-
-	public void setShowSystrayMessages(boolean showSystrayMessages) {
-		this.showSystrayMessages = showSystrayMessages;
-	}
-
-	public boolean isShowStreamInTray() {
-		return showStreamInTray;
-	}
-
-	public void setShowStreamInTray(boolean showStreamInTray) {
-		this.showStreamInTray = showStreamInTray;
-	}
-
-	public boolean isShowStatusInTray() {
-		return showStatusInTray;
-	}
-
-	public void setShowStatusInTray(boolean showStatusInTray) {
-		this.showStatusInTray = showStatusInTray;
 	}
 
 }

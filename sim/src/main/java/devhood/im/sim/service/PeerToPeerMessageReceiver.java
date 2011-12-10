@@ -10,28 +10,45 @@ import java.util.logging.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-import devhood.im.sim.Sim;
-import devhood.im.sim.event.EventDispatcher;
-import devhood.im.sim.event.Events;
+import org.springframework.context.annotation.Scope;
+
+import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.model.Message;
+import devhood.im.sim.service.interfaces.MessageCallback;
 
 /**
- * Bekommt vom ServerSocket eine neue Verbindung zu einem Client und empf�ngt
+ * Bekommt vom ServerSocket eine neue Verbindung zu einem Client und empfängt
  * eine neue Message
  * 
  * @author Tobi
  * 
  */
+@Named("peerToPeerMessageReceiver")
+@Scope("prototype")
 public class PeerToPeerMessageReceiver implements Runnable {
 
 	private Logger log = Logger.getLogger(PeerToPeerMessageReceiver.class
 			.toString());
 
 	/**
-	 * Socket f�r den Server
+	 * Socket für den Server.
 	 */
 	private Socket clientSocket;
+
+	/**
+	 * Callback bei eingehender Nachricht.
+	 */
+	private MessageCallback messageCallback;
+
+	@Inject
+	private SimConfiguration simConfiguration;
+
+	public PeerToPeerMessageReceiver() {
+
+	}
 
 	/**
 	 * Initialisiert Worker mit aktueller Verbindung
@@ -39,12 +56,14 @@ public class PeerToPeerMessageReceiver implements Runnable {
 	 * @param clientSocket
 	 *            aktuelle Client Socket Connection
 	 */
-	public PeerToPeerMessageReceiver(Socket clientSocket) {
+	public PeerToPeerMessageReceiver(Socket clientSocket,
+			MessageCallback messageCallback) {
 		this.clientSocket = clientSocket;
+		this.messageCallback = messageCallback;
 	}
 
 	/**
-	 * Empf�ngt neue Nachricht eines Clients
+	 * Empfängt neue Nachricht eines Clients
 	 */
 	@Override
 	public void run() {
@@ -58,7 +77,8 @@ public class PeerToPeerMessageReceiver implements Runnable {
 
 				// AES Key mit RSA entschluesseln
 				Cipher cipher = Cipher.getInstance("RSA");
-				cipher.init(Cipher.UNWRAP_MODE, Sim.getKeyPair().getPrivate());
+				cipher.init(Cipher.UNWRAP_MODE, simConfiguration.getKeyPair()
+						.getPrivate());
 				Key key = cipher.unwrap(wrappedKey, "AES", Cipher.SECRET_KEY);
 
 				// daten mit AES entschluesseln
@@ -78,7 +98,7 @@ public class PeerToPeerMessageReceiver implements Runnable {
 				log.log(Level.SEVERE,
 						"ungültige message empfangen (validation)");
 			} else {
-				EventDispatcher.fireEvent(Events.MESSAGE_RECEIVED, message);
+				messageCallback.messageReceivedCallback(message);
 			}
 
 		} catch (IOException e) {
@@ -96,5 +116,21 @@ public class PeerToPeerMessageReceiver implements Runnable {
 			valid = false;
 		}
 		return valid;
+	}
+
+	public Socket getClientSocket() {
+		return clientSocket;
+	}
+
+	public void setClientSocket(Socket clientSocket) {
+		this.clientSocket = clientSocket;
+	}
+
+	public MessageCallback getMessageCallback() {
+		return messageCallback;
+	}
+
+	public void setMessageCallback(MessageCallback messageCallback) {
+		this.messageCallback = messageCallback;
 	}
 }

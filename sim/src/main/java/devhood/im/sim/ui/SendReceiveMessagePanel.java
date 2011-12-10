@@ -1,7 +1,6 @@
 package devhood.im.sim.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -10,7 +9,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,6 +19,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
@@ -31,7 +31,6 @@ import javax.swing.JTextArea;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import javax.swing.JComboBox.KeySelectionManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.HyperlinkEvent;
@@ -40,8 +39,10 @@ import javax.swing.text.DefaultCaret;
 import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import devhood.im.sim.Sim;
+import devhood.im.sim.config.SimConfiguration;
+import devhood.im.sim.controller.SimControl;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
@@ -50,8 +51,9 @@ import devhood.im.sim.model.MessageType;
 import devhood.im.sim.model.MessagingError;
 import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
-import devhood.im.sim.service.ServiceLocator;
-import devhood.im.sim.ui.util.ComponentProvider;
+import devhood.im.sim.service.interfaces.UserService;
+import devhood.im.sim.ui.util.SmileyFactory;
+import devhood.im.sim.ui.util.UserColorFactory;
 
 /**
  * Panel to send and receive messages.
@@ -59,12 +61,8 @@ import devhood.im.sim.ui.util.ComponentProvider;
  * @author flo
  * 
  */
+@Named("sendReceiveMessagePanel")
 public class SendReceiveMessagePanel extends JPanel implements EventObserver {
-
-	/**
-	 * Name des Tabs, in dem die Nachrichten an alle gesendet, empfangen werden.
-	 */
-	private String streamTabName = Sim.streamTabName;
 
 	/**
 	 * Tabbed pane der einzelnen Konversationen. Eine Konv. pro Tab.
@@ -91,8 +89,25 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	private List<String> unreadTabsList = new ArrayList<String>();
 
-	public SendReceiveMessagePanel() {
-		super();
+	@Inject
+	private SimControl simControl;
+
+	@Inject
+	private UserService userService;
+
+	@Inject
+	private UserPanel userPanel;
+
+	@Inject
+	private UserColorFactory userColorFactory;
+
+	@Inject
+	private SmileyFactory smileyFactory;
+
+	@Inject
+	private SimConfiguration simConfiguration;
+
+	public void init() {
 		setLayout(new BorderLayout());
 
 		tabbedPane = new JTabbedPane();
@@ -100,7 +115,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		tabbedPane.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(e.getClickCount()==2) {
+				if (e.getClickCount() == 2) {
 					int index = tabbedPane.getSelectedIndex();
 					if (index == 0) {
 						return;
@@ -109,10 +124,10 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				}
 			}
 		});
-		
+
 		addToTabPane(
-				streamTabName,
-				Sim.applicationName
+				simConfiguration.getStreamTabName(),
+				simConfiguration.getApplicationName()
 						+ "<br /> "
 						+ "<i>Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i>");
 
@@ -128,7 +143,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 					String toUser = getCurrentSelectedTabTitle();
 					sendMessage(toUser);
 				} else {
-					sendMessage(streamTabName);
+					sendMessage(simConfiguration.getStreamTabName());
 				}
 			}
 		});
@@ -173,19 +188,19 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				JComboBox box = (JComboBox) e.getSource();
 				UserStatus status = (UserStatus) box.getSelectedItem();
 
-				Sim.getCurrentUser().setStatusType(status);
+				simConfiguration.getCurrentUser().setStatusType(status);
 				Message statusMessage = new Message();
 				statusMessage.setMessageType(MessageType.USER_STATUS);
 				statusMessage.setUserStatus(status);
-				statusMessage.setSender(Sim.getCurrentUser().getName());
+				statusMessage.setSender(simConfiguration.getCurrentUser()
+						.getName());
 
-				List<User> users = ServiceLocator.getInstance()
-						.getRegistryService().getUsers();
+				List<User> users = userService.getUsers();
 				for (User user : users) {
 					statusMessage.getReceiver().add(user.getName());
 				}
 
-				EventDispatcher.fireEvent(Events.MESSAGE_SENT, statusMessage);
+				simControl.sendMessage(statusMessage);
 			}
 		});
 
@@ -201,6 +216,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		createUnreadMessagesTimer();
 
 		EventDispatcher.add(this);
+
 	}
 
 	/**
@@ -211,6 +227,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	public void clearText(JTextComponent area) {
 		area.setText(null);
+		area.moveCaretPosition(0);
 	}
 
 	/**
@@ -246,7 +263,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	}
 
 	/**
-	 * Schließt den Tab mit dem angegebenen index:
+	 * Schlieï¿½t den Tab mit dem angegebenen index:
 	 * 
 	 * @param index
 	 *            tab
@@ -273,32 +290,41 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		JTextComponent input = (JTextComponent) ((JViewport) ((JScrollPane) p
 				.getComponent(1)).getComponent(0)).getComponent(0);
 
+		if (StringUtils.isEmpty(input.getText().trim())) {
+			clearText(input);
+			return;
+		}
+
 		final Message newMessage = new Message();
 
 		List<String> usernames = new ArrayList<String>();
 		usernames.add(toUser);
 		newMessage.setReceiver(usernames);
-		newMessage.setSender(Sim.getCurrentUser().getName());
+		newMessage.setSender(simConfiguration.getUsername());
 		newMessage.setText(input.getText());
 
-		if (toUser.equals(streamTabName)) { // Ist dies im Stremtab - nachricht
-											// an alle
+		if (toUser.equals(simConfiguration.getStreamTabName())) { // Ist dies im
+																	// Stremtab
+																	// -
+																	// nachricht
+			// an alle
 			newMessage.setMessageType(MessageType.ALL);
 			newMessage.getReceiver().clear();
-			List<User> users = ServiceLocator.getInstance()
-					.getRegistryService().getUsers();
+			List<User> users = userService.getUsers();
 			for (User user : users) {
 				newMessage.getReceiver().add(user.getName());
 			}
 			System.out.println("Nachricht an alle");
 		}
 
-		String title = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
+		if (!toUser.equals(simConfiguration.getStreamTabName())) { // Ist dies
+																	// im
+																	// Stremtab
+																	// -
+																	// nachricht
+			// an alle
 
-		if (!toUser.equals(streamTabName)) { // Ist dies im Stremtab - nachricht
-												// an alle
-
-			if (isUserOnline(toUser)) {
+			if (userService.isUserOnline(toUser)) {
 				timeline.setText(getFormattedMessage(newMessage,
 						timeline.getText()));
 			} else {
@@ -308,7 +334,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		}
 
-		input.setText(null);
+		clearText(input);
 
 		moveCaretDown((JEditorPane) timeline);
 
@@ -326,7 +352,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 			@Override
 			protected Void doInBackground() throws Exception {
-				EventDispatcher.fireEvent(Events.MESSAGE_SENT, newMessage);
+				simControl.sendMessage(newMessage);
 				return null;
 			}
 
@@ -338,18 +364,6 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		};
 
 		worker.execute();
-	}
-
-	/**
-	 * Gibt zurueck ob user online ist oder nicht.
-	 * 
-	 * @param user
-	 *            username
-	 * @return return
-	 */
-	public boolean isUserOnline(String user) {
-		return ComponentProvider.getInstance().getUserPanel().getCurrentUsers()
-				.contains(user);
 	}
 
 	/**
@@ -390,9 +404,10 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 					+ " ist jetzt "
 					+ (Events.USER_OFFLINE_NOTICE.equals(event) ? "offline"
 							: "online");
-			outputStatusMessage(message, nameTextAreaMap.get(streamTabName));
+			outputStatusMessage(message,
+					nameTextAreaMap.get(simConfiguration.getStreamTabName()));
 
-			outputStatusMessage(message, (List<String>) o);
+			outputStatusMessage(message, (List<User>) o);
 
 		} else if (Events.MESSAGE_SEND_FAILED.equals(event)) {
 
@@ -428,21 +443,18 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		String sender = m.getSender();
 
 		if (MessageType.ALL.equals(m.getMessageType())) {
-			sender = streamTabName;
+			sender = simConfiguration.getStreamTabName();
 		}
 		if (MessageType.USER_STATUS.equals(m.getMessageType())) {
 			// Wenn eine Statusnachricht von sich selbst kommt, nicht
 			// verarbeiten
-			if (Sim.getCurrentUser().getName().equals(m.getSender())) {
+			if (simConfiguration.getUsername().equals(m.getSender())) {
 				return;
 			}
 
-			List<String> tabs = new ArrayList<String>();
-			tabs.add(streamTabName);
-			tabs.add(sender);
-
 			String statusMessage = getFormattedUserStatusMessage(m);
-			outputStatusMessage(statusMessage, tabs);
+			outputStatusMessage(statusMessage,
+					simConfiguration.getStreamTabName(), sender);
 		}
 		if (!MessageType.USER_STATUS.equals(m.getMessageType())) {
 			final JEditorPane textArea = nameTextAreaMap.get(sender);
@@ -503,7 +515,13 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @param tabs
 	 *            Liste von Tabs
 	 */
-	protected void outputStatusMessage(String statusMessage, List<String> tabs) {
+	protected void outputStatusMessage(String statusMessage, List<User> tabs) {
+		for (User user : tabs) {
+			outputStatusMessage(statusMessage, user.getName());
+		}
+	}
+
+	protected void outputStatusMessage(String statusMessage, String... tabs) {
 		for (String tab : tabs) {
 			JEditorPane textArea = nameTextAreaMap.get(tab);
 			if (textArea != null) {
@@ -571,15 +589,14 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		StringBuffer msg = new StringBuffer();
 
 		/* Farbe des Benutzers ermitteln. */
-		colorHexValue = ComponentProvider.getInstance().getUserColorFactory()
-				.getOrReserveUserColor(sender).getHexValue();
+		colorHexValue = userColorFactory.getOrReserveUserColor(sender)
+				.getHexValue();
 
 		for (String c : chunks) {
 			if (c.matches(linkPattern)) {
 				c = "<a href=\"" + c + "\">" + c + "</a>";
 			} else {
-				c = ComponentProvider.getInstance().getSmileyFactory()
-						.applySmiles(c);
+				c = smileyFactory.applySmiles(c);
 			}
 			msg.append(" ");
 			msg.append(c);
@@ -640,7 +657,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		textPanel.add(messageScrollPane, BorderLayout.SOUTH);
 
-		tabbedPane.addTab(label, Sim.readIcon, textPanel);
+		tabbedPane.addTab(label, simConfiguration.getReadIcon(), textPanel);
 
 		tabbedPane.addChangeListener(new ChangeListener() {
 
@@ -815,7 +832,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		}
 		;
 		int index = tabbedPane.indexOfTab(name);
-		tabbedPane.setIconAt(index, Sim.unreadIcon);
+		tabbedPane.setIconAt(index, simConfiguration.getUnreadIcon());
 
 	}
 
@@ -828,6 +845,6 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	protected void setIconToReadMessages(String name) {
 		unreadTabsList.remove(name);
 		int index = tabbedPane.indexOfTab(name);
-		tabbedPane.setIconAt(index, Sim.readIcon);
+		tabbedPane.setIconAt(index, simConfiguration.getReadIcon());
 	}
 }

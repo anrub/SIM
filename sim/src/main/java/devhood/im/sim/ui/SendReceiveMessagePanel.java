@@ -161,7 +161,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			}
 		});
 
-		// Schlie�t das aktuelle Tab.
+		// Schlieï¿½t das aktuelle Tab.
 		JButton closeButton = new JButton("Close");
 		closeButton.addActionListener(new ActionListener() {
 
@@ -231,7 +231,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	}
 
 	/**
-	 * Erzeugt den Timer, der regelm��ig checkt ob es ungelesene Nachrichten
+	 * Erzeugt den Timer, der regelmï¿½ï¿½ig checkt ob es ungelesene Nachrichten
 	 * gibt.
 	 */
 	public void createUnreadMessagesTimer() {
@@ -263,7 +263,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	}
 
 	/**
-	 * Schlie�t den Tab mit dem angegebenen index:
+	 * Schlieï¿½t den Tab mit dem angegebenen index:
 	 * 
 	 * @param index
 	 *            tab
@@ -414,7 +414,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			final MessagingError error = (MessagingError) o;
 			if (MessageType.SINGLE.equals(error.getMessage().getMessageType())) {
 				// Muss per invokeLater auf dem Swing Event Dispatcher Thread
-				// ausgef�hrt werden siehe
+				// ausgefï¿½hrt werden siehe
 				// http://docs.oracle.com/javase/tutorial/uiswing/concurrency/dispatch.html
 				// http://tips4java.wordpress.com/2008/10/22/text-area-scrolling/
 				SwingUtilities.invokeLater(new Runnable() {
@@ -498,7 +498,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @param statusMessage
 	 *            beliebige Statusmeldung
 	 * @param textArea
-	 *            Zieltab f�r Statusmeldung
+	 *            Zieltab fï¿½r Statusmeldung
 	 */
 	protected void outputStatusMessage(String statusMessage,
 			JTextComponent textArea) {
@@ -750,7 +750,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 			/**
 			 * Bei Klick auf einen Link in der Timeline, wird der Browser
-			 * ge�ffnet.
+			 * geï¿½ffnet.
 			 * 
 			 * @param e
 			 *            Event.
@@ -760,7 +760,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 
-					// Fenster asynchron �ffnen, sonst blockt ui.
+					// Fenster asynchron ï¿½ffnen, sonst blockt ui.
 					SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
 						@Override

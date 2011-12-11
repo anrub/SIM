@@ -96,7 +96,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	/**
 	 * Filetransfer: Mapping id->File.
 	 */
-	private Map<String, File> idFileMap = new ConcurrentHashMap<String, File>();
+	private static Map<String, File> idFileMap = new ConcurrentHashMap<String, File>();
 
 	/**
 	 * Filetransfer: Mapping Id -> aktueller Progress beim versenden.
@@ -106,12 +106,12 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	/**
 	 * Filetransfer: Mapping Id -> Filename
 	 */
-	private Map<String, String> idFilenameMap = new ConcurrentHashMap<String, String>();
+	private static Map<String, String> idFilenameMap = new ConcurrentHashMap<String, String>();
 
 	/**
 	 * Filetransfer: Mapping Id -> Empfaenger Obj.
 	 */
-	private Map<String, FileReceiver> idReceiverMap = new ConcurrentHashMap<String, FileReceiver>();
+	private static Map<String, FileReceiver> idReceiverMap = new ConcurrentHashMap<String, FileReceiver>();
 
 	/**
 	 * Startet Message Server in neuem Thread.
@@ -152,6 +152,12 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 		m.setText("Id: " + id + " wurde abgelehnt.");
 		m.getReceiver().add(username);
 		m.setSender(simConfiguration.getUsername());
+
+		FileReceiver r = idReceiverMap.get(m.getId());
+		if (r != null) {
+			r.stopped = true;
+		}
+		idReceiverMap.remove(m.getId());
 
 		User u = userDao.getUser(username);
 		sendMessage(u, m);
@@ -451,14 +457,6 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 		} else if (Events.MESSAGE_FILE_REQUEST_RECEIVED.equals(event)) {
 			FileSendRequestMessage msg = (FileSendRequestMessage) o;
 			idFilenameMap.put(msg.getId(), msg.getFilename());
-		} else if (Events.MESSAGE_FILE_REJECT_RECEIVED.equals(event)) {
-			FileSendRejectMessage m = (FileSendRejectMessage) o;
-			FileReceiver r = idReceiverMap.get(m.getId());
-			if (r != null) {
-				r.stopped = true;
-			}
-			idReceiverMap.remove(m.getId());
-
 		}
 	}
 

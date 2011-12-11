@@ -427,12 +427,16 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 					@Override
 					public void run() {
-
+						JTextComponent textarea = nameTextAreaMap.get(error
+								.getMessage().getReceiver().get(0));
+						if (textarea == null) {
+							textarea = nameTextAreaMap.get(simConfiguration
+									.getStreamTabName());
+						}
 						outputStatusMessage(
 								"Fehler: Message konnte nicht gesendet werden: "
 										+ error.getException().getMessage(),
-								nameTextAreaMap.get(error.getMessage()
-										.getReceiver().get(0)));
+								textarea);
 					}
 				});
 			}
@@ -820,6 +824,10 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		int index = tabbedPane.indexOfTab(name);
 		if (index != -1) {
 			tabbedPane.setSelectedIndex(index);
+			JTextComponent inputComponent = inputTextAreaMap.get(name);
+			if (inputComponent != null) {
+				inputComponent.requestFocusInWindow();
+			}
 		}
 	}
 

@@ -136,16 +136,7 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 														.getFilename()
 												+ " von "
 												+ fileSendRequestMessage
-														.getSender()
-												+ ".. "
-												+ perc
-												+ "% ("
-												+ (int) (messageSender
-														.getProgress(id) / 1024)
-												+ "KB/"
-												+ (int) (fileSendRequestMessage
-														.getSize() / 1024)
-												+ "KB)");
+														.getSender());
 									}
 								} else {
 									close.setVisible(true);

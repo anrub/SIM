@@ -119,18 +119,11 @@ public class SendFileFrame extends JFrame implements EventObserver {
 						int perc = (int) ((messageSender.getProgress(id) * 100) / fileToSend
 								.length());
 						bar.setValue(perc);
-						if (bar.getValue() != 0) {
+						if (bar.getValue() != 0  ) {
 							tryLabel.setText("Sende "
 									+ fileToSend.getName()
 									+ " an "
-									+ toUser
-									+ ".. "
-									+ perc
-									+ "% ("
-									+ (int) (messageSender.getProgress(id) / 1024)
-									+ "KB/"
-									+ (int) (fileToSend.length() / 1024)
-									+ "KB)");
+									+ toUser);
 						}
 					} else {
 						close.setVisible(true);

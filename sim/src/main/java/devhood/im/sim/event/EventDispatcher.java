@@ -2,6 +2,7 @@ package devhood.im.sim.event;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Event Dispatcher, verteilt die Events an alle registierten
@@ -15,7 +16,7 @@ public class EventDispatcher {
 	/**
 	 * Liste der registrierten Subscriber.
 	 */
-	private static List<EventObserver> observer = new ArrayList<EventObserver>();
+	private static List<EventObserver> observer = new CopyOnWriteArrayList<EventObserver>();
 
 	/**
 	 * Feuert Event.

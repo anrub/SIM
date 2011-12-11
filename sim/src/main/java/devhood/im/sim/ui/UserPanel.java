@@ -5,6 +5,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -13,14 +14,21 @@ import java.util.TimerTask;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.swing.BoxLayout;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+
+import org.springframework.context.ApplicationContext;
 
 import devhood.im.sim.config.SimConfiguration;
+import devhood.im.sim.controller.SimControl;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
+import devhood.im.sim.service.interfaces.MessageSender;
 import devhood.im.sim.service.interfaces.UserChangeListener;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.util.UiUtil;
@@ -42,6 +50,12 @@ public class UserPanel extends JPanel {
 
 	@Inject
 	private SimConfiguration simConfiguration;
+
+	@Inject
+	private SimControl simControl;
+
+	@Inject
+	private ApplicationContext applicationContext;
 
 	/**
 	 * Initialisiert, füllt das UserPanel.
@@ -77,8 +91,38 @@ public class UserPanel extends JPanel {
 	 *            User.
 	 * @return Label
 	 */
-	public JLabel createUserLabel(User user) {
+	public JLabel createUserLabel(final User user) {
 		final JLabel userLabel = new JLabel(user.getName());
+		final JPopupMenu popupMenu = new JPopupMenu();
+		final JMenuItem sendFileItem = new JMenuItem("Send File");
+		sendFileItem.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (e.getSource() == sendFileItem) {
+					JFileChooser fc = new JFileChooser();
+					int returnVal = fc.showOpenDialog(userLabel);
+
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						SendFileFrame sendFileFrame = new SendFileFrame();
+						sendFileFrame.init();
+						// sendFileFrame.
+
+						sendFileFrame.setMessageSender(applicationContext
+								.getBean(MessageSender.class));
+						File file = fc.getSelectedFile();
+						sendFileFrame.setFileToSend(file);
+						sendFileFrame.setToUser(user.getName());
+						sendFileFrame.showFrame();
+					} else {
+
+					}
+
+				}
+			}
+		});
+		popupMenu.add(sendFileItem);
+
 		userLabel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -86,6 +130,13 @@ public class UserPanel extends JPanel {
 				EventDispatcher.fireEvent(Events.USER_SELECTED,
 						userLabel.getText());
 
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					popupMenu.show(e.getComponent(), e.getX(), e.getY());
+				}
 			}
 
 			@Override

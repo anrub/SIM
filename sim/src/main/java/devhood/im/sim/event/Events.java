@@ -1,5 +1,7 @@
 package devhood.im.sim.event;
 
+import devhood.im.sim.model.FileSendAcceptMessage;
+
 /**
  * Events in der Applikation.
  * 
@@ -54,5 +56,19 @@ public enum Events {
 	/**
 	 * wird geworfen wenn ein Fehler beim senden auftrat parameter: Exception e
 	 */
-	MESSAGE_SEND_FAILED;
+	MESSAGE_SEND_FAILED,
+	/**
+	 * Anfrage zur Dateiubertragung empfangen. Parameter :
+	 * FileSendRequestMessage m
+	 */
+	MESSAGE_FILE_REQUEST_RECEIVED,
+	/**
+	 * Akzeptieren des dateiempfangs empfangen. Parameter :
+	 * {@link FileSendAcceptMessage} m.
+	 */
+	MESSAGE_FILE_ACCEPT_RECEIVED,
+	/**
+	 * Ein Dateiversand wurde abgelehnt.
+	 */
+	MESSAGE_FILE_REJECT_RECEIVED;
 }

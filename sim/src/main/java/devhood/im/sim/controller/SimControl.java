@@ -8,6 +8,9 @@ import javax.inject.Named;
 import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.Events;
+import devhood.im.sim.model.FileSendAcceptMessage;
+import devhood.im.sim.model.FileSendRejectMessage;
+import devhood.im.sim.model.FileSendRequestMessage;
 import devhood.im.sim.model.Message;
 import devhood.im.sim.model.MessageType;
 import devhood.im.sim.model.User;
@@ -73,6 +76,26 @@ public class SimControl {
 				System.out.println(m);
 				EventDispatcher.fireEvent(Events.MESSAGE_RECEIVED, m);
 			}
+
+			@Override
+			public void messageFileRequestReceivedCallback(
+					FileSendRequestMessage m) {
+				EventDispatcher.fireEvent(Events.MESSAGE_FILE_REQUEST_RECEIVED,
+						m);
+			}
+
+			@Override
+			public void messageFileRequestAcceptCallback(FileSendAcceptMessage m) {
+				EventDispatcher.fireEvent(Events.MESSAGE_FILE_ACCEPT_RECEIVED,
+						m);
+			}
+
+			@Override
+			public void messageFileRequestRejectCallback(FileSendRejectMessage m) {
+				EventDispatcher.fireEvent(Events.MESSAGE_FILE_REJECT_RECEIVED,
+						m);
+			}
+
 		});
 
 		userService.refresh(simConfiguration.getCurrentUser());

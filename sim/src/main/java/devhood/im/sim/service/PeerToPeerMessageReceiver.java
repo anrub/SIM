@@ -16,6 +16,9 @@ import javax.inject.Named;
 import org.springframework.context.annotation.Scope;
 
 import devhood.im.sim.config.SimConfiguration;
+import devhood.im.sim.model.FileSendAcceptMessage;
+import devhood.im.sim.model.FileSendRejectMessage;
+import devhood.im.sim.model.FileSendRequestMessage;
 import devhood.im.sim.model.Message;
 import devhood.im.sim.service.interfaces.MessageCallback;
 
@@ -98,7 +101,18 @@ public class PeerToPeerMessageReceiver implements Runnable {
 				log.log(Level.SEVERE,
 						"ungültige message empfangen (validation)");
 			} else {
-				messageCallback.messageReceivedCallback(message);
+				if (message instanceof FileSendRequestMessage) {
+					messageCallback
+							.messageFileRequestReceivedCallback((FileSendRequestMessage) message);
+				} else if (message instanceof FileSendAcceptMessage) {
+					messageCallback
+							.messageFileRequestAcceptCallback((FileSendAcceptMessage) message);
+				} else if (message instanceof FileSendRejectMessage) {
+					messageCallback
+							.messageFileRequestRejectCallback((FileSendRejectMessage) message);
+				} else if (message instanceof Message) {
+					messageCallback.messageReceivedCallback(message);
+				}
 			}
 
 		} catch (IOException e) {

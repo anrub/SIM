@@ -40,17 +40,20 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ApplicationContext;
 
 import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.controller.SimControl;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
+import devhood.im.sim.model.FileSendRequestMessage;
 import devhood.im.sim.model.Message;
 import devhood.im.sim.model.MessageType;
 import devhood.im.sim.model.MessagingError;
 import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
+import devhood.im.sim.service.interfaces.MessageSender;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.util.SmileyFactory;
 import devhood.im.sim.ui.util.UserColorFactory;
@@ -106,6 +109,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	@Inject
 	private SimConfiguration simConfiguration;
+
+	@Inject
+	private ApplicationContext applicationContext;
 
 	public void init() {
 		setLayout(new BorderLayout());
@@ -430,6 +436,14 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 					}
 				});
 			}
+		} else if (Events.MESSAGE_FILE_REQUEST_RECEIVED.equals(event)) {
+			ReceiveFileFrame frame = new ReceiveFileFrame();
+			frame.init();
+			frame.setMessageSender((MessageSender) applicationContext
+					.getBean(MessageSender.class));
+			frame.setFileSendRequestMessage((FileSendRequestMessage) o);
+
+			frame.showFrame();
 		}
 	}
 

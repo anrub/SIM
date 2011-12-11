@@ -17,6 +17,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
@@ -104,13 +105,21 @@ public class UserPanel extends JPanel {
 					int returnVal = fc.showOpenDialog(userLabel);
 
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						File file = fc.getSelectedFile();
+						if (file.length() == 0) {
+							JOptionPane.showMessageDialog(null,
+									"Die Datei hat eine Größe von 0!");
+							return;
+						}
+
 						SendFileFrame sendFileFrame = new SendFileFrame();
+						sendFileFrame.setLocationRelativeTo(userLabel);
+
 						sendFileFrame.init();
 						// sendFileFrame.
 
 						sendFileFrame.setMessageSender(applicationContext
 								.getBean(MessageSender.class));
-						File file = fc.getSelectedFile();
 						sendFileFrame.setFileToSend(file);
 						sendFileFrame.setToUser(user.getName());
 						sendFileFrame.showFrame();

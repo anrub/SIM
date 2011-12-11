@@ -113,8 +113,6 @@ public class UserPanel extends JPanel {
 						}
 
 						SendFileFrame sendFileFrame = new SendFileFrame();
-						sendFileFrame.setLocationRelativeTo(userLabel);
-
 						sendFileFrame.init();
 						// sendFileFrame.
 

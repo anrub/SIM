@@ -66,14 +66,10 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 
 		container.setLayout(new BoxLayout(container, BoxLayout.PAGE_AXIS));
 
-		JLabel label = new JLabel(fileSendRequestMessage.getSender()
-				+ " möchte Ihnen folgende Datei schicken:");
-		JLabel label1 = new JLabel("Dateiname : "
-				+ fileSendRequestMessage.getFilename());
-		JLabel label2 = new JLabel("Dateigröße: "
+		final JLabel tryLabel = new JLabel(fileSendRequestMessage.getSender()
+				+ " möchte Ihnen folgende Datei schicken: "
+				+ fileSendRequestMessage.getFilename() + ", Dateigröße: "
 				+ fileSendRequestMessage.getSize());
-		JLabel label3 = new JLabel("Nachricht : "
-				+ fileSendRequestMessage.getText());
 
 		final JProgressBar bar = new JProgressBar();
 		bar.setIndeterminate(true);
@@ -134,6 +130,23 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 									int perc = (int) ((messageSender
 											.getProgress(id) * 100) / sizeToReceive);
 									bar.setValue(perc);
+									if (bar.getValue() != 0) {
+										tryLabel.setText("Empfange "
+												+ fileSendRequestMessage
+														.getFilename()
+												+ " von "
+												+ fileSendRequestMessage
+														.getSender()
+												+ ".. "
+												+ perc
+												+ "% ("
+												+ (int) (messageSender
+														.getProgress(id) / 1024)
+												+ "KB/"
+												+ (int) (fileSendRequestMessage
+														.getSize() / 1024)
+												+ "KB)");
+									}
 								} else {
 									close.setVisible(true);
 									reject.setVisible(false);
@@ -161,10 +174,7 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 			}
 		});
 
-		panel.add(label);
-		panel.add(label1);
-		panel.add(label2);
-		panel.add(label3);
+		panel.add(tryLabel);
 
 		buttons.add(ok);
 		buttons.add(close);

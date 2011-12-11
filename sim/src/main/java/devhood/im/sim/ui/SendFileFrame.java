@@ -83,8 +83,8 @@ public class SendFileFrame extends JFrame implements EventObserver {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 		setTitle(fileToSend.getName() + " an " + toUser + " schicken...");
 
-		JLabel label = new JLabel("Versuche " + fileToSend.getName() + " an "
-				+ toUser + " zu senden, warte auf Antwort...");
+		final JLabel tryLabel = new JLabel("Versuche " + fileToSend.getName()
+				+ " an " + toUser + " zu senden, warte auf Antwort...");
 		final JProgressBar bar = new JProgressBar();
 		bar.setIndeterminate(true);
 		bar.setValue(0);
@@ -115,9 +115,23 @@ public class SendFileFrame extends JFrame implements EventObserver {
 					}
 
 					if (bar.getValue() < 100) {
+
 						int perc = (int) ((messageSender.getProgress(id) * 100) / fileToSend
 								.length());
 						bar.setValue(perc);
+						if (bar.getValue() != 0) {
+							tryLabel.setText("Sende "
+									+ fileToSend.getName()
+									+ " an "
+									+ toUser
+									+ ".. "
+									+ perc
+									+ "% ("
+									+ (int) (messageSender.getProgress(id) / 1024)
+									+ "KB/"
+									+ (int) (fileToSend.length() / 1024)
+									+ "KB)");
+						}
 					} else {
 						close.setVisible(true);
 						cancel.setVisible(false);
@@ -133,7 +147,7 @@ public class SendFileFrame extends JFrame implements EventObserver {
 		p.add(close);
 		p.add(cancel);
 
-		panel.add(label);
+		panel.add(tryLabel);
 		panel.add(bar);
 		panel.add(p);
 

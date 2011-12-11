@@ -446,7 +446,6 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			frame.setMessageSender((MessageSender) applicationContext
 					.getBean(MessageSender.class));
 			frame.setFileSendRequestMessage((FileSendRequestMessage) o);
-			frame.setLocationRelativeTo(this);
 			frame.showFrame();
 		}
 	}

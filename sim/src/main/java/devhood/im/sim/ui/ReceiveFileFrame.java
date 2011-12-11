@@ -93,7 +93,7 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 			}
 		});
 
-		JButton reject = new JButton("Abbrechen");
+		final JButton reject = new JButton("Abbrechen");
 
 		ok.addActionListener(new ActionListener() {
 
@@ -132,6 +132,7 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 									bar.setValue(perc);
 								} else {
 									close.setVisible(true);
+									reject.setVisible(false);
 								}
 
 							} catch (Exception e) {

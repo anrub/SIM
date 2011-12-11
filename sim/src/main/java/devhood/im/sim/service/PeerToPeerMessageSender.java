@@ -455,7 +455,9 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 		} else if (Events.MESSAGE_FILE_REJECT_RECEIVED.equals(event)) {
 			FileSendRejectMessage m = (FileSendRejectMessage) o;
 			FileReceiver r = idReceiverMap.get(m.getId());
-			r.stopped = true;
+			if (r != null) {
+				r.stopped = true;
+			}
 			idReceiverMap.remove(m.getId());
 
 		}

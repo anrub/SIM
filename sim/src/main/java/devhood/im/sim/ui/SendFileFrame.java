@@ -120,6 +120,7 @@ public class SendFileFrame extends JFrame implements EventObserver {
 						bar.setValue(perc);
 					} else {
 						close.setVisible(true);
+						cancel.setVisible(false);
 					}
 
 				} catch (Exception e) {

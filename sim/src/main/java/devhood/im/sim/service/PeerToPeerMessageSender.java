@@ -216,7 +216,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 
 				OutputStream os = socket.getOutputStream();
 
-			/*	try {
+				try {
 					// temporaeren AES Key erzeugen
 					KeyGenerator keygen = KeyGenerator.getInstance("AES");
 					SecureRandom random = new SecureRandom();
@@ -236,7 +236,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 				} catch (Exception e) {
 					log.log(Level.SEVERE, "verschluesselung fehlgeschlagen", e);
 				}
-*/
+
 				// message object senden
 				InputStream in = new BufferedInputStream(new FileInputStream(file));
 				idProgressSentMap.put(m.getId(), 0l);
@@ -391,7 +391,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 				InputStream is = clientSocket.getInputStream();
 
 				try {
-				/*	// AES Key lesen
+					// AES Key lesen
 					byte[] wrappedKey = new byte[256];
 					is.read(wrappedKey, 0, 256);
 
@@ -407,7 +407,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 					cipher.init(Cipher.DECRYPT_MODE, key);
 
 					is = new CipherInputStream(is, cipher);
-*/
+
 					InputStream in = new BufferedInputStream(is);
 					byte[] buffer = new byte[100];
 					int len = -1;

@@ -1,6 +1,7 @@
 package devhood.im.sim.service;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -215,7 +216,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 
 				OutputStream os = socket.getOutputStream();
 
-				try {
+			/*	try {
 					// temporaeren AES Key erzeugen
 					KeyGenerator keygen = KeyGenerator.getInstance("AES");
 					SecureRandom random = new SecureRandom();
@@ -235,9 +236,9 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 				} catch (Exception e) {
 					log.log(Level.SEVERE, "verschluesselung fehlgeschlagen", e);
 				}
-
+*/
 				// message object senden
-				InputStream in = new FileInputStream(file);
+				InputStream in = new BufferedInputStream(new FileInputStream(file));
 				idProgressSentMap.put(m.getId(), 0l);
 
 				byte[] buffer = new byte[100];
@@ -390,7 +391,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 				InputStream is = clientSocket.getInputStream();
 
 				try {
-					// AES Key lesen
+				/*	// AES Key lesen
 					byte[] wrappedKey = new byte[256];
 					is.read(wrappedKey, 0, 256);
 
@@ -406,15 +407,15 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 					cipher.init(Cipher.DECRYPT_MODE, key);
 
 					is = new CipherInputStream(is, cipher);
-
+*/
 					InputStream in = new BufferedInputStream(is);
 					byte[] buffer = new byte[100];
 					int len = -1;
 					File file = new File(storeInPath + "/"
 							+ idFilenameMap.get(id));
 					file.createNewFile();
-					FileOutputStream fos = new FileOutputStream(file);
-
+					OutputStream fos = new FileOutputStream(file);
+					fos = new BufferedOutputStream(fos);
 					idProgressSentMap.put(id, 0l);
 
 					while ((len = in.read(buffer)) != -1 && !stopped) {
@@ -516,6 +517,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 			}
 
 			// message object senden
+			os = new BufferedOutputStream(os);
 			ObjectOutputStream obs = new ObjectOutputStream(os);
 			obs.writeObject(m);
 			obs.flush();

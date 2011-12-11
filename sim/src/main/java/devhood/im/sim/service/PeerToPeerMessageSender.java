@@ -13,7 +13,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.Key;
 import java.security.SecureRandom;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -97,7 +96,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	/**
 	 * Filetransfer: Mapping id->File.
 	 */
-	private Map<String, File> idFileMap = new HashMap<String, File>();
+	private Map<String, File> idFileMap = new ConcurrentHashMap<String, File>();
 
 	/**
 	 * Filetransfer: Mapping Id -> aktueller Progress beim versenden.
@@ -107,12 +106,12 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	/**
 	 * Filetransfer: Mapping Id -> Filename
 	 */
-	private Map<String, String> idFilenameMap = new HashMap<String, String>();
+	private Map<String, String> idFilenameMap = new ConcurrentHashMap<String, String>();
 
 	/**
 	 * Filetransfer: Mapping Id -> Empfaenger Obj.
 	 */
-	private Map<String, FileReceiver> idReceiverMap = new HashMap<String, FileReceiver>();
+	private Map<String, FileReceiver> idReceiverMap = new ConcurrentHashMap<String, FileReceiver>();
 
 	/**
 	 * Startet Message Server in neuem Thread.

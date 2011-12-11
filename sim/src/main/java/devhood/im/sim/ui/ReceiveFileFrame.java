@@ -101,9 +101,13 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fc = new JFileChooser();
 
-				fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				// fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				fc.setFileSelectionMode(JFileChooser.SAVE_DIALOG);
 
-				int returnVal = fc.showOpenDialog(panel);
+				File f = new File(fileSendRequestMessage.getFilename());
+				fc.setSelectedFile(f);
+
+				int returnVal = fc.showSaveDialog(panel);
 
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					final File file = fc.getSelectedFile();

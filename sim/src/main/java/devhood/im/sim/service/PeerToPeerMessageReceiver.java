@@ -66,7 +66,8 @@ public class PeerToPeerMessageReceiver implements Runnable {
 	}
 
 	/**
-	 * Empfängt neue Nachricht eines Clients
+	 * Empfängt neue Nachricht eines Clients und ruft den
+	 * {@link MessageCallback} auf.
 	 */
 	@Override
 	public void run() {

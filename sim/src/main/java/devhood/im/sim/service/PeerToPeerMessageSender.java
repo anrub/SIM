@@ -53,7 +53,7 @@ import devhood.im.sim.service.interfaces.MessageSender;
  * versendet Nachrichten.
  * 
  * TODO: Die Crypto sachen besser zusammenfassen, ausmisten was durch den
- * fileversand dazukam.
+ * fileversand dazukam. Kann Filetransfer evtl abgekapselt werden?
  * 
  * @author Tobi, flo
  * 
@@ -66,9 +66,6 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 			.toString());
 
 	@Inject
-	private PeerToPeerMessageReceiver messageReceiver;
-
-	@Inject
 	private UserDao userDao;
 
 	@Inject
@@ -78,7 +75,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	private SimConfiguration simConfiguration;
 
 	/**
-	 * Socket f�r den Server
+	 * Socket für den Server.
 	 */
 	private ServerSocket serverSocket;
 
@@ -88,7 +85,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	private Thread thread;
 
 	/**
-	 * Threadpool f�r das versenden
+	 * Threadpool für das versenden.
 	 */
 	private Executor threadPool;
 
@@ -98,22 +95,22 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	private MessageCallback messageCallback;
 
 	/**
-	 * Mapping id->File.
+	 * Filetransfer: Mapping id->File.
 	 */
 	private Map<String, File> idFileMap = new HashMap<String, File>();
 
 	/**
-	 * Mapping Id -> aktueller Progress beim versenden.
+	 * Filetransfer: Mapping Id -> aktueller Progress beim versenden.
 	 */
 	private static Map<String, Long> idProgressSentMap = new ConcurrentHashMap<String, Long>();
 
 	/**
-	 * Mapping Id -> Filename
+	 * Filetransfer: Mapping Id -> Filename
 	 */
 	private Map<String, String> idFilenameMap = new HashMap<String, String>();
 
 	/**
-	 * Mapping Id -> Empfaenger Obj.
+	 * Filetransfer: Mapping Id -> Empfaenger Obj.
 	 */
 	private Map<String, FileReceiver> idReceiverMap = new HashMap<String, FileReceiver>();
 
@@ -139,6 +136,15 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 		EventDispatcher.add(this);
 	}
 
+	/**
+	 * Filetransfer: Lehnt eine Anfrage ab, sendet eine
+	 * {@link FileSendRejectMessage} an username.
+	 * 
+	 * @param id
+	 *            des Filetransfers.
+	 * @param username
+	 *            Empfaenger der Ablehnung.
+	 */
 	@Override
 	public void rejectFileMessage(String id, String username) {
 		FileSendRejectMessage m = new FileSendRejectMessage();
@@ -153,7 +159,12 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	}
 
 	/**
-	 * Sendet eine Anfrage zum Dateitransfer.
+	 * Filetransfer: Sendet eine Anfrage zum Dateitransfer.
+	 * 
+	 * @param file
+	 *            Datei zum versand
+	 * @param toUser
+	 *            user der die Anfrage bekommt.
 	 */
 	@Override
 	public String sendFileRequest(File file, String toUser) {
@@ -178,7 +189,8 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	}
 
 	/**
-	 * Startet den Dateitransfer.
+	 * Filetransfer: Startet den Dateitransfer, oeffnet eine Socket Verbindung
+	 * zum vorher ausgehandelten Port und streamt die Datei.
 	 * 
 	 * @param m
 	 *            {@link FileSendAcceptMessage} msg.
@@ -261,6 +273,13 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 		}
 	}
 
+	/**
+	 * Filetransfer: Gibt die gesendeten/empfangenen bytes des Transfers mit der
+	 * Id zurueck.
+	 * 
+	 * @param id
+	 *            des transfers.
+	 */
 	@Override
 	public long getProgress(String id) {
 		Long progress = 0l;
@@ -273,6 +292,17 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 		return progress;
 	}
 
+	/**
+	 * Filetransfer: Akzeptiert den Filetransfer, sendet eine
+	 * {@link FileSendAcceptMessage} an den Anfrager.
+	 * 
+	 * @param username
+	 *            username, der die Anfrage sendete
+	 * @param id
+	 *            des transfers.
+	 * @param storeInPath
+	 *            Pfad, in dem die Datei abgelegt werden soll.
+	 */
 	@Override
 	public void acceptFileMessage(String username, String id, String storeInPath) {
 		FileSendAcceptMessage msg = new FileSendAcceptMessage();
@@ -291,7 +321,8 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	}
 
 	/**
-	 * Startet den Server, auf dem die Datei empfangen werden soll.
+	 * Filetransfer: Startet den Server, auf dem die Datei empfangen werden
+	 * soll.
 	 * 
 	 * @param storeInPath
 	 *            Speichert die Datei in diesem Ordner.
@@ -323,7 +354,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	}
 
 	/**
-	 * Emfängt die Datei.
+	 * Filetransfer: Emfängt die Datei vom Socket und schreibt sie.
 	 * 
 	 * @author flo
 	 * 
@@ -384,6 +415,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 					while ((len = in.read(buffer)) != -1 && !stopped) {
 						fos.write(buffer, 0, len);
 						try {
+							// TODO wie sieht das performance maessig aus?
 							long before = idProgressSentMap.get(id);
 							long after = before + len;
 							idProgressSentMap.put(id, after);
@@ -505,7 +537,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	}
 
 	/**
-	 * Startet Server und empf�ngt neue Nachrichten
+	 * Startet Server und empfängt neue Nachrichten.
 	 */
 	@Override
 	public void run() {

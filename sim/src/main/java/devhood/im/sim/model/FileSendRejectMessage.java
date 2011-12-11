@@ -3,7 +3,8 @@ package devhood.im.sim.model;
 import java.io.Serializable;
 
 /**
- * Ablehnung der Transferanfrage.
+ * Lehnt eine Anfrage zur Uebertraung ab, oder bricht eine laufende Uebertragung
+ * ab.
  * 
  * @author flo
  * 
@@ -11,7 +12,7 @@ import java.io.Serializable;
 public class FileSendRejectMessage extends Message implements Serializable {
 
 	/**
-	 * Eindeutige id.
+	 * Eindeutige id des Dateitransfers.
 	 */
 	private String id;
 

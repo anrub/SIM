@@ -17,9 +17,9 @@ import java.io.Serializable;
  * <td>Empfaenger entscheidetd ob Dateitransfer angenommen wird oder nicht</td>
  * </tr>
  * <tr>
- * <td><i>{@link FileSendAcceptMessage}</i></td>
+ * <td>&nbsp;</td>
  * <td>&lt;-</td>
- * <td>Empfaenger oeffnet Port zum Empfang des Streams, und teilt ihn dem Sender
+ * <td><i>{@link FileSendAcceptMessage}</i> Empfaenger oeffnet Port zum Empfang des Streams, und teilt ihn dem Sender
  * mit</td>
  * </tr>
  * <tr>

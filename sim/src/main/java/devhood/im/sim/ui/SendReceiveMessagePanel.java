@@ -297,7 +297,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				.getComponent(1)).getComponent(0)).getComponent(0);
 
 		if (StringUtils.isEmpty(input.getText().trim())) {
-			clearText(input);
+			//clearText(input);
 			return;
 		}
 
@@ -309,6 +309,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		newMessage.setSender(simConfiguration.getUsername());
 		newMessage.setText(input.getText());
 
+		clearText(input);
+		
 		if (toUser.equals(simConfiguration.getStreamTabName())) { // Ist dies im
 																	// Stremtab
 																	// -
@@ -340,7 +342,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		}
 
-		clearText(input);
+		//clearText(input);
 
 		moveCaretDown((JEditorPane) timeline);
 
@@ -666,6 +668,14 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					sendMessage(label);
+					e.consume();
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					clearText(messageTextArea);
 				}
 			}
 		});

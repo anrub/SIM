@@ -13,13 +13,13 @@ import javax.inject.Named;
 @Named("yahooSmileyFactory")
 public class YahooSmileyFactory implements SmileyFactory {
 
-	/* Hier sind zu jedem Smiley-K�rzel die Grafik-Pfade hinterlegt. */
+	/* Hier sind zu jedem Smiley-Kürzel die Grafik-Pfade hinterlegt. */
 	private Map<String[], String> smileys = new HashMap<String[], String>();
 
 	private String imagePath = "/images/yahoo_smileys/";
 	
 	/**
-	 * Tauscht die Smiley-K�rzel gegen die Smiley-Grafiken aus.
+	 * Tauscht die Smiley-Kürzel gegen die Smiley-Grafiken aus.
 	 * 
 	 * @param String
 	 *            text Der Text in dem die Smiley's ausgetausch werden sollen.
@@ -41,7 +41,7 @@ public class YahooSmileyFactory implements SmileyFactory {
 	}
 
 	/**
-	 * Die Initialisierung f�hrt das Pairing der Kurzschreibweisen zu den
+	 * Die Initialisierung führt das Pairing der Kurzschreibweisen zu den
 	 * Bildnamen durch.
 	 */
 	public void init() {

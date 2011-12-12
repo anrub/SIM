@@ -128,7 +128,7 @@ public class YahooSmileyFactory implements SmileyFactory {
 		smileys.put(new String[] { ":!!" }, "110.gif");
 		smileys.put(new String[] { "\\m/" }, "111.gif");
 		smileys.put(new String[] { ":-q" }, "112.gif");
-		smileys.put(new String[] { ":-bd", ":-)bd", ":)bd", "b:)d", "b:-)d" },
+		smileys.put(new String[] { ":-bd", ":-)bd", ":)bd", "b:)d", "b:-)d",";-bd", ";-)bd", ";)bd", "b;)d", "b;-)d" },
 				"113.gif");
 		smileys.put(new String[] { "^#(^", "#(^^" }, "114.gif");
 		smileys.put(new String[] { ":ar!" }, "116.gif");
@@ -154,5 +154,6 @@ public class YahooSmileyFactory implements SmileyFactory {
 		smileys.put(new String[] { "&[]" }, "139.gif");
 		smileys.put(new String[] { "%||:-{", "%||:{" }, "140.gif");
 		smileys.put(new String[] { ":(fight)" }, "141.gif");
+		smileys.put(new String[] { "[..]" }, "142.gif");
 	}
 }

@@ -52,7 +52,7 @@ begin
   'Database File|*.db|All files|*.*',
   '.db');             
 
-  Page.Values[0] := 'Z:\Webteam\Mitarbeiter\Fuchs\sim.db';
+  Page.Values[0] := 'Z:\sim.db';
 end;
 
 function GetDatabase(Param: String): String;

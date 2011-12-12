@@ -1,7 +1,7 @@
 package devhood.im.sim.ui.util;
 
 /**
- * Die SmileyFactory sorg dafür, dass die Smiley eingabe zu eine img tag wird.
+ * Die SmileyFactory sorg dafuer, dass die Smiley eingabe zu eine img tag wird.
  * @author flo
  *
  */
@@ -9,7 +9,7 @@ public interface SmileyFactory {
 
 
 	/**
-	 * Smiley einfügen.
+	 * Smiley einfuegen.
 	 * 
 	 * @param c text.
 	 * @return c mit img.

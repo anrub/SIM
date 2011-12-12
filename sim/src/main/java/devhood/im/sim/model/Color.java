@@ -1,7 +1,7 @@
 package devhood.im.sim.model;
 
 /**
- * Die im Chat verfügbaren Farben.
+ * Die im Chat verfuegbaren Farben.
  * 
  * @author Schiefele.Andreas
  */
@@ -38,7 +38,7 @@ public enum Color {
 	}
 
 	/**
-	 * Gibt den Hexwert der Farbe zurück.
+	 * Gibt den Hexwert der Farbe zurueck.
 	 * 
 	 * @return hexValue Der Hexwert. 
 	 */

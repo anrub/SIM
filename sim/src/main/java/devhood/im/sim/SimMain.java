@@ -11,9 +11,8 @@ import javax.swing.UIManager;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
 
-import devhood.im.sim.config.SimConfiguration;
-import devhood.im.sim.controller.SimControl;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Message;
@@ -77,9 +76,11 @@ public class SimMain {
 	 */
 	public void startup() {
 		try {
-			ApplicationContext context = new ClassPathXmlApplicationContext(
-					"applicationContext.xml");
-
+			GenericXmlApplicationContext context = new GenericXmlApplicationContext();
+			
+			context.setValidating(false);
+			context.load("classpath:/devhood/im/sim/applicationContext.xml");
+			context.refresh();
 			MainFrame mainFrame = (MainFrame) context.getBean("mainFrame");
 			mainFrame.initMainFrame();
 

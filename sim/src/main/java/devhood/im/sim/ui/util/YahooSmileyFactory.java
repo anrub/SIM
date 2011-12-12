@@ -142,17 +142,17 @@ public class YahooSmileyFactory implements SmileyFactory {
 		smileys.put(new String[] { "o|^_^|o" }, "127.gif");
 		smileys.put(new String[] { ":puke!" }, "128.gif");
 		smileys.put(new String[] { "o|\\~" }, "129.gif");
-		smileys.put(new String[] { "o|\\~" }, "130.gif");
-		smileys.put(new String[] { "o|:-)", "o|:)" }, "131.gif");
-		smileys.put(new String[] { "[]==[]" }, "132.gif");
-		smileys.put(new String[] { ":-)/\\:-)", ":)/\\:)" }, "133.gif");
-		smileys.put(new String[] { ":(game)" }, "134.gif");
-		smileys.put(new String[] { "@-@" }, "135.gif");
-		smileys.put(new String[] { ":-&gt;~~" }, "136.gif");
-		smileys.put(new String[] { "?@_@?" }, "137.gif");
-		smileys.put(new String[] { ":(tv)" }, "138.gif");
-		smileys.put(new String[] { "&[]" }, "139.gif");
-		smileys.put(new String[] { "%||:-{", "%||:{" }, "140.gif");
+		smileys.put(new String[] { "o|:-)", "o|:)" }, "130.gif");
+		smileys.put(new String[] { "[]==[]" }, "131.gif");
+		smileys.put(new String[] { ":-)/\\:-)", ":)/\\:)" }, "132.gif");
+		smileys.put(new String[] { ":(game)" }, "133.gif");
+		smileys.put(new String[] { "@-@" }, "134.gif");
+		smileys.put(new String[] { ":-&gt;~~" }, "135.gif");
+		smileys.put(new String[] { "?@_@?" }, "136.gif");
+		smileys.put(new String[] { ":(tv)" }, "137.gif");
+		smileys.put(new String[] { "&[]" }, "138.gif");
+		smileys.put(new String[] { "%||:-{", "%||:{" }, "139.gif");
+		smileys.put(new String[] { "%*-{", "%*{" }, "140.gif");
 		smileys.put(new String[] { ":(fight)" }, "141.gif");
 		smileys.put(new String[] { "[..]" }, "142.gif");
 	}

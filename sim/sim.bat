@@ -1,1 +1,0 @@
-java -cp sim-0.0.1-SNAPSHOT-jar-with-dependencies-jar devhood.im.sim.SimMain -f //svappl02/p21/Webteam/Mitarbeiter/Fuchs/sim.db

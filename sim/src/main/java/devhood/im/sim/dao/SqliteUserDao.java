@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,7 +29,8 @@ import devhood.im.sim.model.User;
  * 
  * users Tabelle:
  * 
- * name String | address String | lastaccess Long
+ * name String | address String | port int | lastaccess Long | publickey BLOB |
+ * statusType TEXT
  * 
  * @author flo
  * 
@@ -45,17 +48,25 @@ public class SqliteUserDao implements UserDao {
 	@Inject
 	private SimConfiguration simConfiguration;
 
+	private Logger log = Logger.getLogger(SqliteUserDao.class.toString());
+
 	public SqliteUserDao() {
 
 	}
 
+	/**
+	 * Gibt die Connection zurueck.
+	 * 
+	 * @return Connection
+	 * @throws SQLException
+	 *             Im Fehlerfall.
+	 */
 	public Connection getConnection() throws SQLException {
 		try {
 			Class.forName(driver);
 		} catch (Exception e) {
-			System.err.println("ERROR: failed to load " + driver
-					+ " JDBCdriver.");
-			e.printStackTrace();
+			log.log(Level.SEVERE, "ERROR: failed to load " + driver
+					+ " JDBCdriver.", e);
 		}
 
 		Connection connection = DriverManager.getConnection(getUrl(), username,
@@ -83,14 +94,14 @@ public class SqliteUserDao implements UserDao {
 			pstmt.close();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Konnte Tabelle nicht anlegen", e);
 		} finally {
 			if (con != null)
 				try {
 					con.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.log(Level.SEVERE,
+							"Connection konnte nicht geschlossen werden", e);
 				}
 		}
 	}
@@ -124,26 +135,28 @@ public class SqliteUserDao implements UserDao {
 								Long.valueOf(resultSet.getLong("lastaccess"))),
 						getPublicKey(resultSet.getBytes("publickey")),
 						resultSet.getString("statusType"));
-			} else {
-
 			}
 			pstmt.close();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, "User " + username
+					+ " konnte nicht abgefragt werden.", e);
 		} finally {
 			if (con != null)
 				try {
 					con.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.log(Level.SEVERE,
+							"Connection jonnte nicht geschlossen werden", e);
 				}
 		}
 
 		return u;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<User> getUsers() {
 		createTable();
@@ -174,19 +187,22 @@ public class SqliteUserDao implements UserDao {
 			pstmt.close();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Users konnten nicht ermittelt werden", e);
 		} finally {
 			if (con != null)
 				try {
 					con.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.log(Level.SEVERE,
+							"Connection konnte nicht geschlossen werden", e);
 				}
 		}
 		return users;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized void logout(String username) {
 		createTable();
@@ -204,18 +220,22 @@ public class SqliteUserDao implements UserDao {
 			pstmt.close();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Konnte logout von " + username
+					+ "nicht druchfuehren", e);
 		} finally {
 			if (con != null)
 				try {
 					con.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.log(Level.SEVERE,
+							"Connection konnte nicht geschlossen werden", e);
 				}
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public synchronized void purgeOfflineUsers() {
 		createTable();
 
@@ -234,18 +254,21 @@ public class SqliteUserDao implements UserDao {
 			pstmt.close();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, "User konnten nicht geloescht werden", e);
 		} finally {
 			if (con != null)
 				try {
 					con.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.log(Level.SEVERE,
+							"Connection konnte nicht geschlossen werden");
 				}
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized void refresh(User user) {
 		Connection con = null;
@@ -285,16 +308,32 @@ public class SqliteUserDao implements UserDao {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE,
+					"Konnte Update/Insert des Users nicht durchfuehren", e);
 		} finally {
 			if (con != null)
 				try {
 					con.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.log(Level.SEVERE,
+							"Connection konnte nicht geschlossen werden", e);
 				}
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	private PublicKey getPublicKey(byte[] publicKeyRaw) {
+		PublicKey publicKey = null;
+		try {
+			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+			EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyRaw);
+			publicKey = keyFactory.generatePublic(publicKeySpec);
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Public Key konnte nicht erzeugt werden", e);
+		}
+		return publicKey;
 	}
 
 	public String getUsername() {
@@ -315,18 +354,6 @@ public class SqliteUserDao implements UserDao {
 
 	public String getUrl() {
 		return "jdbc:sqlite:" + dbPath;
-	}
-
-	private PublicKey getPublicKey(byte[] publicKeyRaw) {
-		PublicKey publicKey = null;
-		try {
-			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-			EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyRaw);
-			publicKey = keyFactory.generatePublic(publicKeySpec);
-		} catch (Exception e) {
-
-		}
-		return publicKey;
 	}
 
 	public String getDbPath() {

@@ -32,7 +32,7 @@ import devhood.im.sim.model.User;
  * @author flo
  * 
  */
-@Named("registryServiceJdbc")
+@Named("sqliteServiceJdbc")
 public class SqliteUserDao implements UserDao {
 	private String username = "sa";
 	private String password = "";
@@ -188,7 +188,7 @@ public class SqliteUserDao implements UserDao {
 	}
 
 	@Override
-	public void logout(String username) {
+	public synchronized void logout(String username) {
 		createTable();
 		Connection con = null;
 		PreparedStatement pstmt;
@@ -216,7 +216,7 @@ public class SqliteUserDao implements UserDao {
 		}
 	}
 
-	public void purgeOfflineUsers() {
+	public synchronized void purgeOfflineUsers() {
 		createTable();
 
 		Connection con = null;
@@ -247,7 +247,7 @@ public class SqliteUserDao implements UserDao {
 	}
 
 	@Override
-	public void refresh(User user) {
+	public synchronized void refresh(User user) {
 		Connection con = null;
 		PreparedStatement pstmt;
 		try {

@@ -18,9 +18,10 @@ import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.UserChangeListener;
 import devhood.im.sim.service.interfaces.UserService;
 
+
+
 /**
- * Dieser {@link UserService} aktualisiert sich selbst und den übergebenen User
- * regelmäßig.
+ * Dieser {@link UserService} aktualisiert sich selbst und den übergebenen User regelmäßig.
  * 
  * @author flo
  * 
@@ -49,10 +50,17 @@ public class RefreshingUserService implements UserService, EventObserver {
 	private List<UserChangeListener> userChangeListeners = new ArrayList<UserChangeListener>();
 
 	/**
+	 * Liste von Usern, die momentan aktiv refresht werden. (eigtl nur der eigene aktuelle User).
+	 */
+	private List<String> refreshingUsers = new ArrayList<String>();
+
+	/**
 	 * Konfiguration.
 	 */
 	@Inject
 	private SimConfiguration simConfiguration;
+
+
 
 	/**
 	 * Initialisiert, füllt das UserPanel.
@@ -62,12 +70,16 @@ public class RefreshingUserService implements UserService, EventObserver {
 		startUserRefreshingTimer();
 	}
 
+
+
 	@Override
 	public void eventReceived(Events event, Object o) {
 		if (Events.SERVER_INITIALISED.equals(event)) {
 			refresh(simConfiguration.getCurrentUser());
 		}
 	}
+
+
 
 	/**
 	 * {@inheritDoc}
@@ -84,6 +96,8 @@ public class RefreshingUserService implements UserService, EventObserver {
 		return online;
 	}
 
+
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -91,6 +105,8 @@ public class RefreshingUserService implements UserService, EventObserver {
 	public List<User> getUsers() {
 		return userDao.getUsers();
 	}
+
+
 
 	/**
 	 * Fuegt die Users aus registryService in die Liste ein.
@@ -100,32 +116,39 @@ public class RefreshingUserService implements UserService, EventObserver {
 		processNewOrRemovedUsers(users);
 	}
 
+
+
 	/**
 	 * Aktualisiert den Nutzer, startet einen Timer, der das regelmaessig macht.
 	 */
 	@Override
 	public void refresh(User u) {
-		Timer t = new Timer();
-		TimerTask task = new TimerTask() {
-			public void run() {
-				try {
-					User u = simConfiguration.getCurrentUser();
-					u.setLastaccess(new Date());
-					userDao.refresh(u);
-				} catch (Exception e) {
-					// Wenn Exception fliegt, soll der Timer weiterlaufen.
-					e.printStackTrace();
-				}
+		if (!refreshingUsers.contains(u.getName())) {
+			Timer t = new Timer();
+			TimerTask task = new TimerTask() {
+				public void run() {
+					try {
+						User u = simConfiguration.getCurrentUser();
+						u.setLastaccess(new Date());
+						userDao.refresh(u);
+					} catch (Exception e) {
+						// Wenn Exception fliegt, soll der Timer weiterlaufen.
+						e.printStackTrace();
+					}
+				};
 			};
-		};
 
-		t.schedule(task, 0, simConfiguration.getInitRefreshUserStateInterval());
+			t.schedule(task, 0, simConfiguration.getInitRefreshUserStateInterval());
+
+			refreshingUsers.add(u.getName());
+		}
 	}
 
+
+
 	/**
-	 * Verarbeitet die USer und prüft ob sie bereits vorhanden, oder neu, oder
-	 * nicht mehr vorhanden sind. Benachrichtigt den userChangeListener in
-	 * beiden fällen.
+	 * Verarbeitet die USer und prüft ob sie bereits vorhanden, oder neu, oder nicht mehr vorhanden sind. Benachrichtigt
+	 * den userChangeListener in beiden fällen.
 	 * 
 	 * @param users
 	 *            aktuelle USer aus der dB.
@@ -176,6 +199,8 @@ public class RefreshingUserService implements UserService, EventObserver {
 		}
 	}
 
+
+
 	/**
 	 * Fuegt einen {@link UserChangeListener} ein.
 	 * 
@@ -187,12 +212,13 @@ public class RefreshingUserService implements UserService, EventObserver {
 		this.userChangeListeners.add(listener);
 	}
 
+
+
 	/**
 	 * Startet den Thread, der die User liste aktuell haelt.
 	 */
 	public void startUserRefreshingTimer() {
-		Timer reloadUserTimer = new Timer(
-				"RefreshingUserService: Reload Users Timer");
+		Timer reloadUserTimer = new Timer("RefreshingUserService: Reload Users Timer");
 
 		TimerTask task = new TimerTask() {
 			@Override
@@ -209,15 +235,14 @@ public class RefreshingUserService implements UserService, EventObserver {
 				}
 			}
 		};
-		reloadUserTimer.schedule(task, simConfiguration.getUserLoadDelay(),
-				simConfiguration.getUserLoadPeriod());
+		reloadUserTimer.schedule(task, simConfiguration.getUserLoadDelay(), simConfiguration.getUserLoadPeriod());
 	}
 
+
+
 	/**
-	 * Gibt die aktuellen User zurueck. Falls bisher noch keine USer geladen
-	 * wurden, wird eine Liste zurueckgegeben, die bei contains immer true
-	 * zurueck gibt. (Da noch nicht klar ist, ob der User vorhanden ist oder
-	 * nicht, hacky).
+	 * Gibt die aktuellen User zurueck. Falls bisher noch keine USer geladen wurden, wird eine Liste zurueckgegeben, die
+	 * bei contains immer true zurueck gibt. (Da noch nicht klar ist, ob der User vorhanden ist oder nicht, hacky).
 	 * 
 	 * @return list von usern.
 	 */
@@ -235,6 +260,8 @@ public class RefreshingUserService implements UserService, EventObserver {
 		return users;
 	}
 
+
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -243,6 +270,8 @@ public class RefreshingUserService implements UserService, EventObserver {
 		userDao.purgeOfflineUsers();
 	}
 
+
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -250,6 +279,8 @@ public class RefreshingUserService implements UserService, EventObserver {
 	public void logout(String username) {
 		userDao.logout(username);
 	}
+
+
 
 	public User getUser(String name) {
 		return userDao.getUser(name);

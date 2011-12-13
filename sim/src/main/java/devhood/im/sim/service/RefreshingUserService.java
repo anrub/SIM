@@ -124,7 +124,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 	@Override
 	public void refresh(User u) {
 		if (!refreshingUsers.contains(u.getName())) {
-			Timer t = new Timer();
+			Timer t = new Timer("RefreshingUserService: Refresh own user Timer");
 			TimerTask task = new TimerTask() {
 				public void run() {
 					try {

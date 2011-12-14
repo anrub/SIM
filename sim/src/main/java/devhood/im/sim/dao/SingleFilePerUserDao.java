@@ -1,4 +1,4 @@
-package devhood.im.sim.dao.interfaces;
+package devhood.im.sim.dao;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,6 +20,7 @@ import javax.inject.Named;
 
 import org.springframework.beans.factory.annotation.Value;
 
+import devhood.im.sim.dao.interfaces.UserDao;
 import devhood.im.sim.model.User;
 
 /**

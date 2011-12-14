@@ -12,6 +12,8 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Named;
 import javax.swing.ImageIcon;
@@ -31,6 +33,8 @@ import devhood.im.sim.ui.util.UiUtil;
  */
 @Named("simConfiguration")
 public class SimConfiguration {
+
+	private Logger log = Logger.getLogger(SimConfiguration.class.toString());
 
 	private String applicationName = "SIM - S Intstant Messenger";
 
@@ -154,26 +158,23 @@ public class SimConfiguration {
 	 * 
 	 * @return ip
 	 */
-	private String getCurrentIp() {
-		String hostName = null;
+	protected String getCurrentIp() {
+		String myIp = null;
 		try {
-			hostName = InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		InetAddress addrs[] = null;
-		try {
+			String hostName = InetAddress.getLocalHost().getHostName();
+
+			InetAddress addrs[] = null;
+
 			addrs = InetAddress.getAllByName(hostName);
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		String myIp = "UNKNOWN";
-		for (InetAddress addr : addrs) {
-			if (!addr.isLoopbackAddress() && addr.isSiteLocalAddress()) {
-				myIp = addr.getHostAddress();
+
+			for (InetAddress addr : addrs) {
+				if (!addr.isLoopbackAddress() && addr.isSiteLocalAddress()) {
+					myIp = addr.getHostAddress();
+				}
 			}
+		} catch (UnknownHostException e) {
+			log.log(Level.SEVERE,
+					"Lokale IP Adresse konnte nicht ermittelt werden!", e);
 		}
 
 		return myIp;
@@ -192,7 +193,8 @@ public class SimConfiguration {
 				kpg.initialize(2048);
 				keyPair = kpg.generateKeyPair();
 			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, "Konnte Schluesselpaar nicht generieren",
+						e);
 			}
 		}
 
@@ -213,13 +215,12 @@ public class SimConfiguration {
 			BufferedReader read = new BufferedReader(new InputStreamReader(is));
 			version = read.readLine();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Konnte Versionfile nicht lesen", e);
 		} finally {
-
 			try {
 				is.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, "Konnte Inputstream nicht schliessen", e);
 			}
 		}
 

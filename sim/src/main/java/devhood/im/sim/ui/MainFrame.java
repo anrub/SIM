@@ -6,11 +6,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -29,7 +24,6 @@ import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
-import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.util.UiUtil;
 
 /**
@@ -70,12 +64,6 @@ public class MainFrame implements EventObserver {
 	 * Checkbox ob Nachrichten in Systray angezeigt werden sollen, oder nicht.
 	 */
 	private JCheckBoxMenuItem systrayMenuItem;
-
-	/**
-	 * Das ist der Service zum Zugriff auf Stammdaten, wie zb verfuegbare User.
-	 */
-	@Inject
-	private UserService userService;
 
 	@Inject
 	private SimConfiguration simConfiguration;

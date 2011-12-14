@@ -55,6 +55,11 @@ public class RefreshingUserService implements UserService, EventObserver {
 	private List<String> refreshingUsers = new ArrayList<String>();
 
 	/**
+	 * Flag sagt, dass der Timer, der die aktuellen User aktualisiert, gestartet wurde.
+	 */
+	private boolean userRefreshingTimerStarted = false;
+
+	/**
 	 * Konfiguration.
 	 */
 	@Inject
@@ -218,24 +223,28 @@ public class RefreshingUserService implements UserService, EventObserver {
 	 * Startet den Thread, der die User liste aktuell haelt.
 	 */
 	public void startUserRefreshingTimer() {
-		Timer reloadUserTimer = new Timer("RefreshingUserService: Reload Users Timer");
+		if (!userRefreshingTimerStarted) {
+			Timer reloadUserTimer = new Timer("RefreshingUserService: Reload Users Timer");
 
-		TimerTask task = new TimerTask() {
-			@Override
-			public void run() {
-				try {
-					userDao.purgeOfflineUsers();
+			TimerTask task = new TimerTask() {
+				@Override
+				public void run() {
+					try {
+						userDao.purgeOfflineUsers();
 
-					refreshUsers();
-					usersLoaded = true;
-				} catch (Exception e) {
-					// Sollte eine Exception fliegen, soll der Timer
-					// weiterlaufen.
-					e.printStackTrace();
+						refreshUsers();
+						usersLoaded = true;
+					} catch (Exception e) {
+						// Sollte eine Exception fliegen, soll der Timer
+						// weiterlaufen.
+						e.printStackTrace();
+					}
 				}
-			}
-		};
-		reloadUserTimer.schedule(task, simConfiguration.getUserLoadDelay(), simConfiguration.getUserLoadPeriod());
+			};
+			reloadUserTimer.schedule(task, simConfiguration.getUserLoadDelay(), simConfiguration.getUserLoadPeriod());
+
+			userRefreshingTimerStarted = true;
+		}
 	}
 
 

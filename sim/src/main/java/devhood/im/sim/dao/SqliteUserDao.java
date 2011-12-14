@@ -61,7 +61,7 @@ public class SqliteUserDao implements UserDao {
 	 * @throws SQLException
 	 *             Im Fehlerfall.
 	 */
-	public Connection getConnection() throws SQLException {
+	public synchronized Connection getConnection() throws SQLException {
 		try {
 			Class.forName(driver);
 		} catch (Exception e) {
@@ -78,7 +78,7 @@ public class SqliteUserDao implements UserDao {
 	/**
 	 * Erzeugt die Table, falls sie nicht vorhanden ist.
 	 */
-	public void createTable() {
+	public synchronized void createTable() {
 		String createTableDdl = "CREATE TABLE IF NOT EXISTS users (name TEXT PRIMARY KEY NOT NULL, address TEXT NOT NULL, port INTEGER NOT NULL, lastaccess INTEGER NOT NULL, publickey BLOB NOT NULL, statusType TEXT NOT NULL)";
 
 		Connection con = null;
@@ -110,7 +110,7 @@ public class SqliteUserDao implements UserDao {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public User getUser(String name) {
+	public synchronized User getUser(String name) {
 		if (name.equals(simConfiguration.getUsername())) {
 			return simConfiguration.getCurrentUser();
 		}
@@ -158,7 +158,7 @@ public class SqliteUserDao implements UserDao {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<User> getUsers() {
+	public synchronized List<User> getUsers() {
 		createTable();
 		List<User> users = new ArrayList<User>();
 
@@ -324,7 +324,7 @@ public class SqliteUserDao implements UserDao {
 	/**
 	 * {@inheritDoc}
 	 */
-	private PublicKey getPublicKey(byte[] publicKeyRaw) {
+	private synchronized PublicKey getPublicKey(byte[] publicKeyRaw) {
 		PublicKey publicKey = null;
 		try {
 			KeyFactory keyFactory = KeyFactory.getInstance("RSA");

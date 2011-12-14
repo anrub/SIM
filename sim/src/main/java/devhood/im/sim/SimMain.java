@@ -62,7 +62,7 @@ public class SimMain {
 							+ e.getMessage(), "SIM S Instant Messenger",
 					JOptionPane.ERROR_MESSAGE);
 		} finally {
-			System.exit(0);
+			//System.exit(0);
 		}
 	}
 

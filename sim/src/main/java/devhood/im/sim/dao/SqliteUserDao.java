@@ -43,7 +43,7 @@ public class SqliteUserDao implements UserDao {
 
 	private String driver = "org.sqlite.JDBC";
 
-	@Value("#{systemProperties['sim.jdbcDbPath']}")
+	@Value("#{systemProperties['sim.dbPath']}")
 	private String dbPath;
 
 	@Inject

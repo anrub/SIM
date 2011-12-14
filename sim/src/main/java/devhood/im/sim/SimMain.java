@@ -61,9 +61,9 @@ public class SimMain {
 					"SIM konnte nicht gestartet werden! Exception: "
 							+ e.getMessage(), "SIM S Instant Messenger",
 					JOptionPane.ERROR_MESSAGE);
-		} finally {
-			//System.exit(0);
+			System.exit(0);
 		}
+
 	}
 
 	/**

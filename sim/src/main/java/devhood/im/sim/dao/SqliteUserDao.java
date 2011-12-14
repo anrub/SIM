@@ -36,7 +36,7 @@ import devhood.im.sim.model.User;
  * @author flo
  * 
  */
-@Named("sqliteServiceJdbc")
+@Named("sqliteUserDao")
 public class SqliteUserDao implements UserDao {
 	private String username = "sa";
 	private String password = "";

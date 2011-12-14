@@ -37,7 +37,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 	 * UserDao zum Zugriff auf Stammdaten, zb User.
 	 */
 	@Inject
-	private UserDao userDao;
+	private UserDao sqliteUserDao;
 
 	/**
 	 * true wenn user min. einmal refresht wurden.
@@ -108,7 +108,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 	 */
 	@Override
 	public List<User> getUsers() {
-		return userDao.getUsers();
+		return sqliteUserDao.getUsers();
 	}
 
 
@@ -117,7 +117,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 	 * Fuegt die Users aus registryService in die Liste ein.
 	 */
 	public void refreshUsers() {
-		List<User> users = userDao.getUsers();
+		List<User> users = sqliteUserDao.getUsers();
 		processNewOrRemovedUsers(users);
 	}
 
@@ -135,7 +135,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 					try {
 						User u = simConfiguration.getCurrentUser();
 						u.setLastaccess(new Date());
-						userDao.refresh(u);
+						sqliteUserDao.refresh(u);
 					} catch (Exception e) {
 						// Wenn Exception fliegt, soll der Timer weiterlaufen.
 						e.printStackTrace();
@@ -230,7 +230,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 				@Override
 				public void run() {
 					try {
-						userDao.purgeOfflineUsers();
+						sqliteUserDao.purgeOfflineUsers();
 
 						refreshUsers();
 						usersLoaded = true;
@@ -276,7 +276,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 	 */
 	@Override
 	public void purgeOfflineUsers() {
-		userDao.purgeOfflineUsers();
+		sqliteUserDao.purgeOfflineUsers();
 	}
 
 
@@ -286,13 +286,13 @@ public class RefreshingUserService implements UserService, EventObserver {
 	 */
 	@Override
 	public void logout(String username) {
-		userDao.logout(username);
+		sqliteUserDao.logout(username);
 	}
 
 
 
 	public User getUser(String name) {
-		return userDao.getUser(name);
+		return sqliteUserDao.getUser(name);
 	}
 
 }

@@ -50,18 +50,6 @@ public class SingleFilePerUserDao implements UserDao {
 
 			os = new ObjectInputStream(new FileInputStream(f));
 
-			// BufferedReader r = new BufferedReader(new InputStreamReader(
-			// new BufferedInputStream(new FileInputStream(f))));
-			// String contentLine = r.readLine();
-			// String fields[] = contentLine.split(";");
-			//
-			// u = new User();
-			// u.setName(name);
-			// u.setAddress(fields[0]);
-			// u.setPort(Integer.parseInt(fields[1]));
-			// u.setStatusType(UserStatus.valueOf(fields[2]));
-			// u.setPublicKey(getPublicKey(Base64.decodeBase64(fields[3])));
-
 			u = (User) os.readObject();
 
 		} catch (Exception e) {
@@ -115,17 +103,6 @@ public class SingleFilePerUserDao implements UserDao {
 		ObjectOutputStream os = null;
 		try {
 			File userFile = getFile(user.getName());
-			/*
-			 * String userline = user.getAddress() + ";" + user.getPort() + ";"
-			 * + user.getStatusType().toString() +
-			 * Base64.encodeBase64String(user.getPublicKey() .getEncoded());
-			 * 
-			 * os = new BufferedOutputStream(new FileOutputStream(userFile));
-			 * 
-			 * os.write(userline.getBytes());
-			 * 
-			 * os.close();
-			 */
 			os = new ObjectOutputStream(new FileOutputStream(userFile));
 
 			os.writeObject(user);

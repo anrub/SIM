@@ -16,10 +16,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.springframework.beans.factory.annotation.Value;
 
+import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.dao.interfaces.UserDao;
 import devhood.im.sim.model.User;
 
@@ -34,6 +36,9 @@ public class SingleFilePerUserDao implements UserDao {
 	private static Logger log = Logger.getLogger(SingleFilePerUserDao.class
 			.toString());
 
+	@Inject
+	private SimConfiguration simConfiguration;
+
 	/**
 	 * Das ist das Datenverzeichnis, hier wird ein File pro User erstellt.
 	 */
@@ -41,15 +46,12 @@ public class SingleFilePerUserDao implements UserDao {
 	@Value("#{systemProperties['sim.dbPath']}")
 	private String dataFolder = "";
 
-	@Override
-	public User getUser(String name) {
-
+	public User getUser(File file) {
 		User u = null;
 		ObjectInputStream os = null;
 		try {
-			File f = getFile(name);
 
-			os = new ObjectInputStream(new FileInputStream(f));
+			os = new ObjectInputStream(new FileInputStream(file));
 
 			u = (User) os.readObject();
 
@@ -66,11 +68,20 @@ public class SingleFilePerUserDao implements UserDao {
 	}
 
 	@Override
+	public User getUser(String name) {
+		User u = null;
+		File f = getFile(name);
+
+		u = getUser(f);
+		return u;
+	}
+
+	@Override
 	public List<User> getUsers() {
-		String[] content = getDataFolder().list();
+		File[] content = getDataFolder().listFiles();
 		List<User> users = new ArrayList<User>();
 		if (content != null && content.length > 0) {
-			for (String line : content) {
+			for (File line : content) {
 				users.add(getUser(line));
 			}
 		}
@@ -90,7 +101,9 @@ public class SingleFilePerUserDao implements UserDao {
 			}
 		}
 
-		userFile.deleteOnExit();
+		if (username.equals(simConfiguration.getUsername())) {
+			userFile.deleteOnExit();
+		}
 
 		return userFile;
 	}

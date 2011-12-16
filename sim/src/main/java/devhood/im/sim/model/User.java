@@ -1,5 +1,6 @@
 package devhood.im.sim.model;
 
+import java.io.Serializable;
 import java.security.PublicKey;
 import java.util.Date;
 
@@ -9,7 +10,7 @@ import java.util.Date;
  * @author flo
  * 
  */
-public class User {
+public class User implements Serializable {
 
 	/**
 	 * name of user. to send the messages to the user.

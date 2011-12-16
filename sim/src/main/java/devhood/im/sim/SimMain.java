@@ -40,7 +40,7 @@ public class SimMain {
 					username = args[i + 1];
 				}
 				if ("-f".equals(args[i]) && i + 1 < args.length) {
-					System.setProperty("sim.jdbcDbPath", args[i + 1]);
+					System.setProperty("sim.dbPath", args[i + 1]);
 				}
 			}
 
@@ -61,9 +61,9 @@ public class SimMain {
 					"SIM konnte nicht gestartet werden! Exception: "
 							+ e.getMessage(), "SIM S Instant Messenger",
 					JOptionPane.ERROR_MESSAGE);
-		} finally {
-			//System.exit(0);
+			System.exit(0);
 		}
+
 	}
 
 	/**

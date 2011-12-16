@@ -582,7 +582,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		if (oldText.contains("</body>")) {
 			int index = oldText.indexOf("</body>");
-			newMsg.insert(index, "<br />" + message);
+			newMsg.insert(index, message);
 		}
 
 		return newMsg.toString();
@@ -617,13 +617,13 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			} else {
 				c = smileyFactory.applySmiles(c);
 			}
-			msg.append(" ");
+			msg.append("&nbsp;");
 			msg.append(c);
 		}
 
-		return "<span style=\"color:" + colorHexValue + "\">["
-				+ df.format(new Date()) + "] " + m.getSender() + "></span> "
-				+ msg.toString();
+		return "<div><font color=\"" + colorHexValue + "\">["
+				+ df.format(new Date()) + "] " + m.getSender() + " ></font> "
+				+ msg.toString() + "</div>";
 	}
 
 	/**

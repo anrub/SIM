@@ -522,7 +522,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	protected void outputStatusMessage(String statusMessage,
 			JTextComponent textArea) {
 		String oldText = textArea.getText();
-		textArea.setText(getFormattedMessage("<i>" + statusMessage + "</i>",
+		textArea.setText(getFormattedMessage("<div><i>" + statusMessage + "</i></div>",
 				oldText));
 	}
 

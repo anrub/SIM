@@ -1,5 +1,5 @@
 #define MyAppName "S Instant Messenger"
-#define MyAppVersion "0.0.5"
+#define MyAppVersion "0.0.6"
 #define MyAppPublisher "Flo"
 #define MyAppURL "https://github.com/anrub/SIM"
 #define LaunchProgram "Starte S Instant Messenger nach der Installation"
@@ -25,7 +25,7 @@ SolidCompression=yes
 Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 
 [Files]
-Source: "../sim/target/sim-{#MyAppVersion}-SNAPSHOT-jar-with-dependencies.jar"; DestDir: "{app}"; DestName: "sim.jar"; Flags: ignoreversion
+Source: "../sim/target/sim-{#MyAppVersion}-jar-with-dependencies.jar"; DestDir: "{app}"; DestName: "sim.jar"; Flags: ignoreversion
 Source: "icon.ico"; DestDir: "{app}"; DestName: "icon.ico"; Flags: ignoreversion
 
 [Tasks]

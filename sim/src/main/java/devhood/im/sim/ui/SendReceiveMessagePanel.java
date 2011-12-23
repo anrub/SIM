@@ -134,8 +134,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		addToTabPane(
 				simConfiguration.getStreamTabName(),
 				simConfiguration.getApplicationName()
-						+ "<br /> "
-						+ "<i>Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i>");
+							+ "<br /> "
+							+ "<i>Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i>");
 
 		// Lay out the buttons from left to right.
 		JPanel buttonPane = new JPanel(new BorderLayout());
@@ -237,7 +237,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	}
 
 	/**
-	 * Erzeugt den Timer, der regelmï¿½ï¿½ig checkt ob es ungelesene Nachrichten
+	 * Erzeugt den Timer, der regelm��ig checkt ob es ungelesene Nachrichten
 	 * gibt.
 	 */
 	public void createUnreadMessagesTimer() {
@@ -522,7 +522,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	protected void outputStatusMessage(String statusMessage,
 			JTextComponent textArea) {
 		String oldText = textArea.getText();
-		textArea.setText(getFormattedMessage("<div><i>" + statusMessage + "</i></div>",
+		textArea.setText(getFormattedMessage("<tr><td colspan=\"2\" valign=\"top\"><i>" + statusMessage + "</td></tr></i>",
 				oldText));
 	}
 
@@ -580,8 +580,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	protected String getFormattedMessage(String message, String oldText) {
 		StringBuffer newMsg = new StringBuffer(oldText);
 
-		if (oldText.contains("</body>")) {
-			int index = oldText.indexOf("</body>");
+		if (oldText.contains("</table>\r\n  </body>")) {
+			int index = oldText.indexOf("</table>\r\n  </body>");
 			newMsg.insert(index, message);
 		}
 
@@ -617,13 +617,13 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			} else {
 				c = smileyFactory.applySmiles(c);
 			}
-			msg.append("&nbsp;");
+			msg.append(" ");
 			msg.append(c);
 		}
 
-		return "<div><font color=\"" + colorHexValue + "\">["
-				+ df.format(new Date()) + "] " + m.getSender() + " ></font> "
-				+ msg.toString() + "</div>";
+		return "<tr><td valign=\"top\" nowrap><font color=\"" + colorHexValue + "\">["
+				+ df.format(new Date()) + "] " + m.getSender() + " ></font>&nbsp;</td><td valign=\"top\" width=\"100%\">"
+				+ msg.toString() + "</td></tr>";
 	}
 
 	/**
@@ -636,7 +636,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	protected String getFormattedUserStatusMessage(Message m) {
 		String msg = m.getSender() + " ist jetzt ";
 		msg = msg + " " + m.getUserStatus().getText();
-		msg = "<i>" + msg + "</i>";
+		msg = "<tr><td colspan=\"2\" valign=\"top\"><i>" + msg + "</i></td></tr>";
 
 		return msg;
 	}
@@ -650,9 +650,22 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            Text der in die TextArea geschrieben wird.
 	 */
 	protected void addToTabPane(final String label, String text) {
+		
+		String layoutedText = "<table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">";
+	
+		if (!simConfiguration.getStreamTabName().equalsIgnoreCase(label)) {
+			layoutedText +=  "<tr><td colspan=\"2\" valign=\"top\"><i>Konversation mit " + label + " gestartet!</i></td></tr>";
+		}
+		
+		if (text != null) {
+			layoutedText += "<tr><td colspan=\"2\" valign=\"top\">" + text + "</td></tr>";
+		}
+						
+		layoutedText += "</table>";
+		
 		JPanel textPanel = new JPanel(new BorderLayout());
 
-		JScrollPane timelineScrollPane = createTimelineScrollpane(label, text);
+		JScrollPane timelineScrollPane = createTimelineScrollpane(label, layoutedText);
 
 		textPanel.add(timelineScrollPane, BorderLayout.CENTER);
 
@@ -766,7 +779,19 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @return
 	 */
 	protected JScrollPane createTimelineScrollpane(String label, String text) {
-		final JEditorPane timelineTextArea = new JEditorPane("text/html", text);
+		
+		final JEditorPane timelineTextArea = new JEditorPane("text/html", "");
+		
+		String oldText = timelineTextArea.getText();		
+		StringBuffer newMsg = new StringBuffer(oldText);
+
+		if (oldText.contains("</body>")) {
+			int index = oldText.indexOf("</body>");
+			newMsg.insert(index, text);
+		}
+		
+		timelineTextArea.setText(newMsg.toString());
+		
 		DefaultCaret caret = (DefaultCaret) timelineTextArea.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 

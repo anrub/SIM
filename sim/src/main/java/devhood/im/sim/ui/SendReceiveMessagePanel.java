@@ -131,11 +131,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			}
 		});
 
-		addToTabPane(
-				simConfiguration.getStreamTabName(),
-				simConfiguration.getApplicationName()
-							+ "<br /> "
-							+ "<i>Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i>");
+		addToTabPane(simConfiguration.getStreamTabName(), null);
 
 		// Lay out the buttons from left to right.
 		JPanel buttonPane = new JPanel(new BorderLayout());
@@ -653,9 +649,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @return string msg.
 	 */
 	protected String getFormattedUserStatusMessage(Message m) {
-		String msg = m.getSender() + " ist jetzt ";
+		String msg = "User [" + m.getSender() + "] ist jetzt ";
 		msg = msg + " " + m.getUserStatus().getText();
-		msg = "<tr><td colspan=\"2\" valign=\"top\"><i>" + msg + "</i></td></tr>";
 
 		return msg;
 	}
@@ -673,14 +668,18 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		String layoutedText = "<table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">";
 	
 		if (!simConfiguration.getStreamTabName().equalsIgnoreCase(label)) {
-			layoutedText +=  "<tr><td colspan=\"2\" valign=\"top\"><i>Konversation mit " + label + " gestartet!</i></td></tr>";
+			layoutedText +=  "<tr><td colspan=\"2\" valign=\"top\"><i>Konversation mit User [" + label + "] gestartet!</i></td></tr>";
+		}else{
+			layoutedText +=  "<tr><td colspan=\"2\" valign=\"top\"><i>" + simConfiguration.getApplicationName() + "<br />Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i></td></tr>";
 		}
+		
+		layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><br/></td></tr>";
 		
 		if (text != null) {
-			layoutedText += "<tr><td colspan=\"2\" valign=\"top\">" + text + "</td></tr>";
+			layoutedText += text;
 		}
 		
-		layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><br/></td></tr></table>";
+		layoutedText += "</table>";
 		
 		JPanel textPanel = new JPanel(new BorderLayout());
 

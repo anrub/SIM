@@ -232,12 +232,31 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            textarea.
 	 */
 	public void clearText(JTextComponent area) {
-		area.setText(null);
+		
+		if (area instanceof JEditorPane) {
+			
+			String tableLayout = "<table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">";
+			tableLayout += "<tr><td colspan=\"2\" valign=\"top\"><i>Bildschirminhalt gelöscht!</i></td></tr>";
+			tableLayout += "<tr><td colspan=\"2\" valign=\"top\"><br/></td></tr></table>";
+			
+			area.setText("<html><head></head><body></body></html>");
+			
+			String oldText = area.getText();
+			StringBuffer clearTableLayout = new StringBuffer(oldText);
+			
+			int index = oldText.indexOf("</body>");
+			
+			clearTableLayout.insert(index, tableLayout);
+			area.setText(clearTableLayout.toString());
+		}else{
+			area.setText(null);
+		}
+		
 		area.moveCaretPosition(0);
 	}
 
 	/**
-	 * Erzeugt den Timer, der regelm��ig checkt ob es ungelesene Nachrichten
+	 * Erzeugt den Timer, der regelmäßig checkt ob es ungelesene Nachrichten
 	 * gibt.
 	 */
 	public void createUnreadMessagesTimer() {
@@ -580,8 +599,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	protected String getFormattedMessage(String message, String oldText) {
 		StringBuffer newMsg = new StringBuffer(oldText);
 
-		if (oldText.contains("</table>\r\n  </body>")) {
-			int index = oldText.indexOf("</table>\r\n  </body>");
+		if (oldText.contains("</table>\n  </body>")) {
+			int index = oldText.indexOf("</table>\n  </body>");
 			newMsg.insert(index, message);
 		}
 
@@ -660,8 +679,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		if (text != null) {
 			layoutedText += "<tr><td colspan=\"2\" valign=\"top\">" + text + "</td></tr>";
 		}
-						
-		layoutedText += "</table>";
+		
+		layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><br/></td></tr></table>";
 		
 		JPanel textPanel = new JPanel(new BorderLayout());
 
@@ -780,7 +799,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	protected JScrollPane createTimelineScrollpane(String label, String text) {
 		
-		final JEditorPane timelineTextArea = new JEditorPane("text/html", "");
+		final JEditorPane timelineTextArea = new JEditorPane("text/html", "<html><head></head><body></body></html>");
 		
 		String oldText = timelineTextArea.getText();		
 		StringBuffer newMsg = new StringBuffer(oldText);

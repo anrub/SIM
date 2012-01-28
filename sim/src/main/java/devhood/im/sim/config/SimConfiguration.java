@@ -38,9 +38,20 @@ public class SimConfiguration {
 
 	private String applicationName = "SIM - S Instant Messenger";
 	
+	/**
+	 * URL zum Projekt auf Github.
+	 */
 	private String projectGithuburl = "https://github.com/anrub/SIM";
 	
-	private String smileyOverview = "http://www.helpbytes.co.uk/smileys.php";
+	/**
+	 * URL zur Smileyübersicht, vorsichtshalber aufs Wiki.
+	 */
+	private String smileyOverview = "https://github.com/anrub/SIM/wiki";
+	
+	/**
+	 * Links sollen max so lang dargestellt werden.
+	 */
+	private int maxLinkLength = 50;
 
 	/**
 	 * Port auf dem der Server lauscht. 0 sucht einen freien Port.
@@ -381,5 +392,13 @@ public class SimConfiguration {
 
 	public void setSmileyOverview(String smileyOverview) {
 		this.smileyOverview = smileyOverview;
+	}
+
+	public int getMaxLinkLength() {
+		return maxLinkLength;
+	}
+
+	public void setMaxLinkLength(int maxLinkLength) {
+		this.maxLinkLength = maxLinkLength;
 	}
 }

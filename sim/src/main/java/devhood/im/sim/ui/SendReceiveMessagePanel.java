@@ -629,7 +629,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		for (String c : chunks) {
 			if (c.matches(linkPattern)) {
-				c = "<a href=\"" + c + "\">" + c + "</a>";
+				c = "<a href=\"" + c + "\">" + shorten(c, simConfiguration.getMaxLinkLength()) + "</a>";
 			} else {
 				c = smileyFactory.applySmiles(c);
 			}
@@ -641,6 +641,22 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				+ "\">[" + df.format(new Date()) + "] " + m.getSender()
 				+ " ></font>&nbsp;</td><td valign=\"top\" width=\"100%\">"
 				+ msg.toString() + "</td></tr>";
+	}
+	
+	/**
+	 * Verkuerzt den String auf eine bestimmte Anzahl von Zeichen und setzt ... dahinter
+	 * 
+	 * @param s String
+	 * @return verkuerzter String
+	 */
+	public String shorten(String s, int chars) {
+		String shortened = s;
+		if ( s != null && s.length() > chars ) {
+			shortened = s.substring(0, chars - 3);
+			shortened = shortened + "...";
+		}
+		
+		return shortened;
 	}
 
 	/**

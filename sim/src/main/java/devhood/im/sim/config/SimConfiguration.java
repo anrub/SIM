@@ -49,7 +49,7 @@ public class SimConfiguration {
 	private String smileyOverview = "https://github.com/anrub/SIM/wiki";
 	
 	/**
-	 * Links sollen max so lang dargestellt werden.
+	 * 
 	 */
 	private int maxLinkLength = 50;
 

@@ -629,7 +629,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		for (String c : chunks) {
 			if (c.matches(linkPattern)) {
-				c = "<a href=\"" + c + "\" alt=\"" + c + "\">" + shorten(c, 50) + "</a>";
+				c = "<a href=\"" + c + "\" alt=\"" + c + "\">" + shorten(c, simConfiguration.getMaxLinkLength()) + "</a>";
 			} else {
 				c = smileyFactory.applySmiles(c);
 			}

@@ -200,13 +200,15 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				for (String[] key : smileyFactory.getSmileys().keySet()) {
 					c.gridx = x;
 					c.gridy = y;
-
+					String smileyCode = key[0].replace("&gt;", ">").replace(
+							"&lt;", "<");
 					ImageIcon img = UiUtil.createImageIcon(
 							"/images/yahoo_smileys/"
 									+ smileyFactory.getSmileys().get(key),
-							key[0].replace("&gt;", ">").replace("&lt;", "<"));
+							smileyCode);
 					JLabel smileyLabel = new JLabel(img);
-
+					smileyLabel.setToolTipText(smileyCode);
+					
 					smileyLabel.addMouseListener(new MouseAdapter() {
 
 						@Override

@@ -155,7 +155,7 @@ public class YahooSmileyFactory implements SmileyFactory {
 		smileys.put(new String[] { ":-&gt;~~" }, "135.gif");
 		smileys.put(new String[] { "?@_@?" }, "136.gif");
 		smileys.put(new String[] { ":(tv)" }, "137.gif");
-		smileys.put(new String[] { "&[]" }, "138.gif");
+		smileys.put(new String[] { "&amp;[]" }, "138.gif");
 		smileys.put(new String[] { "%||:-{", "%||:{" }, "139.gif");
 		smileys.put(new String[] { "%*-{", "%*{" }, "140.gif");
 		smileys.put(new String[] { ":(fight)" }, "141.gif");

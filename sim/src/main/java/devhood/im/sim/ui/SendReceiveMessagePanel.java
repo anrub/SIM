@@ -13,10 +13,12 @@ import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -196,15 +198,25 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 				int x = 0;
 				int y = 0;
+				Set<String[]> keySet = smileyFactory.getSmileys().keySet();
+				
+				Map<String, String[]> tempMapForSorting = new HashMap<String, String[]>();
+				List<String> keyListForSorting = new ArrayList<String>();
+				for ( String[] keys : keySet) {
+					tempMapForSorting.put(keys[0], keys);
+					keyListForSorting.add(keys[0]);
+				}
 
-				for (String[] key : smileyFactory.getSmileys().keySet()) {
+				Collections.sort(keyListForSorting);
+
+				for (String key : keyListForSorting) {
 					c.gridx = x;
 					c.gridy = y;
-					String smileyCode = key[0].replace("&gt;", ">").replace(
+					String smileyCode = key.replace("&gt;", ">").replace(
 							"&lt;", "<").replace("&amp;", "&");
 					ImageIcon img = UiUtil.createImageIcon(
 							"/images/yahoo_smileys/"
-									+ smileyFactory.getSmileys().get(key),
+									+ smileyFactory.getSmileys().get(tempMapForSorting.get(key)),
 							smileyCode);
 					JLabel smileyLabel = new JLabel(img);
 					smileyLabel.setToolTipText(smileyCode);

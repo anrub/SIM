@@ -1,7 +1,6 @@
 package devhood.im.sim.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -56,6 +55,7 @@ import devhood.im.sim.model.UserStatus;
 import devhood.im.sim.service.interfaces.MessageSender;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.util.SmileyFactory;
+import devhood.im.sim.ui.util.UiUtil;
 import devhood.im.sim.ui.util.UserColorFactory;
 
 /**
@@ -228,26 +228,26 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            textarea.
 	 */
 	public void clearText(JTextComponent area) {
-		
+
 		if (area instanceof JEditorPane) {
-			
+
 			String tableLayout = "<table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">";
 			tableLayout += "<tr><td colspan=\"2\" valign=\"top\"><i>Bildschirminhalt gelöscht!</i></td></tr>";
 			tableLayout += "<tr><td colspan=\"2\" valign=\"top\"><br/></td></tr></table>";
-			
+
 			area.setText("<html><head></head><body></body></html>");
-			
+
 			String oldText = area.getText();
 			StringBuffer clearTableLayout = new StringBuffer(oldText);
-			
+
 			int index = oldText.indexOf("</body>");
-			
+
 			clearTableLayout.insert(index, tableLayout);
 			area.setText(clearTableLayout.toString());
-		}else{
+		} else {
 			area.setText(null);
 		}
-		
+
 		area.moveCaretPosition(0);
 	}
 
@@ -312,7 +312,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				.getComponent(1)).getComponent(0)).getComponent(0);
 
 		if (StringUtils.isEmpty(input.getText().trim())) {
-			//clearText(input);
+			// clearText(input);
 			return;
 		}
 
@@ -325,7 +325,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		newMessage.setText(input.getText());
 
 		clearText(input);
-		
+
 		if (toUser.equals(simConfiguration.getStreamTabName())) { // Ist dies im
 																	// Stremtab
 																	// -
@@ -357,7 +357,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		}
 
-		//clearText(input);
+		// clearText(input);
 
 		moveCaretDown((JEditorPane) timeline);
 
@@ -537,8 +537,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	protected void outputStatusMessage(String statusMessage,
 			JTextComponent textArea) {
 		String oldText = textArea.getText();
-		textArea.setText(getFormattedMessage("<tr><td colspan=\"2\" valign=\"top\"><i>" + statusMessage + "</td></tr></i>",
-				oldText));
+		textArea.setText(getFormattedMessage(
+				"<tr><td colspan=\"2\" valign=\"top\"><i>" + statusMessage
+						+ "</td></tr></i>", oldText));
 	}
 
 	/**
@@ -636,8 +637,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			msg.append(c);
 		}
 
-		return "<tr><td valign=\"top\" nowrap><font color=\"" + colorHexValue + "\">["
-				+ df.format(new Date()) + "] " + m.getSender() + " ></font>&nbsp;</td><td valign=\"top\" width=\"100%\">"
+		return "<tr><td valign=\"top\" nowrap><font color=\"" + colorHexValue
+				+ "\">[" + df.format(new Date()) + "] " + m.getSender()
+				+ " ></font>&nbsp;</td><td valign=\"top\" width=\"100%\">"
 				+ msg.toString() + "</td></tr>";
 	}
 
@@ -664,26 +666,30 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            Text der in die TextArea geschrieben wird.
 	 */
 	protected void addToTabPane(final String label, String text) {
-		
+
 		String layoutedText = "<table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">";
-	
+
 		if (!simConfiguration.getStreamTabName().equalsIgnoreCase(label)) {
-			layoutedText +=  "<tr><td colspan=\"2\" valign=\"top\"><i>Konversation mit User [" + label + "] gestartet!</i></td></tr>";
-		}else{
-			layoutedText +=  "<tr><td colspan=\"2\" valign=\"top\"><i>" + simConfiguration.getApplicationName() + "<br />Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i></td></tr>";
+			layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><i>Konversation mit User ["
+					+ label + "] gestartet!</i></td></tr>";
+		} else {
+			layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><i>"
+					+ simConfiguration.getApplicationName()
+					+ "<br />Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i></td></tr>";
 		}
-		
+
 		layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><br/></td></tr>";
-		
+
 		if (text != null) {
 			layoutedText += text;
 		}
-		
+
 		layoutedText += "</table>";
-		
+
 		JPanel textPanel = new JPanel(new BorderLayout());
 
-		JScrollPane timelineScrollPane = createTimelineScrollpane(label, layoutedText);
+		JScrollPane timelineScrollPane = createTimelineScrollpane(label,
+				layoutedText);
 
 		textPanel.add(timelineScrollPane, BorderLayout.CENTER);
 
@@ -797,19 +803,20 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @return
 	 */
 	protected JScrollPane createTimelineScrollpane(String label, String text) {
-		
-		final JEditorPane timelineTextArea = new JEditorPane("text/html", "<html><head></head><body></body></html>");
-		
-		String oldText = timelineTextArea.getText();		
+
+		final JEditorPane timelineTextArea = new JEditorPane("text/html",
+				"<html><head></head><body></body></html>");
+
+		String oldText = timelineTextArea.getText();
 		StringBuffer newMsg = new StringBuffer(oldText);
 
 		if (oldText.contains("</body>")) {
 			int index = oldText.indexOf("</body>");
 			newMsg.insert(index, text);
 		}
-		
+
 		timelineTextArea.setText(newMsg.toString());
-		
+
 		DefaultCaret caret = (DefaultCaret) timelineTextArea.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
@@ -829,33 +836,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			public void hyperlinkUpdate(final HyperlinkEvent e) {
 
 				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-
-					// Fenster asynchron ï¿½ffnen, sonst blockt ui.
-					SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-
-						@Override
-						protected Void doInBackground() throws Exception {
-
-							try {
-								Desktop.getDesktop().browse(e.getURL().toURI());
-							} catch (Exception uri) {
-								// TODO Fehlerhandling, wen URI / Browser nicht
-								// geoeffnet werden konnte. Warnung anzeigen.
-								uri.printStackTrace();
-							}
-
-							return null;
-						}
-
-						@Override
-						protected void done() {
-							// TODO Auto-generated method stub
-							super.done();
-						}
-					};
-
-					worker.execute();
-
+					UiUtil.openUrlInBrowser(e.getURL().toString());
 				}
 			}
 		});

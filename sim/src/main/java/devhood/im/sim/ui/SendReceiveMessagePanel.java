@@ -232,7 +232,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		if (area instanceof JEditorPane) {
 
 			String tableLayout = "<table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">";
-			tableLayout += "<tr><td colspan=\"2\" valign=\"top\"><i>Bildschirminhalt gelöscht!</i></td></tr>";
+			tableLayout += "<tr><td colspan=\"2\" valign=\"top\"><i>Bildschirminhalt gelöscht</i></td></tr>";
 			tableLayout += "<tr><td colspan=\"2\" valign=\"top\"><br/></td></tr></table>";
 
 			area.setText("<html><head></head><body></body></html>");
@@ -687,7 +687,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		if (!simConfiguration.getStreamTabName().equalsIgnoreCase(label)) {
 			layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><i>Konversation mit User ["
-					+ label + "] gestartet!</i></td></tr>";
+					+ label + "] gestartet</i></td></tr>";
 		} else {
 			layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><i>"
 					+ simConfiguration.getApplicationName()

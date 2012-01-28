@@ -18,10 +18,9 @@ import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.UserChangeListener;
 import devhood.im.sim.service.interfaces.UserService;
 
-
-
 /**
- * Dieser {@link UserService} aktualisiert sich selbst und den übergebenen User regelmäßig.
+ * Dieser {@link UserService} aktualisiert sich selbst und den übergebenen User
+ * regelmäßig.
  * 
  * @author flo
  * 
@@ -37,7 +36,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 	 * UserDao zum Zugriff auf Stammdaten, zb User.
 	 */
 	@Inject
-	private UserDao sqliteUserDao;
+	private UserDao singleFilePerUserDao;
 
 	/**
 	 * true wenn user min. einmal refresht wurden.
@@ -50,12 +49,14 @@ public class RefreshingUserService implements UserService, EventObserver {
 	private List<UserChangeListener> userChangeListeners = new ArrayList<UserChangeListener>();
 
 	/**
-	 * Liste von Usern, die momentan aktiv refresht werden. (eigtl nur der eigene aktuelle User).
+	 * Liste von Usern, die momentan aktiv refresht werden. (eigtl nur der
+	 * eigene aktuelle User).
 	 */
 	private List<String> refreshingUsers = new ArrayList<String>();
 
 	/**
-	 * Flag sagt, dass der Timer, der die aktuellen User aktualisiert, gestartet wurde.
+	 * Flag sagt, dass der Timer, der die aktuellen User aktualisiert, gestartet
+	 * wurde.
 	 */
 	private boolean userRefreshingTimerStarted = false;
 
@@ -65,8 +66,6 @@ public class RefreshingUserService implements UserService, EventObserver {
 	@Inject
 	private SimConfiguration simConfiguration;
 
-
-
 	/**
 	 * Initialisiert, füllt das UserPanel.
 	 */
@@ -75,16 +74,12 @@ public class RefreshingUserService implements UserService, EventObserver {
 		startUserRefreshingTimer();
 	}
 
-
-
 	@Override
 	public void eventReceived(Events event, Object o) {
 		if (Events.SERVER_INITIALISED.equals(event)) {
 			refresh(simConfiguration.getCurrentUser());
 		}
 	}
-
-
 
 	/**
 	 * {@inheritDoc}
@@ -101,27 +96,21 @@ public class RefreshingUserService implements UserService, EventObserver {
 		return online;
 	}
 
-
-
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public List<User> getUsers() {
-		return sqliteUserDao.getUsers();
+		return singleFilePerUserDao.getUsers();
 	}
-
-
 
 	/**
 	 * Fuegt die Users aus registryService in die Liste ein.
 	 */
 	public void refreshUsers() {
-		List<User> users = sqliteUserDao.getUsers();
+		List<User> users = singleFilePerUserDao.getUsers();
 		processNewOrRemovedUsers(users);
 	}
-
-
 
 	/**
 	 * Aktualisiert den Nutzer, startet einen Timer, der das regelmaessig macht.
@@ -135,7 +124,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 					try {
 						User u = simConfiguration.getCurrentUser();
 						u.setLastaccess(new Date());
-						sqliteUserDao.refresh(u);
+						singleFilePerUserDao.refresh(u);
 					} catch (Exception e) {
 						// Wenn Exception fliegt, soll der Timer weiterlaufen.
 						e.printStackTrace();
@@ -143,17 +132,17 @@ public class RefreshingUserService implements UserService, EventObserver {
 				};
 			};
 
-			t.schedule(task, 0, simConfiguration.getInitRefreshUserStateInterval());
+			t.schedule(task, 0,
+					simConfiguration.getInitRefreshUserStateInterval());
 
 			refreshingUsers.add(u.getName());
 		}
 	}
 
-
-
 	/**
-	 * Verarbeitet die USer und prüft ob sie bereits vorhanden, oder neu, oder nicht mehr vorhanden sind. Benachrichtigt
-	 * den userChangeListener in beiden fällen.
+	 * Verarbeitet die USer und prüft ob sie bereits vorhanden, oder neu, oder
+	 * nicht mehr vorhanden sind. Benachrichtigt den userChangeListener in
+	 * beiden fällen.
 	 * 
 	 * @param users
 	 *            aktuelle USer aus der dB.
@@ -164,7 +153,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 
 		for (User u : users) {
 			if (currentUsers.size() == 0) {
-				currentUsers.add(u);
+				currentUsers.addAll(users);
 				continue;
 			}
 
@@ -204,8 +193,6 @@ public class RefreshingUserService implements UserService, EventObserver {
 		}
 	}
 
-
-
 	/**
 	 * Fuegt einen {@link UserChangeListener} ein.
 	 * 
@@ -217,20 +204,19 @@ public class RefreshingUserService implements UserService, EventObserver {
 		this.userChangeListeners.add(listener);
 	}
 
-
-
 	/**
 	 * Startet den Thread, der die User liste aktuell haelt.
 	 */
 	public void startUserRefreshingTimer() {
 		if (!userRefreshingTimerStarted) {
-			Timer reloadUserTimer = new Timer("RefreshingUserService: Reload Users Timer");
+			Timer reloadUserTimer = new Timer(
+					"RefreshingUserService: Reload Users Timer");
 
 			TimerTask task = new TimerTask() {
 				@Override
 				public void run() {
 					try {
-						sqliteUserDao.purgeOfflineUsers();
+						singleFilePerUserDao.purgeOfflineUsers();
 
 						refreshUsers();
 						usersLoaded = true;
@@ -241,58 +227,48 @@ public class RefreshingUserService implements UserService, EventObserver {
 					}
 				}
 			};
-			reloadUserTimer.schedule(task, simConfiguration.getUserLoadDelay(), simConfiguration.getUserLoadPeriod());
+			reloadUserTimer.schedule(task, simConfiguration.getUserLoadDelay(),
+					simConfiguration.getUserLoadPeriod());
 
 			userRefreshingTimerStarted = true;
 		}
 	}
 
-
-
 	/**
-	 * Gibt die aktuellen User zurueck. Falls bisher noch keine USer geladen wurden, wird eine Liste zurueckgegeben, die
-	 * bei contains immer true zurueck gibt. (Da noch nicht klar ist, ob der User vorhanden ist oder nicht, hacky).
+	 * Gibt die aktuellen User zurueck. Falls bisher noch keine USer geladen
+	 * wurden, wird eine Liste zurueckgegeben, die bei contains immer true
+	 * zurueck gibt. (Da noch nicht klar ist, ob der User vorhanden ist oder
+	 * nicht, hacky).
 	 * 
 	 * @return list von usern.
 	 */
 	public List<User> getCurrentUsers() {
-		List<User> users = new ArrayList<User>();
-		if (!usersLoaded) {
-			users = new ArrayList<User>() {
-				public boolean contains(Object o) {
-					return true;
-				};
-			};
-		} else {
-			users = currentUsers;
-		}
-		return users;
+		/*
+		 * List<User> users = new ArrayList<User>(); if (!usersLoaded) { users =
+		 * new ArrayList<User>() { public boolean contains(Object o) { return
+		 * true; }; }; } else { users = currentUsers; } return users;
+		 */
+		return currentUsers;
 	}
-
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void purgeOfflineUsers() {
-		sqliteUserDao.purgeOfflineUsers();
+		singleFilePerUserDao.purgeOfflineUsers();
 	}
-
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void logout(String username) {
-		sqliteUserDao.logout(username);
+		singleFilePerUserDao.logout(username);
 	}
 
-
-
 	public User getUser(String name) {
-		return sqliteUserDao.getUser(name);
+		return singleFilePerUserDao.getUser(name);
 	}
 
 }

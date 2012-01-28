@@ -66,7 +66,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 			.toString());
 
 	@Inject
-	private UserDao sqliteUserDao;
+	private UserDao singleFilePerUserDao;
 
 	@Inject
 	private ApplicationContext context;
@@ -160,7 +160,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 		}
 		idReceiverMap.remove(m.getId());
 
-		User u = sqliteUserDao.getUser(username);
+		User u = singleFilePerUserDao.getUser(username);
 		sendMessage(u, m);
 	}
 
@@ -186,7 +186,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 		String id = UUID.randomUUID().toString();
 		msg.setId(id);
 
-		User u = sqliteUserDao.getUser(toUser);
+		User u = singleFilePerUserDao.getUser(toUser);
 		sendMessage(u, msg);
 
 		idFileMap.put(msg.getId(), file);
@@ -210,7 +210,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 			Socket socket = null;
 
 			try {
-				User user = sqliteUserDao.getUser(m.getSender());
+				User user = singleFilePerUserDao.getUser(m.getSender());
 				String addr = user.getAddress();
 				socket = new Socket(addr, userport);
 
@@ -322,7 +322,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 		msg.setPortToUser(port);
 
 		msg.setText(id);
-		User u = sqliteUserDao.getUser(username);
+		User u = singleFilePerUserDao.getUser(username);
 		sendMessage(u, msg);
 	}
 
@@ -468,7 +468,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	 *            Message.
 	 */
 	public void sendMessageToAllUsers(final Message m) {
-		List<User> users = sqliteUserDao.getUsers();
+		List<User> users = singleFilePerUserDao.getUsers();
 		for (final User user : users) {
 			threadPool.execute(new Runnable() {
 				@Override

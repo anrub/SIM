@@ -39,6 +39,10 @@ public class YahooSmileyFactory implements SmileyFactory {
 
 		return text;
 	}
+	
+	public Map<String[], String> getSmileys() {
+		return smileys;
+	}
 
 	/**
 	 * Die Initialisierung führt das Pairing der Kurzschreibweisen zu den

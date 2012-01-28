@@ -9,11 +9,13 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -25,9 +27,15 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import devhood.im.sim.config.SimConfiguration;
+import devhood.im.sim.controller.SimControl;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
+import devhood.im.sim.model.Message;
+import devhood.im.sim.model.MessageType;
+import devhood.im.sim.model.User;
+import devhood.im.sim.model.UserStatus;
+import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.util.UiUtil;
 
 /**
@@ -38,6 +46,12 @@ import devhood.im.sim.ui.util.UiUtil;
  */
 @Named("mainFrame")
 public class MainFrame implements EventObserver {
+	
+	@Inject
+	private SimControl simControl;
+	
+	@Inject
+	private UserService userService;
 
 	/**
 	 * Das ist der main frame.
@@ -194,14 +208,66 @@ public class MainFrame implements EventObserver {
 		});
 
 		menuNotifications.add(systrayMenuItem);
-		cbMenuItem = new JCheckBoxMenuItem("Status veröffentlichen");
+		cbMenuItem = new JCheckBoxMenuItem("Status veroeffentlichen");
 		menuPrivacy.add(cbMenuItem);
-		cbMenuItem = new JCheckBoxMenuItem("Tippstatus veröffentlichen");
+		cbMenuItem = new JCheckBoxMenuItem("Tippstatus veroeffentlichen");
 		menuPrivacy.add(cbMenuItem);
 
+		JMenu statusMenu = new JMenu("Status");
+		JRadioButtonMenuItem status1 = new JRadioButtonMenuItem(
+				UserStatus.AVAILABLE.toString());
+		status1.setSelected(true);
+
+		JRadioButtonMenuItem status2 = new JRadioButtonMenuItem(
+				UserStatus.BUSY.toString());
+		JRadioButtonMenuItem status3 = new JRadioButtonMenuItem(
+				UserStatus.NOT_AVAILABLE.toString());
+
+		ButtonGroup g = new ButtonGroup();
+		g.add(status1);
+		g.add(status2);
+		g.add(status3);
+
+		statusMenu.add(status1);
+		statusMenu.add(status2);
+		statusMenu.add(status3);
+	
+		ItemListener statusItemListener = new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					JRadioButtonMenuItem item = (JRadioButtonMenuItem) e.getSource();
+					String statusText = item.getText();
+					
+					UserStatus status = UserStatus.get(statusText);
+					
+					simConfiguration.getCurrentUser().setStatusType(status);
+					Message statusMessage = new Message();
+					statusMessage.setMessageType(MessageType.USER_STATUS);
+					statusMessage.setUserStatus(status);
+					statusMessage.setSender(simConfiguration.getCurrentUser()
+							.getName());
+
+					List<User> users = userService.getUsers();
+					for (User user : users) {
+						statusMessage.getReceiver().add(user.getName());
+					}
+
+					simControl.sendMessage(statusMessage);
+
+				}
+			}
+		};
+
+
+		status1.addItemListener(statusItemListener);
+		status2.addItemListener(statusItemListener);
+		status3.addItemListener(statusItemListener);
+		
+		
 		JMenu aboutMenu = new JMenu("About");
 		final JMenuItem githubMenuItem = new JMenuItem("Projekt auf github");
-		final JMenuItem smileyOverview = new JMenuItem("Smileyübersicht");
+		final JMenuItem smileyOverview = new JMenuItem("Smilies");
 		aboutMenu.add(githubMenuItem);
 		aboutMenu.add(smileyOverview);
 
@@ -227,6 +293,8 @@ public class MainFrame implements EventObserver {
 		JMenu layout = createLayoutChangingMenu();
 		menuBar.add(layout);
 
+		
+		menuBar.add(statusMenu);
 		menuBar.add(aboutMenu);
 
 		frame.setJMenuBar(menuBar);

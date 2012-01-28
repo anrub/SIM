@@ -2,6 +2,8 @@ package devhood.im.sim.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -20,9 +22,11 @@ import java.util.TimerTask;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -51,7 +55,6 @@ import devhood.im.sim.model.Message;
 import devhood.im.sim.model.MessageType;
 import devhood.im.sim.model.MessagingError;
 import devhood.im.sim.model.User;
-import devhood.im.sim.model.UserStatus;
 import devhood.im.sim.service.interfaces.MessageSender;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.util.SmileyFactory;
@@ -178,35 +181,81 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			}
 		});
 
-		JComboBox statusComboBox = new JComboBox(
-				new UserStatus[] { UserStatus.AVAILABLE, UserStatus.BUSY,
-						UserStatus.NOT_AVAILABLE });
+		final JFrame smileyFrame = new JFrame();
+		smileyFrame.setIconImage(UiUtil
+				.createImage("/images/yahoo_smileys/01.gif"));
+		GridBagLayout layout = new GridBagLayout();
 
-		// statusComboBox.setEditable(true);
-		statusComboBox.addActionListener(new ActionListener() {
+		final JPanel panel = new JPanel(layout);
+
+		SwingWorker<Void, Void> w = new SwingWorker<Void, Void>() {
+			@Override
+			protected Void doInBackground() throws Exception {
+				smileyFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				final GridBagConstraints c = new GridBagConstraints();
+
+				int x = 0;
+				int y = 0;
+
+				for (String[] key : smileyFactory.getSmileys().keySet()) {
+					c.gridx = x;
+					c.gridy = y;
+
+					ImageIcon img = UiUtil.createImageIcon(
+							"/images/yahoo_smileys/"
+									+ smileyFactory.getSmileys().get(key),
+							key[0].replace("&gt;", ">").replace("&lt;", "<"));
+					JLabel smileyLabel = new JLabel(img);
+
+					smileyLabel.addMouseListener(new MouseAdapter() {
+
+						@Override
+						public void mouseClicked(MouseEvent e) {
+							JLabel l = (JLabel) e.getSource();
+							ImageIcon icon = (ImageIcon) l.getIcon();
+							String code = icon.getDescription();
+							JTextArea input = inputTextAreaMap
+									.get(getCurrentSelectedTabTitle());
+							input.setText(input.getText() + " " + code + " ");
+
+							focusMessageTextArea(getCurrentSelectedTabTitle());
+
+							smileyFrame.dispose();
+						}
+
+					});
+
+					if (y < 10) {
+						y++;
+					} else {
+						y = 0;
+
+						x++;
+					}
+
+					panel.add(smileyLabel, c);
+				}
+				return null;
+			}
+		};
+		w.execute();
+
+		smileyFrame.add(panel);
+
+		final JButton smileyButton = new JButton(UiUtil.createImageIcon(
+				"/images/yahoo_smileys/01.gif", ":)"));
+		smileyButton.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				JComboBox box = (JComboBox) e.getSource();
-				UserStatus status = (UserStatus) box.getSelectedItem();
-
-				simConfiguration.getCurrentUser().setStatusType(status);
-				Message statusMessage = new Message();
-				statusMessage.setMessageType(MessageType.USER_STATUS);
-				statusMessage.setUserStatus(status);
-				statusMessage.setSender(simConfiguration.getCurrentUser()
-						.getName());
-
-				List<User> users = userService.getUsers();
-				for (User user : users) {
-					statusMessage.getReceiver().add(user.getName());
-				}
-
-				simControl.sendMessage(statusMessage);
+			public void actionPerformed(ActionEvent arg0) {
+				panel.repaint();
+				smileyFrame.pack();
+				smileyFrame.setVisible(true);
+				smileyFrame.setLocationRelativeTo(smileyButton);
 			}
 		});
-
-		buttonsRight.add(statusComboBox);
+		buttonsRight.add(smileyButton);
+		// buttonsRight.add(statusComboBox);
 		buttonsRight.add(clearButton);
 		buttonsRight.add(closeButton);
 
@@ -629,7 +678,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		for (String c : chunks) {
 			if (c.matches(linkPattern)) {
-				c = "<a href=\"" + c + "\" alt=\"" + c + "\">" + shorten(c, simConfiguration.getMaxLinkLength()) + "</a>";
+				c = "<a href=\"" + c + "\" alt=\"" + c + "\">"
+						+ shorten(c, simConfiguration.getMaxLinkLength())
+						+ "</a>";
 			} else {
 				c = smileyFactory.applySmiles(c);
 			}
@@ -642,20 +693,22 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				+ " ></font>&nbsp;</td><td valign=\"top\" width=\"100%\">"
 				+ msg.toString() + "</td></tr>";
 	}
-	
+
 	/**
-	 * Verkuerzt den String auf eine bestimmte Anzahl von Zeichen und setzt ... dahinter
+	 * Verkuerzt den String auf eine bestimmte Anzahl von Zeichen und setzt ...
+	 * dahinter
 	 * 
-	 * @param s String
+	 * @param s
+	 *            String
 	 * @return verkuerzter String
 	 */
 	public String shorten(String s, int chars) {
 		String shortened = s;
-		if ( s != null && s.length() > chars ) {
+		if (s != null && s.length() > chars) {
 			shortened = s.substring(0, chars - 3);
 			shortened = shortened + "...";
 		}
-		
+
 		return shortened;
 	}
 

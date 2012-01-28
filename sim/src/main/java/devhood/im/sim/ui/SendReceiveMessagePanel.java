@@ -201,7 +201,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 					c.gridx = x;
 					c.gridy = y;
 					String smileyCode = key[0].replace("&gt;", ">").replace(
-							"&lt;", "<");
+							"&lt;", "<").replace("&amp;", "&");
 					ImageIcon img = UiUtil.createImageIcon(
 							"/images/yahoo_smileys/"
 									+ smileyFactory.getSmileys().get(key),

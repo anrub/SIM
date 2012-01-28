@@ -2,10 +2,13 @@ package devhood.im.sim.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -14,6 +17,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -195,11 +199,35 @@ public class MainFrame implements EventObserver {
 		cbMenuItem = new JCheckBoxMenuItem("Tippstatus veröffentlichen");
 		menuPrivacy.add(cbMenuItem);
 
+		JMenu aboutMenu = new JMenu("About");
+		final JMenuItem githubMenuItem = new JMenuItem("Projekt auf github");
+		final JMenuItem smileyOverview = new JMenuItem("Smileyübersicht");
+		aboutMenu.add(githubMenuItem);
+		aboutMenu.add(smileyOverview);
+
+		smileyOverview.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				UiUtil.openUrlInBrowser(simConfiguration.getSmileyOverview());
+			}
+		});
+
+		githubMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				UiUtil.openUrlInBrowser(simConfiguration.getProjectGithuburl());
+			}
+		});
+
 		menuBar.add(menuNotifications);
 		// menuBar.add(menuPrivacy);
 
 		JMenu layout = createLayoutChangingMenu();
 		menuBar.add(layout);
+
+		menuBar.add(aboutMenu);
 
 		frame.setJMenuBar(menuBar);
 	}
@@ -252,14 +280,10 @@ public class MainFrame implements EventObserver {
 				"Nimbus Layout");
 
 		final JRadioButtonMenuItem r4 = new JRadioButtonMenuItem("Motif Layout");
-		final JRadioButtonMenuItem r5 = new JRadioButtonMenuItem(
-				"Windows classic Layout");
-
 		group.add(r1);
 		group.add(r2);
 		group.add(r3);
 		group.add(r4);
-		group.add(r5);
 
 		ItemListener layoutListener = new ItemListener() {
 
@@ -288,11 +312,6 @@ public class MainFrame implements EventObserver {
 									.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
 							SwingUtilities.updateComponentTreeUI(frame);
 						}
-						if (obj == r5) {
-							UIManager
-									.setLookAndFeel("com.sun.java.swing.plaf.motif.WindowsClassicLookAndFeel");
-							SwingUtilities.updateComponentTreeUI(frame);
-						}
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
@@ -303,13 +322,11 @@ public class MainFrame implements EventObserver {
 		r2.addItemListener(layoutListener);
 		r3.addItemListener(layoutListener);
 		r4.addItemListener(layoutListener);
-		r5.addItemListener(layoutListener);
 
 		layout.add(r1);
 		layout.add(r2);
 		layout.add(r3);
 		layout.add(r4);
-		layout.add(r5);
 
 		return layout;
 	}

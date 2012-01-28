@@ -36,7 +36,11 @@ public class SimConfiguration {
 
 	private Logger log = Logger.getLogger(SimConfiguration.class.toString());
 
-	private String applicationName = "SIM - S Intstant Messenger";
+	private String applicationName = "SIM - S Instant Messenger";
+	
+	private String projectGithuburl = "https://github.com/anrub/SIM";
+	
+	private String smileyOverview = "http://www.helpbytes.co.uk/smileys.php";
 
 	/**
 	 * Port auf dem der Server lauscht. 0 sucht einen freien Port.
@@ -361,5 +365,21 @@ public class SimConfiguration {
 
 	public void setInitRefreshUserStateInterval(int initRefreshUserStateInterval) {
 		this.initRefreshUserStateInterval = initRefreshUserStateInterval;
+	}
+
+	public String getProjectGithuburl() {
+		return projectGithuburl;
+	}
+
+	public void setProjectGithuburl(String projectGithuburl) {
+		this.projectGithuburl = projectGithuburl;
+	}
+
+	public String getSmileyOverview() {
+		return smileyOverview;
+	}
+
+	public void setSmileyOverview(String smileyOverview) {
+		this.smileyOverview = smileyOverview;
 	}
 }

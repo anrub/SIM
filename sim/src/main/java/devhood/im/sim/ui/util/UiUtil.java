@@ -1,11 +1,48 @@
 package devhood.im.sim.ui.util;
 
+import java.awt.Desktop;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.net.URI;
 
 import javax.swing.ImageIcon;
+import javax.swing.SwingWorker;
 
 public class UiUtil {
+
+	/**
+	 * Erzeugt einen SwingWorker, der die übergebene URL im Browser öffnet.
+	 * 
+	 * @param url
+	 *            URL
+	 * @return SwingWorker<Void,Void>
+	 */
+	public static void openUrlInBrowser(final String url) {
+		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+			@Override
+			protected Void doInBackground() throws Exception {
+
+				try {
+					Desktop.getDesktop().browse(URI.create(url));
+				} catch (Exception uri) {
+					// TODO Fehlerhandling, wen URI / Browser nicht
+					// geoeffnet werden konnte. Warnung anzeigen.
+					uri.printStackTrace();
+				}
+
+				return null;
+			}
+
+			@Override
+			protected void done() {
+				// TODO Auto-generated method stub
+				super.done();
+			}
+		};
+
+		worker.execute();
+	}
 
 	/**
 	 * Erzeugt ien ImageIcon aus dem uebergebenen path. path ist im classpath.

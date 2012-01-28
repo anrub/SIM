@@ -77,7 +77,7 @@ public class YahooSmileyFactory implements SmileyFactory {
 		smileys.put(new String[] { "=;-", "=;" }, "23.gif");
 		smileys.put(new String[] { "|-)", "|)", "I-)", "I)", "zzz" }, "24.gif");
 		smileys.put(new String[] { "8-|", "8|" }, "25.gif");
-		smileys.put(new String[] { ":-&", ":&" }, "26.gif");
+		smileys.put(new String[] { ":-&amp;", ":&amp;" }, "26.gif");
 		smileys.put(new String[] { ":-$", ":$" }, "27.gif");
 		smileys.put(new String[] { "[-(" }, "28.gif");
 		smileys.put(new String[] { ":o)" }, "29.gif");

@@ -230,7 +230,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 							String code = icon.getDescription();
 							JTextArea input = inputTextAreaMap
 									.get(getCurrentSelectedTabTitle());
-							input.setText(input.getText() + " " + code + " ");
+							input.insert(" " + code + " ", input.getCaretPosition());
 
 							focusMessageTextArea(getCurrentSelectedTabTitle());
 

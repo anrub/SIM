@@ -213,7 +213,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 					c.gridx = x;
 					c.gridy = y;
 					String smileyCode = key.replace("&gt;", ">").replace(
-							"&lt;", "<").replace("&amp;", "&");
+							"&lt;", "<").replace("&amp;", "&").replace("&quot;", "\"");
 					ImageIcon img = UiUtil.createImageIcon(
 							"/images/yahoo_smileys/"
 									+ smileyFactory.getSmileys().get(tempMapForSorting.get(key)),
@@ -234,7 +234,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 							focusMessageTextArea(getCurrentSelectedTabTitle());
 
-							smileyFrame.dispose();
+							//smileyFrame.dispose();
 						}
 
 					});

@@ -57,7 +57,7 @@ public class YahooSmileyFactory implements SmileyFactory {
 		smileys.put(new String[] { ";;)", ";;-)" }, "05.gif");
 		smileys.put(new String[] { ":-\\", ":-/" }, "06.gif");
 		smileys.put(new String[] { ":-x", ":x", ":-X", ":X" }, "07.gif");
-		smileys.put(new String[] { ":\"&gt;", ":-\"&gt;" }, "08.gif");
+		smileys.put(new String[] { ":&quot;&gt;", ":-&quot;&gt;" }, "08.gif");
 		smileys.put(new String[] { ":-p", ":-P", ";-p", ";-P", ":p", ":P",
 				";p", ";P", ":-)p", ":-)P", ";-)p", ";-)P", ":)p", ":)P",
 				";)p", ";)P" }, "09.gif");
@@ -105,7 +105,7 @@ public class YahooSmileyFactory implements SmileyFactory {
 		smileys.put(new String[] { "[-o&lt;", "[o&lt;" }, "51.gif");
 		smileys.put(new String[] { "@-)" }, "52.gif");
 		smileys.put(new String[] { "$-)" }, "53.gif");
-		smileys.put(new String[] { ":-\"" }, "54.gif");
+		smileys.put(new String[] { ":-&quot;" }, "54.gif");
 		smileys.put(new String[] { ":^o" }, "55.gif");
 		smileys.put(new String[] { "b-(" }, "56.gif");
 		smileys.put(new String[] { ":)&gt;-", ":-)&gt;-" }, "57.gif");

@@ -56,12 +56,12 @@ public class SingleFilePerUserDao implements UserDao {
 			u = (User) os.readObject();
 
 		} catch (Exception e) {
-			log.log(Level.SEVERE, "User konnte nicht gelesen werden.");
+			log.log(Level.SEVERE, "User konnte nicht gelesen werden.",e);
 		} finally {
 			try {
 				os.close();
 			} catch (IOException e) {
-				log.log(Level.SEVERE, "Konnte File nicht schließen");
+				log.log(Level.SEVERE, "Konnte File nicht schließen", e);
 			}
 		}
 		return u;

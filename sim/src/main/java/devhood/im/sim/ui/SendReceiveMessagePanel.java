@@ -234,7 +234,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 							focusMessageTextArea(getCurrentSelectedTabTitle());
 
-							//smileyFrame.dispose();
+							smileyFrame.dispose();
 						}
 
 					});

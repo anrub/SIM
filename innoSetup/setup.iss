@@ -38,21 +38,17 @@ Name: "{userdesktop}\SIM - S Instant Messenger"; Filename: "{sys}\javaw.exe"; Pa
 
 [Code]
 var
-  Page: TInputFileWizardPage;
+  Page: TInputDirWizardPage;
   Database: String;
 
 procedure InitializeWizard;
 begin
   
-  Page := CreateInputFilePage(wpWelcome,
-    'Datenbankpfad', 'Bitte Datenbankdatei auswählen',
-    'Bitte die Datenbankdatei auswählen!');
+  Page := CreateInputDirPage(wpWelcome,
+    'Datenbankpfad', 'Bitte Ordner der Datenbank auswählen',
+    'Bitte den Ordner der Datenbank auswählen!', False, 'Neuer Ordner');
 
-  Page.Add('Speicherort sim.db:',
-  'Database File|*.db|All files|*.*',
-  '.db');             
-
-  Page.Values[0] := 'Z:\sim.db';
+  Page.Add('');             
 end;
 
 function GetDatabase(Param: String): String;

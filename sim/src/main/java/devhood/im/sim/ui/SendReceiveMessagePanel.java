@@ -199,10 +199,10 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				int x = 0;
 				int y = 0;
 				Set<String[]> keySet = smileyFactory.getSmileys().keySet();
-				
+
 				Map<String, String[]> tempMapForSorting = new HashMap<String, String[]>();
 				List<String> keyListForSorting = new ArrayList<String>();
-				for ( String[] keys : keySet) {
+				for (String[] keys : keySet) {
 					tempMapForSorting.put(keys[0], keys);
 					keyListForSorting.add(keys[0]);
 				}
@@ -212,15 +212,17 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				for (String key : keyListForSorting) {
 					c.gridx = x;
 					c.gridy = y;
-					String smileyCode = key.replace("&gt;", ">").replace(
-							"&lt;", "<").replace("&amp;", "&").replace("&quot;", "\"");
+					String smileyCode = key.replace("&gt;", ">")
+							.replace("&lt;", "<").replace("&amp;", "&")
+							.replace("&quot;", "\"");
 					ImageIcon img = UiUtil.createImageIcon(
 							"/images/yahoo_smileys/"
-									+ smileyFactory.getSmileys().get(tempMapForSorting.get(key)),
+									+ smileyFactory.getSmileys().get(
+											tempMapForSorting.get(key)),
 							smileyCode);
 					JLabel smileyLabel = new JLabel(img);
 					smileyLabel.setToolTipText(smileyCode);
-					
+
 					smileyLabel.addMouseListener(new MouseAdapter() {
 
 						@Override
@@ -230,7 +232,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 							String code = icon.getDescription();
 							JTextArea input = inputTextAreaMap
 									.get(getCurrentSelectedTabTitle());
-							input.insert(" " + code + " ", input.getCaretPosition());
+							input.insert(" " + code + " ",
+									input.getCaretPosition());
 
 							focusMessageTextArea(getCurrentSelectedTabTitle());
 
@@ -558,8 +561,10 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 			if (textArea != null) {
 				String oldText = textArea.getText();
-				textArea.setText(getFormattedMessage(m, oldText));
-				moveCaretDown(textArea);
+				synchronized (this) {
+					textArea.setText(getFormattedMessage(m, oldText));
+					moveCaretDown(textArea);
+				}
 			} else {
 				String textline = getFormattedMessage(m);
 				addToTabPane(sender, textline);
@@ -600,9 +605,11 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	protected void outputStatusMessage(String statusMessage,
 			JTextComponent textArea) {
 		String oldText = textArea.getText();
-		textArea.setText(getFormattedMessage(
-				"<tr><td colspan=\"2\" valign=\"top\"><i>" + statusMessage
-						+ "</td></tr></i>", oldText));
+		synchronized (this) {
+			textArea.setText(getFormattedMessage(
+					"<tr><td colspan=\"2\" valign=\"top\"><i>" + statusMessage
+							+ "</td></tr></i>", oldText));
+		}
 	}
 
 	/**

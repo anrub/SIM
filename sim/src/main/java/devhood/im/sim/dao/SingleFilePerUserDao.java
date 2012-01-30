@@ -60,7 +60,7 @@ public class SingleFilePerUserDao implements UserDao {
 		} finally {
 			try {
 				os.close();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				log.log(Level.SEVERE, "Konnte File nicht schließen", e);
 			}
 		}
@@ -82,7 +82,10 @@ public class SingleFilePerUserDao implements UserDao {
 		List<User> users = new ArrayList<User>();
 		if (content != null && content.length > 0) {
 			for (File line : content) {
-				users.add(getUser(line));
+				User u = getUser(line);
+				if ( u != null ) {
+					users.add(u);
+				}
 			}
 		}
 
@@ -125,7 +128,7 @@ public class SingleFilePerUserDao implements UserDao {
 		} finally {
 			try {
 				os.close();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				log.log(Level.SEVERE, "Konnte FIle nicht schliessen", e);
 			}
 		}

@@ -25,6 +25,8 @@ import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
 import devhood.im.sim.ui.util.UiUtil;
 
+
+
 /**
  * Konfigurationsklasse von SIM.
  * 
@@ -37,17 +39,17 @@ public class SimConfiguration {
 	private Logger log = Logger.getLogger(SimConfiguration.class.toString());
 
 	private String applicationName = "SIM - S Instant Messenger";
-	
+
 	/**
 	 * URL zum Projekt auf Github.
 	 */
 	private String projectGithuburl = "https://github.com/anrub/SIM";
-	
+
 	/**
 	 * URL zur Smileyübersicht, vorsichtshalber aufs Wiki.
 	 */
 	private String smileyOverview = "https://github.com/anrub/SIM/wiki";
-	
+
 	/**
 	 * 
 	 */
@@ -74,8 +76,7 @@ public class SimConfiguration {
 	private int userLoadPeriod = 10000;
 
 	/**
-	 * Interval, in dem der Nutzerstatus in refresh(User) in der DB aktualisiert
-	 * wird.
+	 * Interval, in dem der Nutzerstatus in refresh(User) in der DB aktualisiert wird.
 	 */
 	private int initRefreshUserStateInterval = 10000;
 
@@ -102,14 +103,12 @@ public class SimConfiguration {
 	/**
 	 * Icon der gelesenen Nachrichten.
 	 */
-	private ImageIcon readIcon = UiUtil.createImageIcon("/images/read.png",
-			"Gelesene Nachrichten");
+	private ImageIcon readIcon = UiUtil.createImageIcon("/images/read.png", "Gelesene Nachrichten");
 
 	/**
 	 * Icon der ungelesenen Nachrichten.
 	 */
-	private ImageIcon unreadIcon = UiUtil.createImageIcon("/images/unread.png",
-			"Ungelesene Nachrichten");
+	private ImageIcon unreadIcon = UiUtil.createImageIcon("/images/unread.png", "Ungelesene Nachrichten");
 
 	/**
 	 * Look and Feel - default System Laf.
@@ -147,6 +146,8 @@ public class SimConfiguration {
 	 */
 	private User currentUser;
 
+
+
 	/**
 	 * Gibt den eigenen Benutzer zurueck.
 	 * 
@@ -155,11 +156,10 @@ public class SimConfiguration {
 	public User getCurrentUser() {
 		if (currentUser == null) {
 			String x = UserStatus.AVAILABLE.toString();
-			currentUser = new User(username, getCurrentIp(), getPort(),
-					new Date(), getKeyPair().getPublic(),
+			currentUser = new User(username, getCurrentHostname(), getPort(), new Date(), getKeyPair().getPublic(),
 					UserStatus.AVAILABLE.getText());
 		} else {
-			currentUser.setAddress(getCurrentIp());
+			currentUser.setAddress(getCurrentHostname());
 			currentUser.setPort(getPort());
 			currentUser.setPublicKey(getKeyPair().getPublic());
 			currentUser.setName(username);
@@ -168,32 +168,38 @@ public class SimConfiguration {
 		return currentUser;
 	}
 
+
+
 	/**
 	 * Ermittelt die aktuelle IP..
 	 * 
 	 * @return ip
 	 */
-	protected String getCurrentIp() {
-		String myIp = null;
+	protected String getCurrentHostname() {
+		String myHostName = null;
 		try {
 			String hostName = InetAddress.getLocalHost().getHostName();
 
-			InetAddress addrs[] = null;
+			// InetAddress addrs[] = null;
+			//
+			// addrs = InetAddress.getAllByName(hostName);
+			//
+			// for (InetAddress addr : addrs) {
+			// if (!addr.isLoopbackAddress() && addr.isSiteLocalAddress()) {
+			// myIp = addr.getHostAddress();
+			// }
+			// }
 
-			addrs = InetAddress.getAllByName(hostName);
+			myHostName = hostName;
 
-			for (InetAddress addr : addrs) {
-				if (!addr.isLoopbackAddress() && addr.isSiteLocalAddress()) {
-					myIp = addr.getHostAddress();
-				}
-			}
 		} catch (UnknownHostException e) {
-			log.log(Level.SEVERE,
-					"Lokale IP Adresse konnte nicht ermittelt werden!", e);
+			log.log(Level.SEVERE, "Lokale IP Adresse konnte nicht ermittelt werden!", e);
 		}
 
-		return myIp;
+		return myHostName;
 	}
+
+
 
 	/**
 	 * Gibt das KeyPair fuer die Verschluesselung der Messages zurueck.
@@ -208,17 +214,17 @@ public class SimConfiguration {
 				kpg.initialize(2048);
 				keyPair = kpg.generateKeyPair();
 			} catch (NoSuchAlgorithmException e) {
-				log.log(Level.SEVERE, "Konnte Schluesselpaar nicht generieren",
-						e);
+				log.log(Level.SEVERE, "Konnte Schluesselpaar nicht generieren", e);
 			}
 		}
 
 		return keyPair;
 	}
 
+
+
 	/**
-	 * Versucht die Versionsnummer aus der Datei /SIM_VERSION.txt aus dem
-	 * classpath zu lesen.
+	 * Versucht die Versionsnummer aus der Datei /SIM_VERSION.txt aus dem classpath zu lesen.
 	 * 
 	 * @return Versionsnummer oder ""
 	 */
@@ -242,161 +248,241 @@ public class SimConfiguration {
 		return version;
 	}
 
+
+
 	public String getUsername() {
 		return username;
 	}
+
+
 
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
+
+
 	public Map<String, String> getConfiguration() {
 		return configuration;
 	}
+
+
 
 	public void setConfiguration(Map<String, String> configuration) {
 		this.configuration = configuration;
 	}
 
+
+
 	public int getSenderThreads() {
 		return senderThreads;
 	}
+
+
 
 	public void setSenderThreads(int senderThreads) {
 		this.senderThreads = senderThreads;
 	}
 
+
+
 	public void setKeyPair(KeyPair keyPair) {
 		this.keyPair = keyPair;
 	}
+
+
 
 	public String getStreamTabName() {
 		return streamTabName;
 	}
 
+
+
 	public void setStreamTabName(String streamTabName) {
 		this.streamTabName = streamTabName;
 	}
+
+
 
 	public String getTrayIconPath() {
 		return trayIconPath;
 	}
 
+
+
 	public void setTrayIconPath(String trayIconPath) {
 		this.trayIconPath = trayIconPath;
 	}
+
+
 
 	public Image getTrayIcon() {
 		return trayIcon;
 	}
 
+
+
 	public void setTrayIcon(Image trayIcon) {
 		this.trayIcon = trayIcon;
 	}
+
+
 
 	public ImageIcon getReadIcon() {
 		return readIcon;
 	}
 
+
+
 	public void setReadIcon(ImageIcon readIcon) {
 		this.readIcon = readIcon;
 	}
+
+
 
 	public ImageIcon getUnreadIcon() {
 		return unreadIcon;
 	}
 
+
+
 	public void setUnreadIcon(ImageIcon unreadIcon) {
 		this.unreadIcon = unreadIcon;
 	}
+
+
 
 	public String getLookAndFeel() {
 		return lookAndFeel;
 	}
 
+
+
 	public void setLookAndFeel(String lookAndFeel) {
 		this.lookAndFeel = lookAndFeel;
 	}
+
+
 
 	public String getApplicationName() {
 		return applicationName;
 	}
 
+
+
 	public int getPort() {
 		return port;
 	}
+
+
 
 	public void setPort(int port) {
 		this.port = port;
 	}
 
+
+
 	public boolean isShowSystrayMessages() {
 		return showSystrayMessages;
 	}
+
+
 
 	public void setShowSystrayMessages(boolean showSystrayMessages) {
 		this.showSystrayMessages = showSystrayMessages;
 	}
 
+
+
 	public boolean isShowStreamInTray() {
 		return showStreamInTray;
 	}
+
+
 
 	public void setShowStreamInTray(boolean showStreamInTray) {
 		this.showStreamInTray = showStreamInTray;
 	}
 
+
+
 	public boolean isShowStatusInTray() {
 		return showStatusInTray;
 	}
+
+
 
 	public void setShowStatusInTray(boolean showStatusInTray) {
 		this.showStatusInTray = showStatusInTray;
 	}
 
+
+
 	public int getUserLoadDelay() {
 		return userLoadDelay;
 	}
+
+
 
 	public void setUserLoadDelay(int userLoadDelay) {
 		this.userLoadDelay = userLoadDelay;
 	}
 
+
+
 	public int getUserLoadPeriod() {
 		return userLoadPeriod;
 	}
+
+
 
 	public void setUserLoadPeriod(int userLoadPeriod) {
 		this.userLoadPeriod = userLoadPeriod;
 	}
 
+
+
 	public int getInitRefreshUserStateInterval() {
 		return initRefreshUserStateInterval;
 	}
+
+
 
 	public void setInitRefreshUserStateInterval(int initRefreshUserStateInterval) {
 		this.initRefreshUserStateInterval = initRefreshUserStateInterval;
 	}
 
+
+
 	public String getProjectGithuburl() {
 		return projectGithuburl;
 	}
+
+
 
 	public void setProjectGithuburl(String projectGithuburl) {
 		this.projectGithuburl = projectGithuburl;
 	}
 
+
+
 	public String getSmileyOverview() {
 		return smileyOverview;
 	}
+
+
 
 	public void setSmileyOverview(String smileyOverview) {
 		this.smileyOverview = smileyOverview;
 	}
 
+
+
 	public int getMaxLinkLength() {
 		return maxLinkLength;
 	}
+
+
 
 	public void setMaxLinkLength(int maxLinkLength) {
 		this.maxLinkLength = maxLinkLength;

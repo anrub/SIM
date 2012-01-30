@@ -25,7 +25,7 @@ SolidCompression=yes
 Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 
 [Files]
-Source: "../sim/target/sim-{#MyAppVersion}-SNAPSHOT-jar-with-dependencies.jar"; DestDir: "{app}"; DestName: "sim.jar"; Flags: ignoreversion
+Source: "../sim/target/sim-{#MyAppVersion}-jar-with-dependencies.jar"; DestDir: "{app}"; DestName: "sim.jar"; Flags: ignoreversion
 Source: "icon.ico"; DestDir: "{app}"; DestName: "icon.ico"; Flags: ignoreversion
 
 [Tasks]

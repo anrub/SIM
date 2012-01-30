@@ -150,9 +150,9 @@ public class SystemTrayManager implements EventObserver {
 			List<String> users = (List<String>) o;
 			displayMessage("Ungelesene Nachrichten", users.toString(),
 					MessageType.INFO);
-		} else if (Events.USER_OFFLINE_NOTICE.equals(event)) {
+		} else if (Events.USER_OFFLINE_NOTICE.equals(event) && simConfiguration.isShowStatusInTray()) {
 			displayMessage("User offline", o.toString(), MessageType.INFO);
-		} else if (Events.USER_ONLINE_NOTICE.equals(event)) {
+		} else if (Events.USER_ONLINE_NOTICE.equals(event) && simConfiguration.isShowStatusInTray()) {
 			displayMessage("User online", o.toString(), MessageType.INFO);
 		}
 

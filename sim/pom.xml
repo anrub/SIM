@@ -44,6 +44,11 @@
 		<!-- <artifactId>spring-context</artifactId> -->
 		<!-- <version>3.0.6.RELEASE</version> -->
 		<!-- </dependency> -->
+		<dependency>
+			<groupId>net.sourceforge.jtds</groupId>
+			<artifactId>jtds</artifactId>
+			<version>1.2.4</version>
+		</dependency>
 	</dependencies>
 
 	<build>

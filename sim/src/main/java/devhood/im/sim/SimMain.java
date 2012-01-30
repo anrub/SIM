@@ -42,6 +42,14 @@ public class SimMain {
 				if ("-f".equals(args[i]) && i + 1 < args.length) {
 					System.setProperty("sim.dbPath", args[i + 1]);
 				}
+				
+				if ("-user".equals(args[i]) && i + 1 < args.length) {
+					System.setProperty("sim.db.username", args[i + 1]);
+				}
+				
+				if ("-password".equals(args[i]) && i + 1 < args.length) {
+					System.setProperty("sim.db.password", args[i + 1]);
+				}
 			}
 
 		}

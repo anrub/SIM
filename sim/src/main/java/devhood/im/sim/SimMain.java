@@ -39,9 +39,14 @@ public class SimMain {
 				if ("-n".equals(args[i]) && i + 1 < args.length) {
 					username = args[i + 1];
 				}
-				if ("-f".equals(args[i]) && i + 1 < args.length) {
-					System.setProperty("sim.dbPath", args[i + 1]);
+
+				if ("-jdbcDriver".equals(args[i]) && i + 1 < args.length) {
+					System.setProperty("sim.db.driver", args[i + 1]);
 				}
+				
+				if ("-jdbcUrl".equals(args[i]) && i + 1 < args.length) {
+					System.setProperty("sim.db.url", args[i + 1]);
+				}			
 				
 				if ("-user".equals(args[i]) && i + 1 < args.length) {
 					System.setProperty("sim.db.username", args[i + 1]);

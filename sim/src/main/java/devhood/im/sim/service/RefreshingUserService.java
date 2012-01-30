@@ -36,7 +36,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 	 * UserDao zum Zugriff auf Stammdaten, zb User.
 	 */
 	@Inject
-	private UserDao singleFilePerUserDao;
+	private UserDao jtdsUserDao;
 
 	/**
 	 * true wenn user min. einmal refresht wurden.
@@ -101,14 +101,14 @@ public class RefreshingUserService implements UserService, EventObserver {
 	 */
 	@Override
 	public List<User> getUsers() {
-		return singleFilePerUserDao.getUsers();
+		return jtdsUserDao.getUsers();
 	}
 
 	/**
 	 * Fuegt die Users aus registryService in die Liste ein.
 	 */
 	public void refreshUsers() {
-		List<User> users = singleFilePerUserDao.getUsers();
+		List<User> users = jtdsUserDao.getUsers();
 		processNewOrRemovedUsers(users);
 	}
 
@@ -124,7 +124,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 					try {
 						User u = simConfiguration.getCurrentUser();
 						u.setLastaccess(new Date());
-						singleFilePerUserDao.refresh(u);
+						jtdsUserDao.refresh(u);
 					} catch (Exception e) {
 						// Wenn Exception fliegt, soll der Timer weiterlaufen.
 						e.printStackTrace();
@@ -216,7 +216,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 				@Override
 				public void run() {
 					try {
-						singleFilePerUserDao.purgeOfflineUsers();
+						jtdsUserDao.purgeOfflineUsers();
 
 						refreshUsers();
 						usersLoaded = true;
@@ -256,7 +256,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 	 */
 	@Override
 	public void purgeOfflineUsers() {
-		singleFilePerUserDao.purgeOfflineUsers();
+		jtdsUserDao.purgeOfflineUsers();
 	}
 
 	/**
@@ -264,11 +264,11 @@ public class RefreshingUserService implements UserService, EventObserver {
 	 */
 	@Override
 	public void logout(String username) {
-		singleFilePerUserDao.logout(username);
+		jtdsUserDao.logout(username);
 	}
 
 	public User getUser(String name) {
-		return singleFilePerUserDao.getUser(name);
+		return jtdsUserDao.getUser(name);
 	}
 
 }

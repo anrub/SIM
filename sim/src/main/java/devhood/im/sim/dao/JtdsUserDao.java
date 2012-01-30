@@ -105,7 +105,7 @@ public class JtdsUserDao implements UserDao {
 			if (resultSet.next()) {
 
 				u = new User(resultSet.getString("name"), resultSet.getString("address"), resultSet.getInt("port"),
-						resultSet.getDate("lastaccess"),
+						resultSet.getTimestamp("lastaccess"),
 						getPublicKey(resultSet.getBytes("publickey")), resultSet.getString("statusType"));
 			}
 			resultSet.close();
@@ -147,7 +147,7 @@ public class JtdsUserDao implements UserDao {
 			if (resultSet.next()) {
 				do {
 					User u = new User(resultSet.getString("name"), resultSet.getString("address"),
-							resultSet.getInt("port"), resultSet.getDate("lastaccess"),
+							resultSet.getInt("port"), resultSet.getTimestamp("lastaccess"),
 							getPublicKey(resultSet.getBytes("publickey")), resultSet.getString("statusType"));
 
 					users.add(u);
@@ -216,7 +216,7 @@ public class JtdsUserDao implements UserDao {
 			con = getConnection();
 			con.setAutoCommit(false);
 			pstmt = con.prepareStatement("DELETE FROM users where lastaccess < ?");
-			pstmt.setDate(1, new java.sql.Date(new Date().getTime() - (60 * 5000 * 1)));
+			pstmt.setTimestamp(1, new java.sql.Timestamp(new Date().getTime() - (60 * 5000 * 1)));
 			pstmt.executeUpdate();
 
 			con.commit();
@@ -250,7 +250,7 @@ public class JtdsUserDao implements UserDao {
 			con.setAutoCommit(false);
 			pstmt = con
 					.prepareStatement("UPDATE users SET lastaccess=?, address=?, port=?, publickey=?, statusType=? WHERE name=?");
-			pstmt.setDate(1, new java.sql.Date(user.getLastaccess().getTime()));
+			pstmt.setTimestamp(1, new java.sql.Timestamp(user.getLastaccess().getTime()));
 			pstmt.setString(2, user.getAddress());
 			pstmt.setInt(3, user.getPort());
 			pstmt.setBytes(4, user.getPublicKey().getEncoded());
@@ -268,7 +268,7 @@ public class JtdsUserDao implements UserDao {
 				pstmt.setString(1, user.getName());
 				pstmt.setString(2, user.getAddress());
 				pstmt.setInt(3, user.getPort());
-				pstmt.setDate(4, new java.sql.Date(user.getLastaccess().getTime()));
+				pstmt.setTimestamp(4, new java.sql.Timestamp(user.getLastaccess().getTime()));
 				pstmt.setBytes(5, user.getPublicKey().getEncoded());
 				pstmt.setString(6, user.getStatusType().getText());
 

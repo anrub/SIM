@@ -85,6 +85,9 @@ public class MainFrame implements EventObserver {
 
 	@Inject
 	private SimConfiguration simConfiguration;
+	
+	@Inject
+	private ConfigurationFrame configurationFrame;
 
 	public MainFrame() {
 		EventDispatcher.add(this);
@@ -286,6 +289,21 @@ public class MainFrame implements EventObserver {
 				UiUtil.openUrlInBrowser(simConfiguration.getProjectGithuburl());
 			}
 		});
+		
+		
+		JMenu configMenu = new JMenu("Optionen");
+		JMenuItem configMenuItem = new JMenuItem("Einstellungen");
+		configMenu.add(configMenuItem);
+		
+		configMenuItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				configurationFrame.pack();
+				configurationFrame.setVisible(true);
+			}
+		});
+		
 
 		menuBar.add(menuNotifications);
 		// menuBar.add(menuPrivacy);
@@ -295,6 +313,8 @@ public class MainFrame implements EventObserver {
 
 		
 		menuBar.add(statusMenu);
+		
+		menuBar.add(configMenu);
 		menuBar.add(aboutMenu);
 
 		frame.setJMenuBar(menuBar);

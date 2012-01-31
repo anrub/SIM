@@ -146,7 +146,12 @@ public class SimConfiguration {
 	 */
 	private User currentUser;
 
-
+	/**
+	 * Welches UserDao soll genutzt werden?
+	 * "jtds","single","sqlite" Default: jtds
+	 */
+	@Value("#{systemProperties['sim.userDao']}")
+	private String userDaoToUse;
 
 	/**
 	 * Gibt den eigenen Benutzer zurueck.
@@ -486,5 +491,17 @@ public class SimConfiguration {
 
 	public void setMaxLinkLength(int maxLinkLength) {
 		this.maxLinkLength = maxLinkLength;
+	}
+
+
+
+	public String getUserDaoToUse() {
+		return userDaoToUse;
+	}
+
+
+
+	public void setUserDaoToUse(String userDaoToUse) {
+		this.userDaoToUse = userDaoToUse;
 	}
 }

@@ -24,8 +24,14 @@ import java.util.TimerTask;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ComponentInputMap;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -34,6 +40,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JViewport;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
@@ -835,6 +842,17 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		inputTextAreaMap.put(label, messageTextArea);
 	}
 
+	
+	/**
+	 * wechsetl das tab.
+	 * 
+	 * @param e e
+	 */
+	public void switchTab(ActionEvent e) {
+		String cmd = e.getActionCommand();
+		tabbedPane.setSelectedIndex(new Integer(cmd) - 1);
+	}
+	
 	/**
 	 * Fuegt die Shortcuts ALT+1-9 zum tabpane hinzu. Damit kann man per alt+1-9
 	 * zwischen den tabs umschalten.
@@ -843,34 +861,25 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            tabbedpane
 	 */
 	public void addKeyboardShortcuts(JTabbedPane tabbedPane) {
-		if (tabbedPane.getTabCount() >= 1) {
-			tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+		if ( getRootPane() != null ) {
+			InputMap inputmap = new ComponentInputMap(getRootPane());
+			
+			for ( int i = 0; i < tabbedPane.getTabCount(); i++ ) {
+				inputmap.put(KeyStroke.getKeyStroke("control " + (i + 1)), "switchTab");
+			}
+			
+			tabbedPane.setInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW, inputmap);
+			
+			Action switchTab = new AbstractAction("switchTab") {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					switchTab(e);
+				}
+			};
+			
+			tabbedPane.getActionMap().put("switchTab", switchTab);
 		}
-		if (tabbedPane.getTabCount() >= 2) {
-			tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
-		}
-		if (tabbedPane.getTabCount() >= 3) {
-			tabbedPane.setMnemonicAt(2, KeyEvent.VK_3);
-		}
-		if (tabbedPane.getTabCount() >= 4) {
-			tabbedPane.setMnemonicAt(3, KeyEvent.VK_4);
-		}
-		if (tabbedPane.getTabCount() >= 5) {
-			tabbedPane.setMnemonicAt(4, KeyEvent.VK_5);
-		}
-		if (tabbedPane.getTabCount() >= 6) {
-			tabbedPane.setMnemonicAt(6, KeyEvent.VK_6);
-		}
-		if (tabbedPane.getTabCount() >= 7) {
-			tabbedPane.setMnemonicAt(7, KeyEvent.VK_7);
-		}
-		if (tabbedPane.getTabCount() >= 8) {
-			tabbedPane.setMnemonicAt(8, KeyEvent.VK_8);
-		}
-		if (tabbedPane.getTabCount() >= 9) {
-			tabbedPane.setMnemonicAt(9, KeyEvent.VK_9);
-		}
-
 	}
 
 	/**

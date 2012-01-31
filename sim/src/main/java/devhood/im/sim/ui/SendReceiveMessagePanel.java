@@ -363,13 +363,15 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            tab
 	 */
 	protected void closeTab(int index) {
-		String title = tabbedPane.getTitleAt(index);
-		nameTextAreaMap.remove(title);
-		inputTextAreaMap.remove(title);
-
-		tabbedPane.remove(index);
-
-		addKeyboardShortcuts(tabbedPane);
+		if ( index != 0 ) {
+			String title = tabbedPane.getTitleAt(index);
+			nameTextAreaMap.remove(title);
+			inputTextAreaMap.remove(title);
+	
+			tabbedPane.remove(index);
+	
+			addKeyboardShortcuts(tabbedPane);
+		}
 	}
 
 	/**
@@ -854,6 +856,14 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	}
 	
 	/**
+	 * Gibt das ausgewaehlte tab zurueck.
+	 * @return index.
+	 */
+	public int getCurrentSelectTabIndex() {
+		return tabbedPane.getSelectedIndex();
+	}
+	
+	/**
 	 * Fuegt die Shortcuts ALT+1-9 zum tabpane hinzu. Damit kann man per alt+1-9
 	 * zwischen den tabs umschalten.
 	 * 
@@ -868,6 +878,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				inputmap.put(KeyStroke.getKeyStroke("control " + (i + 1)), "switchTab");
 			}
 			
+			inputmap.put(KeyStroke.getKeyStroke("control F4"), "closeCurrentTab");
+			
 			tabbedPane.setInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW, inputmap);
 			
 			Action switchTab = new AbstractAction("switchTab") {
@@ -878,7 +890,16 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				}
 			};
 			
+			Action closeCurrentTab = new AbstractAction("closeCurrentTab") {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					closeTab(getCurrentSelectTabIndex());
+				}
+			};
+			
 			tabbedPane.getActionMap().put("switchTab", switchTab);
+			tabbedPane.getActionMap().put("closeCurrentTab", closeCurrentTab);
 		}
 	}
 

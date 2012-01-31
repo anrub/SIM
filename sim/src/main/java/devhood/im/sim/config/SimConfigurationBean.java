@@ -38,10 +38,10 @@ public class SimConfigurationBean {
 		if ( simConfiguration.getUserDaoToUse() != null) {
 			if ( "single".equals(simConfiguration.getUserDaoToUse()) ) {
 				userDao = singleFilePerUserDao;
-			}else if ( "single".equals(simConfiguration.getUserDaoToUse()) ) {
-				userDao = singleFilePerUserDao;
 			}else if ( "sqlite".equals(simConfiguration.getUserDaoToUse()) ) {
 				userDao = sqliteUserDao;
+			}else if ( "jtds".equals(simConfiguration.getUserDaoToUse()) ) {
+				userDao = jtdsUserDao;
 			}
 			
 		}

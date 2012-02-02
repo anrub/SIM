@@ -106,6 +106,7 @@ public class MainFrame implements EventObserver {
 		initMenuBar();
 		initUserScrollPane();
 		initTray();
+		configurationFrame.init();
 		// initRefreshUserState();
 
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);

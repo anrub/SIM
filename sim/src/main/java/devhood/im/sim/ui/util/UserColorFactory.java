@@ -6,8 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
+import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.model.Color;
 
 /**
@@ -29,6 +31,10 @@ public class UserColorFactory {
 	 * Map von Name des Users -> Farbe.
 	 */
 	private Map<String, Color> userColors = new HashMap<String, Color>();
+	
+	
+	@Inject
+	private SimConfiguration simConfiguration;
 
 	public UserColorFactory() {
 		// Verfügbare Farben eintragen (außer Schwarz).
@@ -78,6 +84,10 @@ public class UserColorFactory {
 		int colorRepetition = userColors.size() / colors.size();
 
 		for (Color color : colors) {
+			if ( color.getHexValue().equals(simConfiguration.getUserColor())) {
+				continue;
+			}
+			
 			Color newUserColor = Color.BLACK;
 
 			int colorCounter = 0;

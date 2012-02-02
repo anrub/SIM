@@ -1,5 +1,6 @@
 package devhood.im.sim.config;
 
+import java.awt.Color;
 import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,8 +13,11 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import javax.inject.Named;
 import javax.swing.ImageIcon;
@@ -253,6 +257,81 @@ public class SimConfiguration {
 		return version;
 	}
 
+	public static String USER_COLOR_KEY = "userColor";
+	
+	/**
+	 * Gibt das attribut USER_COLOR_KEY aus den preferences zurueck.
+	 * 
+	 * @return usercolor
+	 */
+	public String getUserColor() {
+		Preferences prefs = getPreferences();
+		
+		String userColor = "#" + prefs.get(USER_COLOR_KEY, "000000");
+		
+		return userColor;
+	}
+	
+	/**
+	 * Gibt die User color als int[] R,G,B zurueck.
+	 * @return color
+	 */
+	public int[] getUserColorRgb() {
+		String color = getPreferences().get(USER_COLOR_KEY, "000000");
+		int[] rgb = new int[3];
+		rgb[0] = 0;
+		rgb[1] = 0;
+		rgb[2] = 0;
+		
+		if ( color.length() == 6 ) {
+			String red = color.substring(0, 2);
+			String green = color.substring(2, 4);
+			String blue = color.substring(4,6);
+			rgb[0] = Integer.parseInt(red,16);
+			rgb[1] = Integer.parseInt(green,16);
+			rgb[2] = Integer.parseInt(blue,16);
+		}
+
+		return rgb;
+	}
+	
+	/**
+	 * Gibt den hexwert von c 2 stellig zurueck.
+	 * 
+	 * @param c c
+	 * @return hexwert
+	 */
+	public String getHexValue(int c) {
+		String hex = Integer.toHexString(c);
+		if ( hex.length() < 2 ) {
+			hex = "0" + hex;
+		}
+		
+		return hex;
+	}
+	
+	/**
+	 * Speichert die usercolor in den Preferences.
+	 * 
+	 * @param c Color.
+	 */
+	public void saveUserColor(Color c) {
+		Preferences prefs = getPreferences();
+		
+		prefs.put(USER_COLOR_KEY, getHexValue(c.getRed()) + 
+				getHexValue(c.getGreen()) +
+				getHexValue(c.getBlue()));
+	
+		try {
+			prefs.sync();
+		} catch (BackingStoreException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public Preferences getPreferences() {
+		return Preferences.userNodeForPackage(SimConfiguration.class);
+	}
 
 
 	public String getUsername() {

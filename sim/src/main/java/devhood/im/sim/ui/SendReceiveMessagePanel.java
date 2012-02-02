@@ -703,9 +703,13 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		StringBuffer msg = new StringBuffer();
 
 		/* Farbe des Benutzers ermitteln. */
-		colorHexValue = userColorFactory.getOrReserveUserColor(sender)
-				.getHexValue();
-
+		if ( simConfiguration.getUsername().equals(sender)) {
+			colorHexValue = simConfiguration.getUserColor();
+		}else {
+			colorHexValue = userColorFactory.getOrReserveUserColor(sender)
+					.getHexValue();
+		}
+		
 		for (String c : chunks) {
 			if (c.matches(linkPattern)) {
 				c = "<a href=\"" + c + "\" alt=\"" + c + "\">"

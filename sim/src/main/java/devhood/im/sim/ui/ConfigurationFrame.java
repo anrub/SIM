@@ -1,14 +1,23 @@
 package devhood.im.sim.ui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.inject.Named;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.JTabbedPane;
+
+import devhood.im.sim.config.SimConfiguration;
 
 /**
  * In diesem Frame koennen verschiedene Konfigs vorgenommen werden.
@@ -19,35 +28,81 @@ import javax.swing.tree.DefaultMutableTreeNode;
 @Named("configurationFrame")
 public class ConfigurationFrame extends JFrame {
 
+	@Inject
+	private SimConfiguration simConfiguration;
+
+	
 	public ConfigurationFrame() {
+	
+	}
+	
+	public void init() {
 		setTitle("Einstellungen");
 		setMinimumSize(new Dimension(500, 400));
 
-		DefaultMutableTreeNode node1 = new DefaultMutableTreeNode("Farben");
-		DefaultMutableTreeNode node2 = new DefaultMutableTreeNode(
-				"Benachrichtigungen");
-		DefaultMutableTreeNode node3 = new DefaultMutableTreeNode(
-				"Look & Feel");
-		DefaultMutableTreeNode node4 = new DefaultMutableTreeNode(
-				"About");
-		DefaultMutableTreeNode node5 = new DefaultMutableTreeNode(
-				"Sonstiges");
+		JTabbedPane pane = new JTabbedPane();
 		
-		JTree configItemsTree = new JTree(new Object[] { node1, node2, node3, node4, node5 });
+		JPanel colorPanel = new JPanel(new BorderLayout());
+		
+		JPanel notificationsPanel = new JPanel();
+		JPanel lafPanel = new JPanel();
+		JPanel aboutPanel = new JPanel();
+		JPanel elsePanel = new JPanel();
+		
+		JLabel l1 = new JLabel("Farbe (eigener User):");
+		colorPanel.add(l1);
+		
+		
+		Color selectedColor = new Color(simConfiguration.getUserColorRgb()[0],
+			simConfiguration.getUserColorRgb()[1],
+			simConfiguration.getUserColorRgb()[2]);
+	
+		final JColorChooser chooser = new JColorChooser(selectedColor);
+		chooser.setName("userColor");
+		colorPanel.add(chooser,BorderLayout.CENTER);
+		
+		JPanel buttonPane = new JPanel();
+		JButton save = new JButton("Speichern");
+		
+		save.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Color c = chooser.getSelectionModel().getSelectedColor();
+				simConfiguration.saveUserColor(c);
+			}
+		});
 
-		JPanel pane1 = new JPanel();
-		JLabel label1 = new JLabel("Konfig test");
-		pane1.add(label1);
+		buttonPane.add(save);
+		JButton reset = new JButton("Reset");
+		
+		reset.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Color c = new Color(0);
+				chooser.setColor(c);
+				simConfiguration.saveUserColor(c);
+			}
+		});
 
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-
-		splitPane.add(configItemsTree);
-		splitPane.add(pane1);
-
-		add(splitPane);
+		buttonPane.add(reset);
+		
+		colorPanel.add(buttonPane, BorderLayout.SOUTH);
+		
+		
+		pane.addTab("Farben", colorPanel);
+		
+		pane.addTab("Benachrichtigungen", notificationsPanel);
+		pane.addTab("Look & Feel", lafPanel);
+		pane.addTab("About", aboutPanel);
+		pane.addTab("Sonstiges", elsePanel);
+		
+		
+		add(pane);
 
 		// pack();
 		// setVisible(true);
 	}
-
+	
 }

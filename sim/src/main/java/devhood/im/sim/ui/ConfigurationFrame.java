@@ -49,8 +49,8 @@ public class ConfigurationFrame extends JFrame {
 		JPanel aboutPanel = new JPanel();
 		JPanel elsePanel = new JPanel();
 		
-		JLabel l1 = new JLabel("Farbe (eigener User):");
-		colorPanel.add(l1);
+		JLabel l1 = new JLabel("Wählen Sie die Farbe des eigenen Benutzers:");
+		colorPanel.add(l1, BorderLayout.NORTH);
 		
 		
 		Color selectedColor = new Color(simConfiguration.getUserColorRgb()[0],

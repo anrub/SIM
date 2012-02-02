@@ -84,7 +84,7 @@ public class UserColorFactory {
 		int colorRepetition = userColors.size() / colors.size();
 
 		for (Color color : colors) {
-			if ( color.getHexValue().equals(simConfiguration.getUserColor())) {
+			if ( color.getHexValue().equalsIgnoreCase(simConfiguration.getUserColor())) {
 				continue;
 			}
 			

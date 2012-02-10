@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -124,6 +125,11 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	@Inject
 	private ApplicationContext applicationContext;
+
+	/**
+	 * Cache des Timelineinhalts, tabName->timeline Inhalte. 
+	 */
+	private Map<String, String> nameTimelineCache = new HashMap<String, String>();
 
 	public void init() {
 		setLayout(new BorderLayout());
@@ -363,13 +369,16 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            tab
 	 */
 	protected void closeTab(int index) {
-		if ( index != 0 ) {
+		if (index != 0) {
 			String title = tabbedPane.getTitleAt(index);
+			// Vor dem schliessen wird der Inhalt in den Cache geschrieben.
+			nameTimelineCache.put(title, nameTextAreaMap.get(title).getText());
+
 			nameTextAreaMap.remove(title);
 			inputTextAreaMap.remove(title);
-	
+
 			tabbedPane.remove(index);
-	
+
 			addKeyboardShortcuts(tabbedPane);
 		}
 	}
@@ -703,13 +712,13 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		StringBuffer msg = new StringBuffer();
 
 		/* Farbe des Benutzers ermitteln. */
-		if ( simConfiguration.getUsername().equals(sender)) {
+		if (simConfiguration.getUsername().equals(sender)) {
 			colorHexValue = simConfiguration.getUserColor();
-		}else {
+		} else {
 			colorHexValue = userColorFactory.getOrReserveUserColor(sender)
 					.getHexValue();
 		}
-		
+
 		for (String c : chunks) {
 			if (c.matches(linkPattern)) {
 				c = "<a href=\"" + c + "\" alt=\"" + c + "\">"
@@ -769,25 +778,33 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            Text der in die TextArea geschrieben wird.
 	 */
 	protected void addToTabPane(final String label, String text) {
+		String cachedText = nameTimelineCache.get(label);
+		String layoutedText = "";
+		if (cachedText == null) {
+			layoutedText = "<table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">";
 
-		String layoutedText = "<table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">";
+			if (!simConfiguration.getStreamTabName().equalsIgnoreCase(label)) {
+				layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><i>Konversation mit User ["
+						+ label + "] gestartet</i></td></tr>";
+			} else {
+				layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><i>"
+						+ simConfiguration.getApplicationName()
+						+ "<br />Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i></td></tr>";
+			}
 
-		if (!simConfiguration.getStreamTabName().equalsIgnoreCase(label)) {
-			layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><i>Konversation mit User ["
-					+ label + "] gestartet</i></td></tr>";
+			//layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><br/></td></tr>";
+
+			if (text != null) {
+				layoutedText += text;
+			}
+
+			layoutedText += "</table>";
 		} else {
-			layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><i>"
-					+ simConfiguration.getApplicationName()
-					+ "<br />Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i></td></tr>";
+			if (text == null) {
+				text = "";
+			}
+			layoutedText = getFormattedMessage(text, cachedText);
 		}
-
-		layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><br/></td></tr>";
-
-		if (text != null) {
-			layoutedText += text;
-		}
-
-		layoutedText += "</table>";
 
 		JPanel textPanel = new JPanel(new BorderLayout());
 
@@ -840,33 +857,45 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				focusMessageTextArea(title);
 
 				setIconToReadMessages(title);
+
+				scrollToBottom(title);
 			}
 		});
 
 		addKeyboardShortcuts(tabbedPane);
 
 		inputTextAreaMap.put(label, messageTextArea);
+		scrollToBottom(label);
+
 	}
 
-	
+	public void scrollToBottom(String label) {
+		JEditorPane pane = nameTextAreaMap.get(label);
+		Rectangle rect = new Rectangle(0, pane.getHeight(), (int)pane.getVisibleRect().getWidth(),
+				(int)pane.getVisibleRect().getHeight());
+		pane.scrollRectToVisible(rect);
+	}
+
 	/**
 	 * wechsetl das tab.
 	 * 
-	 * @param e e
+	 * @param e
+	 *            e
 	 */
 	public void switchTab(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		tabbedPane.setSelectedIndex(new Integer(cmd) - 1);
 	}
-	
+
 	/**
 	 * Gibt das ausgewaehlte tab zurueck.
+	 * 
 	 * @return index.
 	 */
 	public int getCurrentSelectTabIndex() {
 		return tabbedPane.getSelectedIndex();
 	}
-	
+
 	/**
 	 * Fuegt die Shortcuts ALT+1-9 zum tabpane hinzu. Damit kann man per alt+1-9
 	 * zwischen den tabs umschalten.
@@ -875,33 +904,35 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            tabbedpane
 	 */
 	public void addKeyboardShortcuts(JTabbedPane tabbedPane) {
-		if ( getRootPane() != null ) {
+		if (getRootPane() != null) {
 			InputMap inputmap = new ComponentInputMap(getRootPane());
-			
-			for ( int i = 0; i < tabbedPane.getTabCount(); i++ ) {
-				inputmap.put(KeyStroke.getKeyStroke("control " + (i + 1)), "switchTab");
+
+			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+				inputmap.put(KeyStroke.getKeyStroke("control " + (i + 1)),
+						"switchTab");
 			}
-			
-			inputmap.put(KeyStroke.getKeyStroke("control F4"), "closeCurrentTab");
-			
+
+			inputmap.put(KeyStroke.getKeyStroke("control F4"),
+					"closeCurrentTab");
+
 			tabbedPane.setInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW, inputmap);
-			
+
 			Action switchTab = new AbstractAction("switchTab") {
-				
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					switchTab(e);
 				}
 			};
-			
+
 			Action closeCurrentTab = new AbstractAction("closeCurrentTab") {
-				
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					closeTab(getCurrentSelectTabIndex());
 				}
 			};
-			
+
 			tabbedPane.getActionMap().put("switchTab", switchTab);
 			tabbedPane.getActionMap().put("closeCurrentTab", closeCurrentTab);
 		}

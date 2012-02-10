@@ -293,7 +293,7 @@ public class MainFrame implements EventObserver {
 		
 		
 		JMenu configMenu = new JMenu("Optionen");
-		JMenuItem configMenuItem = new JMenuItem("Einstellungen");
+		JMenuItem configMenuItem = new JMenuItem("Einstellungen",simConfiguration.getConfigurationFrameIcon());
 		configMenu.add(configMenuItem);
 		
 		configMenuItem.addActionListener(new ActionListener() {

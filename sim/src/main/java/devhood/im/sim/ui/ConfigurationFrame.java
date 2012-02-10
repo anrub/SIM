@@ -39,7 +39,7 @@ public class ConfigurationFrame extends JFrame {
 
 	public void init() {
 		setTitle("Einstellungen");
-
+		setIconImage(simConfiguration.getConfigurationFrameImage());
 		JTabbedPane pane = new JTabbedPane();
 
 

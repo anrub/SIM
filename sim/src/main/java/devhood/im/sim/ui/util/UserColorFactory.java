@@ -31,8 +31,10 @@ public class UserColorFactory {
 	 * Map von Name des Users -> Farbe.
 	 */
 	private Map<String, Color> userColors = new HashMap<String, Color>();
-	
-	
+
+	/**
+	 * Konfigurationsklasse.
+	 */
 	@Inject
 	private SimConfiguration simConfiguration;
 
@@ -84,10 +86,12 @@ public class UserColorFactory {
 		int colorRepetition = userColors.size() / colors.size();
 
 		for (Color color : colors) {
-			if ( color.getHexValue().equalsIgnoreCase(simConfiguration.getUserColor())) {
+			if (color.getHexValue().equalsIgnoreCase(
+					simConfiguration.getUserColor())
+					|| isColorSimilarToOwn(color)) {
 				continue;
 			}
-			
+
 			Color newUserColor = Color.BLACK;
 
 			int colorCounter = 0;
@@ -115,5 +119,32 @@ public class UserColorFactory {
 		}
 
 		return Color.BLACK;
+	}
+
+	/**
+	 * Gibt zurueck, die die uebergebene Farbe der eigenen Farbe zu ähnlich ist,
+	 * um richtig unterschieden zu werden.
+	 * 
+	 * @param c
+	 *            Color
+	 * @return true/false
+	 */
+	public boolean isColorSimilarToOwn(Color c) {
+		int rgbOwnColor = simConfiguration.getUserColorRgbValue();
+		int[] rgbColor = simConfiguration.getUserColorRgb(c.getHexValue());
+		int rgb = rgbColor[0] + rgbColor[1] + rgbColor[2];
+
+		int diff = rgbOwnColor - rgb;
+
+		if (diff < 0) {
+			diff = diff * -1;
+		}
+
+		boolean isColorSimilar = false;
+		if (diff < simConfiguration.getMinColorDiff()) {
+			isColorSimilar = true;
+		}
+
+		return isColorSimilar;
 	}
 }

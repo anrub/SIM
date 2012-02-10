@@ -62,7 +62,7 @@ public class UiUtil {
 			return null;
 		}
 	}
-
+	
 	/**
 	 * Erzeugt ien Image aus dem uebergebenen path. path ist im classpath.
 	 * 

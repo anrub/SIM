@@ -86,6 +86,7 @@ public class UserPanel extends JPanel {
 			final JLabel userLabel = createUserLabel(user);
 			currentUsers.add(userLabel);
 		}
+		
 
 		return currentUsers;
 	}

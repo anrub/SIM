@@ -1,5 +1,6 @@
 package devhood.im.sim.ui;
 
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -8,10 +9,9 @@ import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -57,6 +57,7 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 				progressTimer.cancel();
 			}
 		});
+
 	}
 
 	public void showFrame() {
@@ -76,6 +77,7 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 		bar.setValue(0);
 		bar.setMaximum(100);
 
+		final JCheckBox openFileCheckBox = new JCheckBox("Datei öffnen");
 		final JButton ok = new JButton("Datei empfangen");
 		final JButton close = new JButton("Schließen");
 		close.setVisible(false);
@@ -83,9 +85,7 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				updateProgressBarTask.cancel();
-				progressTimer.cancel();
-				dispose();
+				closeFrame();
 			}
 		});
 
@@ -141,6 +141,15 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 								} else {
 									close.setVisible(true);
 									reject.setVisible(false);
+									if (openFileCheckBox.isSelected()) {
+										Desktop.getDesktop()
+												.open(new File(
+														file.getAbsoluteFile()
+																+ "/"
+																+ fileSendRequestMessage
+																		.getFilename()));
+										closeFrame();
+									}
 								}
 
 							} catch (Exception e) {
@@ -170,9 +179,11 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 		buttons.add(ok);
 		buttons.add(close);
 		buttons.add(reject);
+		buttons.add(openFileCheckBox);
 
 		container.add(panel);
 		container.add(bar);
+
 		container.add(buttons);
 		add(container);
 
@@ -180,6 +191,15 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 		setVisible(true);
 
 		// initTransfer();
+	}
+
+	/**
+	 * Schliesst diesen Frame.
+	 */
+	public void closeFrame() {
+		updateProgressBarTask.cancel();
+		progressTimer.cancel();
+		dispose();
 	}
 
 	@Override

@@ -18,9 +18,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import devhood.im.sim.event.EventDispatcher;
-import devhood.im.sim.event.EventObserver;
-import devhood.im.sim.event.Events;
 import devhood.im.sim.model.FileSendRequestMessage;
 import devhood.im.sim.service.interfaces.MessageSender;
 
@@ -30,7 +27,7 @@ import devhood.im.sim.service.interfaces.MessageSender;
  * @author flo
  * 
  */
-public class ReceiveFileFrame extends JFrame implements EventObserver {
+public class ReceiveFileFrame extends JFrame {
 
 	private JPanel panel = new JPanel();
 	private JPanel buttons = new JPanel();
@@ -48,7 +45,6 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 	public void init() {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setAlwaysOnTop(true);
-		EventDispatcher.add(this);
 
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -61,7 +57,6 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 	}
 
 	public void showFrame() {
-		// panel.setLayout();
 		setTitle(fileSendRequestMessage.getFilename() + " von "
 				+ fileSendRequestMessage.getSender() + " empfangen...");
 
@@ -97,7 +92,6 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fc = new JFileChooser();
 
-				// fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				fc.setFileSelectionMode(JFileChooser.SAVE_DIALOG);
 
 				File f = new File(fileSendRequestMessage.getFilename());
@@ -159,8 +153,6 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 					};
 					progressTimer.schedule(updateProgressBarTask, 0, 500);
 
-				} else {
-
 				}
 			}
 		});
@@ -189,8 +181,6 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 
 		pack();
 		setVisible(true);
-
-		// initTransfer();
 	}
 
 	/**
@@ -200,12 +190,6 @@ public class ReceiveFileFrame extends JFrame implements EventObserver {
 		updateProgressBarTask.cancel();
 		progressTimer.cancel();
 		dispose();
-	}
-
-	@Override
-	public void eventReceived(Events event, Object o) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public JPanel getPanel() {

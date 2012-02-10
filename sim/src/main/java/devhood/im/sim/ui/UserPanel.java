@@ -65,24 +65,35 @@ public class UserPanel extends JPanel {
 		BoxLayout layout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
 		setLayout(layout);
 
-		addUsers();
+		for (JLabel userLabel : getCurrentUsers()) {
+			add(userLabel);
+		}
+
 		setUserChangeListener();
 		startRefreshUsers();
 	}
 
 	/**
-	 * Fuegt die Users aus registryService in die Liste ein.
+	 * Gibt die Labels der aktuellen User aus der DB zurueck.
 	 */
-	public void addUsers() {
+	public List<JLabel> getCurrentUsers() {
 		List<User> users = userService.getUsers();
 		List<String> userFromDb = new ArrayList<String>();
+		List<JLabel> currentUsers = new ArrayList<JLabel>();
 
 		for (User user : users) {
 			userFromDb.add(user.getName());
 			final JLabel userLabel = createUserLabel(user);
-			add(userLabel);
-
+			currentUsers.add(userLabel);
 		}
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return currentUsers;
 	}
 
 	/**
@@ -220,9 +231,16 @@ public class UserPanel extends JPanel {
 	 * Aktualisiert das UserPanel.
 	 */
 	public void refreshUi() {
+		List<JLabel> userLabels = getCurrentUsers();
+
 		removeAll();
-		addUsers();
+
+		for (JLabel userLabel : userLabels) {
+			add(userLabel);
+		}
+
 		validate();
 		repaint();
 	}
+
 }

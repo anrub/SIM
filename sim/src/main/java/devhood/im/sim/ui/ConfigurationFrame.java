@@ -52,9 +52,9 @@ public class ConfigurationFrame extends JFrame {
 
 		pane.addTab("Farben", colorPanel);
 
-		pane.addTab("Benachrichtigungen", notificationsPanel);
-		pane.addTab("Look & Feel", lafPanel);
-		pane.addTab("About", aboutPanel);
+		//pane.addTab("Benachrichtigungen", notificationsPanel);
+		//pane.addTab("Look & Feel", lafPanel);
+		//pane.addTab("About", aboutPanel);
 		
 		
 		//pane.addTab("Sonstiges", elsePanel);

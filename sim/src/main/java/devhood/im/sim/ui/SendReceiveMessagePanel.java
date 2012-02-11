@@ -132,7 +132,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	@Inject
 	private SimpleTabCache nameTimelineCache;
-	
+
 	public void init() {
 		setLayout(new BorderLayout());
 
@@ -374,8 +374,12 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		if (index != 0) {
 			String title = tabbedPane.getTitleAt(index);
 			// Vor dem schliessen wird der Inhalt in den Cache geschrieben.
-			nameTimelineCache.put(title, nameTextAreaMap.get(title).getText());
-
+			try {
+				nameTimelineCache.put(title, nameTextAreaMap.get(title)
+						.getText());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			nameTextAreaMap.remove(title);
 			inputTextAreaMap.remove(title);
 
@@ -559,7 +563,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @param m
 	 *            Message
 	 */
-	protected void processNewMessage(Message m) {
+	protected synchronized void processNewMessage(Message m) {
 		String sender = m.getSender();
 
 		if (MessageType.ALL.equals(m.getMessageType())) {
@@ -794,7 +798,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 						+ "<br />Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i></td></tr>";
 			}
 
-			//layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><br/></td></tr>";
+			// layoutedText +=
+			// "<tr><td colspan=\"2\" valign=\"top\"><br/></td></tr>";
 
 			if (text != null) {
 				layoutedText += text;
@@ -873,8 +878,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	public void scrollToBottom(String label) {
 		JEditorPane pane = nameTextAreaMap.get(label);
-		Rectangle rect = new Rectangle(0, pane.getHeight(), (int)pane.getVisibleRect().getWidth(),
-				(int)pane.getVisibleRect().getHeight());
+		Rectangle rect = new Rectangle(0, pane.getHeight(), (int) pane
+				.getVisibleRect().getWidth(), (int) pane.getVisibleRect()
+				.getHeight());
 		pane.scrollRectToVisible(rect);
 	}
 

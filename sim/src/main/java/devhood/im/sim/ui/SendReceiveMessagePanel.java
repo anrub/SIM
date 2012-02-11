@@ -67,6 +67,7 @@ import devhood.im.sim.model.MessagingError;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.MessageSender;
 import devhood.im.sim.service.interfaces.UserService;
+import devhood.im.sim.ui.util.SimpleTabCache;
 import devhood.im.sim.ui.util.SmileyFactory;
 import devhood.im.sim.ui.util.UiUtil;
 import devhood.im.sim.ui.util.UserColorFactory;
@@ -127,10 +128,11 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	private ApplicationContext applicationContext;
 
 	/**
-	 * Cache des Timelineinhalts, tabName->timeline Inhalte. 
+	 * Simpler cache für die tabs.
 	 */
-	private Map<String, String> nameTimelineCache = new HashMap<String, String>();
-
+	@Inject
+	private SimpleTabCache nameTimelineCache;
+	
 	public void init() {
 		setLayout(new BorderLayout());
 

@@ -180,6 +180,13 @@ public class SimConfiguration {
 	 */
 	private int minColorDiff = 100;
 
+	
+
+	/**
+	 * Key der Konfig ob die Tabs gecached werde sollen.
+	 */
+	public static String TAB_CACHE_KEY = "userColor";
+	
 	/**
 	 * Gibt den eigenen Benutzer zurueck.
 	 * 
@@ -375,6 +382,16 @@ public class SimConfiguration {
 
 	public Preferences getPreferences() {
 		return Preferences.userNodeForPackage(SimConfiguration.class);
+	}
+	
+	/**
+	 * Gibt zurueck ob der TabCache aktiviert ist oder nicht.
+	 * 
+	 * @return true/false;
+	 */
+	public boolean isTabCacheEnabled() {
+		// TODO Cache Konfig in ui anbieten.
+		return true;
 	}
 
 	public String getUsername() {

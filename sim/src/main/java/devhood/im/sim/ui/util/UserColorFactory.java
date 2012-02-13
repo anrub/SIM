@@ -130,15 +130,11 @@ public class UserColorFactory {
 	 * @return true/false
 	 */
 	public boolean isColorSimilarToOwn(Color c) {
-		int rgbOwnColor = simConfiguration.getUserColorRgbValue();
+		int[] rgbOwnColor = simConfiguration.getUserColorRgb();
 		int[] rgbColor = simConfiguration.getUserColorRgb(c.getHexValue());
 		int rgb = rgbColor[0] + rgbColor[1] + rgbColor[2];
 
-		int diff = rgbOwnColor - rgb;
-
-		if (diff < 0) {
-			diff = diff * -1;
-		}
+		int diff = new Double(Math.pow(Math.pow((rgbOwnColor[0] - rgbColor[0]), 2) + Math.pow((rgbOwnColor[1] - rgbColor[1]), 2) + Math.pow((rgbOwnColor[2] - rgbColor[2]), 2), 0.5)).intValue();
 
 		boolean isColorSimilar = false;
 		if (diff < simConfiguration.getMinColorDiff()) {

@@ -178,7 +178,7 @@ public class SimConfiguration {
 	/**
 	 * Mindest differen zwischen den RGB Farben.
 	 */
-	private int minColorDiff = 100;
+	private int minColorDiff = 70;
 
 	
 

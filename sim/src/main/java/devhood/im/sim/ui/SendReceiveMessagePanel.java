@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -69,6 +70,7 @@ import devhood.im.sim.service.interfaces.MessageSender;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.util.SimpleTabCache;
 import devhood.im.sim.ui.util.SmileyFactory;
+import devhood.im.sim.ui.util.Splitter;
 import devhood.im.sim.ui.util.UiUtil;
 import devhood.im.sim.ui.util.UserColorFactory;
 
@@ -744,18 +746,20 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	}
 
 	/**
-	 * Verkuerzt den String auf eine bestimmte Anzahl von Zeichen und setzt ...
-	 * dahinter
+	 * Bricht den String nach chars anzahl von Zeichen mit &lt;br&gt; um.
 	 * 
 	 * @param s
 	 *            String
 	 * @return verkuerzter String
 	 */
 	public String shorten(String s, int chars) {
-		String shortened = s;
-		if (s != null && s.length() > chars) {
-			shortened = s.substring(0, chars - 3);
-			shortened = shortened + "...";
+		String shortened = "";
+		List<String> parts = Splitter.getParts(s, chars);
+		for (int i = 0; i < parts.size(); i++) {
+			shortened = shortened + parts.get(i);
+			if (i < parts.size()) {
+				shortened = shortened + "<br/>";
+			}
 		}
 
 		return shortened;

@@ -55,7 +55,7 @@ public class SimConfiguration {
 	/**
 	 * 
 	 */
-	private int maxLinkLength = 50;
+	private int maxLinkLength = 75;
 
 	/**
 	 * Port auf dem der Server lauscht. 0 sucht einen freien Port.

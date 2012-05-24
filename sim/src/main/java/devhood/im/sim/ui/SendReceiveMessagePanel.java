@@ -756,7 +756,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		String shortened = "";
 		List<String> parts = Splitter.getParts(s, chars);
 		for (int i = 0; i < parts.size(); i++) {
-			shortened = shortened + parts.get(i);
+			shortened = shortened.trim() + parts.get(i).trim();
 			if (i < parts.size()) {
 				shortened = shortened + "<br/>";
 			}

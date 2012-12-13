@@ -21,8 +21,8 @@ import javax.swing.JProgressBar;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
-import devhood.im.sim.model.FileSendAcceptMessage;
-import devhood.im.sim.model.FileSendRejectMessage;
+import devhood.im.sim.messages.FileSendAcceptMessage;
+import devhood.im.sim.messages.FileSendRejectMessage;
 import devhood.im.sim.service.interfaces.MessageSender;
 
 /**

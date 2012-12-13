@@ -21,14 +21,18 @@ import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
-import devhood.im.sim.model.Message;
+import devhood.im.sim.messages.BroadcastMessage;
+import devhood.im.sim.messages.Message;
+import devhood.im.sim.messages.RoomMessage;
+import devhood.im.sim.messages.SingleMessage;
+import devhood.im.sim.messages.UserStatusMessage;
 import devhood.im.sim.service.interfaces.UserService;
 
 /**
  * Verwaltet das SystemTray.
- * 
+ *
  * @author flo
- * 
+ *
  */
 @Named("systemTrayManager")
 public class SystemTrayManager implements EventObserver {
@@ -116,7 +120,7 @@ public class SystemTrayManager implements EventObserver {
 
 	/**
 	 * Wird vom {@link EventDispatcher} aufgerufen.
-	 * 
+	 *
 	 * @param Events
 	 *            event siehe {@link Events}
 	 * @param Object
@@ -126,22 +130,26 @@ public class SystemTrayManager implements EventObserver {
 	public void eventReceived(Events event, Object o) {
 		if (Events.MESSAGE_RECEIVED.equals(event)) {
 			Message m = (Message) o;
-			if (devhood.im.sim.model.MessageType.ALL.equals(m.getMessageType())) {
+			if (m instanceof BroadcastMessage) {
 				if (!m.getSender().contains(simConfiguration.getUsername())
 						&& simConfiguration.isShowStreamInTray()) {
 					displayMessage("Stream: " + m.getSender(), m.getText(),
 							MessageType.INFO);
 				}
 				lastUser = simConfiguration.getStreamTabName();
-			} else if (devhood.im.sim.model.MessageType.SINGLE.equals(m
-					.getMessageType())) {
+			} else if (m instanceof SingleMessage) {
 				displayMessage(m.getSender(), m.getText(), MessageType.INFO);
 				lastUser = m.getSender();
-			} else if (devhood.im.sim.model.MessageType.USER_STATUS.equals(m
-					.getMessageType()) && simConfiguration.isShowStatusInTray()) {
+			} else if (m instanceof RoomMessage) {
+				displayMessage(
+						"[" + ((RoomMessage) m).getRoomName() + "] "
+								+ m.getSender(), m.getText(), MessageType.INFO);
+				lastUser = m.getSender();
+			} else if (m instanceof UserStatusMessage
+					&& simConfiguration.isShowStatusInTray()) {
 				if (!simConfiguration.getUsername().equals(m.getSender())) {
-					displayMessage(m.getSender(), m.getUserStatus().getText(),
-							MessageType.INFO);
+					displayMessage(m.getSender(), ((UserStatusMessage) m)
+							.getUserStatus().getText(), MessageType.INFO);
 					lastUser = m.getSender();
 				}
 			}
@@ -150,9 +158,11 @@ public class SystemTrayManager implements EventObserver {
 			List<String> users = (List<String>) o;
 			displayMessage("Ungelesene Nachrichten", users.toString(),
 					MessageType.INFO);
-		} else if (Events.USER_OFFLINE_NOTICE.equals(event) && simConfiguration.isShowStatusInTray()) {
+		} else if (Events.USER_OFFLINE_NOTICE.equals(event)
+				&& simConfiguration.isShowStatusInTray()) {
 			displayMessage("User offline", o.toString(), MessageType.INFO);
-		} else if (Events.USER_ONLINE_NOTICE.equals(event) && simConfiguration.isShowStatusInTray()) {
+		} else if (Events.USER_ONLINE_NOTICE.equals(event)
+				&& simConfiguration.isShowStatusInTray()) {
 			displayMessage("User online", o.toString(), MessageType.INFO);
 		}
 
@@ -160,7 +170,7 @@ public class SystemTrayManager implements EventObserver {
 
 	/**
 	 * Zeigt die nachricht im systray an, wenn die Option nicht gew�hlt wurde.
-	 * 
+	 *
 	 * @param title
 	 *            Titel
 	 * @param message
@@ -177,7 +187,7 @@ public class SystemTrayManager implements EventObserver {
 
 	/**
 	 * Fuegt einen MouseListener an das SystmeTray.
-	 * 
+	 *
 	 * @param listener
 	 *            Listener.
 	 */

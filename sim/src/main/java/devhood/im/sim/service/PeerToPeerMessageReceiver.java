@@ -16,10 +16,10 @@ import javax.inject.Named;
 import org.springframework.context.annotation.Scope;
 
 import devhood.im.sim.config.SimConfiguration;
-import devhood.im.sim.model.FileSendAcceptMessage;
-import devhood.im.sim.model.FileSendRejectMessage;
-import devhood.im.sim.model.FileSendRequestMessage;
-import devhood.im.sim.model.Message;
+import devhood.im.sim.messages.FileSendAcceptMessage;
+import devhood.im.sim.messages.FileSendRejectMessage;
+import devhood.im.sim.messages.FileSendRequestMessage;
+import devhood.im.sim.messages.Message;
 import devhood.im.sim.service.interfaces.MessageCallback;
 
 /**

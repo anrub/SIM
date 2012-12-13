@@ -21,9 +21,9 @@ import devhood.im.sim.service.interfaces.UserService;
 /**
  * Dieser {@link UserService} aktualisiert sich selbst und den übergebenen User
  * regelmäßig.
- * 
+ *
  * @author flo
- * 
+ *
  */
 @Named("refreshingUserService")
 public class RefreshingUserService implements UserService, EventObserver {
@@ -107,6 +107,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 	/**
 	 * Fuegt die Users aus registryService in die Liste ein.
 	 */
+	@Override
 	public void refreshUsers() {
 		List<User> users = userDao.getUsers();
 		processNewOrRemovedUsers(users);
@@ -120,6 +121,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 		if (!refreshingUsers.contains(u.getName())) {
 			Timer t = new Timer("RefreshingUserService: Refresh own user Timer");
 			TimerTask task = new TimerTask() {
+				@Override
 				public void run() {
 					try {
 						User u = simConfiguration.getCurrentUser();
@@ -143,7 +145,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 	 * Verarbeitet die USer und prüft ob sie bereits vorhanden, oder neu, oder
 	 * nicht mehr vorhanden sind. Benachrichtigt den userChangeListener in
 	 * beiden fällen.
-	 * 
+	 *
 	 * @param users
 	 *            aktuelle USer aus der dB.
 	 */
@@ -195,7 +197,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 
 	/**
 	 * Fuegt einen {@link UserChangeListener} ein.
-	 * 
+	 *
 	 * @param listener
 	 *            Listener.
 	 */
@@ -239,9 +241,10 @@ public class RefreshingUserService implements UserService, EventObserver {
 	 * wurden, wird eine Liste zurueckgegeben, die bei contains immer true
 	 * zurueck gibt. (Da noch nicht klar ist, ob der User vorhanden ist oder
 	 * nicht, hacky).
-	 * 
+	 *
 	 * @return list von usern.
 	 */
+	@Override
 	public List<User> getCurrentUsers() {
 		/*
 		 * List<User> users = new ArrayList<User>(); if (!usersLoaded) { users =
@@ -267,6 +270,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 		userDao.logout(username);
 	}
 
+	@Override
 	public User getUser(String name) {
 		return userDao.getUser(name);
 	}

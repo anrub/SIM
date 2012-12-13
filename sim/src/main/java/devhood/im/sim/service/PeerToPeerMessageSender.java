@@ -34,15 +34,16 @@ import javax.inject.Named;
 import org.springframework.context.ApplicationContext;
 
 import devhood.im.sim.config.SimConfiguration;
+import devhood.im.sim.dao.interfaces.RoomDao;
 import devhood.im.sim.dao.interfaces.UserDao;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
-import devhood.im.sim.model.FileSendAcceptMessage;
-import devhood.im.sim.model.FileSendRejectMessage;
-import devhood.im.sim.model.FileSendRequestMessage;
-import devhood.im.sim.model.Message;
-import devhood.im.sim.model.MessageType;
+import devhood.im.sim.messages.FileSendAcceptMessage;
+import devhood.im.sim.messages.FileSendRejectMessage;
+import devhood.im.sim.messages.FileSendRequestMessage;
+import devhood.im.sim.messages.Message;
+import devhood.im.sim.messages.RoomMessage;
 import devhood.im.sim.model.MessagingError;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.MessageCallback;
@@ -51,12 +52,12 @@ import devhood.im.sim.service.interfaces.MessageSender;
 /**
  * Peer to Peer Implementierung des {@link MessageService}. Dieser Service
  * versendet Nachrichten.
- * 
+ *
  * TODO: Die Crypto sachen besser zusammenfassen, ausmisten was durch den
  * fileversand dazukam. Kann Filetransfer evtl abgekapselt werden?
- * 
+ *
  * @author Tobi, flo
- * 
+ *
  */
 @Named("peerToPeerMessageSender")
 public class PeerToPeerMessageSender implements EventObserver, Runnable,
@@ -64,6 +65,9 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 
 	private Logger log = Logger.getLogger(PeerToPeerMessageSender.class
 			.toString());
+
+	@Inject
+	private RoomDao roomDao;
 
 	@Inject
 	private UserDao userDao;
@@ -116,7 +120,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 
 	/**
 	 * Startet Message Server in neuem Thread.
-	 * 
+	 *
 	 * @throws IOException
 	 *             Exception wenn ServerSocket nicht erzeugt werden kann
 	 */
@@ -139,7 +143,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	/**
 	 * Filetransfer: Lehnt eine Anfrage ab, sendet eine
 	 * {@link FileSendRejectMessage} an username.
-	 * 
+	 *
 	 * @param id
 	 *            des Filetransfers.
 	 * @param username
@@ -149,7 +153,6 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	public void rejectFileMessage(String id, String username) {
 		FileSendRejectMessage m = new FileSendRejectMessage();
 		m.setId(id);
-		m.setMessageType(MessageType.SINGLE);
 		m.setText("Id: " + id + " wurde abgelehnt.");
 		m.getReceiver().add(username);
 		m.setSender(simConfiguration.getUsername());
@@ -166,7 +169,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 
 	/**
 	 * Filetransfer: Sendet eine Anfrage zum Dateitransfer.
-	 * 
+	 *
 	 * @param file
 	 *            Datei zum versand
 	 * @param toUser
@@ -176,7 +179,6 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	public String sendFileRequest(File file, String toUser) {
 		FileSendRequestMessage msg = new FileSendRequestMessage();
 		msg.getReceiver().add(toUser);
-		msg.setMessageType(MessageType.SINGLE);
 		msg.setSender(simConfiguration.getUsername());
 
 		msg.setFilename(file.getName());
@@ -197,7 +199,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	/**
 	 * Filetransfer: Startet den Dateitransfer, oeffnet eine Socket Verbindung
 	 * zum vorher ausgehandelten Port und streamt die Datei.
-	 * 
+	 *
 	 * @param m
 	 *            {@link FileSendAcceptMessage} msg.
 	 */
@@ -238,7 +240,8 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 				}
 
 				// message object senden
-				InputStream in = new BufferedInputStream(new FileInputStream(file));
+				InputStream in = new BufferedInputStream(new FileInputStream(
+						file));
 				idProgressSentMap.put(m.getId(), 0l);
 
 				byte[] buffer = new byte[100];
@@ -282,7 +285,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	/**
 	 * Filetransfer: Gibt die gesendeten/empfangenen bytes des Transfers mit der
 	 * Id zurueck.
-	 * 
+	 *
 	 * @param id
 	 *            des transfers.
 	 */
@@ -301,7 +304,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	/**
 	 * Filetransfer: Akzeptiert den Filetransfer, sendet eine
 	 * {@link FileSendAcceptMessage} an den Anfrager.
-	 * 
+	 *
 	 * @param username
 	 *            username, der die Anfrage sendete
 	 * @param id
@@ -314,7 +317,6 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 		FileSendAcceptMessage msg = new FileSendAcceptMessage();
 		msg.setId(id);
 		msg.setSender(simConfiguration.getUsername());
-		msg.setMessageType(MessageType.SINGLE);
 		msg.getReceiver().add(username);
 		msg.setText("Accept: " + id);
 
@@ -329,7 +331,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	/**
 	 * Filetransfer: Startet den Server, auf dem die Datei empfangen werden
 	 * soll.
-	 * 
+	 *
 	 * @param storeInPath
 	 *            Speichert die Datei in diesem Ordner.
 	 * @param id
@@ -361,9 +363,9 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 
 	/**
 	 * Filetransfer: Emfängt die Datei vom Socket und schreibt sie.
-	 * 
+	 *
 	 * @author flo
-	 * 
+	 *
 	 */
 	class FileReceiver implements Runnable {
 
@@ -384,6 +386,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 
 		private boolean stopped = false;
 
+		@Override
 		public void run() {
 			try {
 				Socket clientSocket = fileServerSocket.accept();
@@ -463,10 +466,11 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 
 	/**
 	 * Schickt die Message an alle bekannten User.
-	 * 
+	 *
 	 * @param m
 	 *            Message.
 	 */
+	@Override
 	public void sendMessageToAllUsers(final Message m) {
 		List<User> users = userDao.getUsers();
 		for (final User user : users) {
@@ -479,15 +483,34 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 		}
 	}
 
+	@Override
+	public void sendMessageToRoom(final RoomMessage m) {
+		List<User> users = roomDao.getUsers(m.getRoomName());
+
+		for (final User user : users) {
+			threadPool.execute(new Runnable() {
+				@Override
+				public void run() {
+					sendMessage(user, m);
+				}
+			});
+		}
+	}
+
 	/**
 	 * Schickt die Nachricht an den User.
-	 * 
+	 *
 	 * @param user
 	 *            User
 	 * @param m
 	 *            Message
 	 */
+	@Override
 	public void sendMessage(User user, Message m) {
+		if ( user.getName().equals(m.getSender())) {
+			return;
+		}
+
 		Socket socket = null;
 
 		try {
@@ -562,6 +585,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 		return messageCallback;
 	}
 
+	@Override
 	public void setMessageCallback(MessageCallback messageCallback) {
 		this.messageCallback = messageCallback;
 	}

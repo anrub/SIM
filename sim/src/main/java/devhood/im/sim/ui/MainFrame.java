@@ -8,14 +8,12 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -27,29 +25,30 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import devhood.im.sim.config.SimConfiguration;
-import devhood.im.sim.controller.SimControl;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
-import devhood.im.sim.model.Message;
-import devhood.im.sim.model.MessageType;
+import devhood.im.sim.messages.Message;
+import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
+import devhood.im.sim.service.MessageFactory;
+import devhood.im.sim.service.SimService;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.util.UiUtil;
 
 /**
  * Diese Klasse erzeugt das Hauptfenster der Anwendung.
- * 
+ *
  * @author flo
- * 
+ *
  */
 @Named("mainFrame")
 public class MainFrame implements EventObserver {
-	
+
 	@Inject
-	private SimControl simControl;
-	
+	private SimService simControl;
+
 	@Inject
 	private UserService userService;
 
@@ -85,7 +84,7 @@ public class MainFrame implements EventObserver {
 
 	@Inject
 	private SimConfiguration simConfiguration;
-	
+
 	@Inject
 	private ConfigurationFrame configurationFrame;
 
@@ -146,7 +145,7 @@ public class MainFrame implements EventObserver {
 
 	/**
 	 * Initialies Menubar.
-	 * 
+	 *
 	 * @param frame
 	 *            Frame.
 	 */
@@ -235,20 +234,19 @@ public class MainFrame implements EventObserver {
 		statusMenu.add(status1);
 		statusMenu.add(status2);
 		statusMenu.add(status3);
-	
+
 		ItemListener statusItemListener = new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
-					JRadioButtonMenuItem item = (JRadioButtonMenuItem) e.getSource();
+					JRadioButtonMenuItem item = (JRadioButtonMenuItem) e
+							.getSource();
 					String statusText = item.getText();
-					
+
 					UserStatus status = UserStatus.get(statusText);
-					
+
 					simConfiguration.getCurrentUser().setStatusType(status);
-					Message statusMessage = new Message();
-					statusMessage.setMessageType(MessageType.USER_STATUS);
-					statusMessage.setUserStatus(status);
+					Message statusMessage = MessageFactory.createUserStatusMessage(status);
 					statusMessage.setSender(simConfiguration.getCurrentUser()
 							.getName());
 
@@ -263,12 +261,10 @@ public class MainFrame implements EventObserver {
 			}
 		};
 
-
 		status1.addItemListener(statusItemListener);
 		status2.addItemListener(statusItemListener);
 		status3.addItemListener(statusItemListener);
-		
-		
+
 		JMenu aboutMenu = new JMenu("About");
 		final JMenuItem githubMenuItem = new JMenuItem("Projekt auf github");
 		final JMenuItem smileyOverview = new JMenuItem("Smilies");
@@ -290,21 +286,20 @@ public class MainFrame implements EventObserver {
 				UiUtil.openUrlInBrowser(simConfiguration.getProjectGithuburl());
 			}
 		});
-		
-		
+
 		JMenu configMenu = new JMenu("Optionen");
-		JMenuItem configMenuItem = new JMenuItem("Einstellungen",simConfiguration.getConfigurationFrameIcon());
+		JMenuItem configMenuItem = new JMenuItem("Einstellungen",
+				simConfiguration.getConfigurationFrameIcon());
 		configMenu.add(configMenuItem);
-		
+
 		configMenuItem.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				configurationFrame.pack();
 				configurationFrame.setVisible(true);
 			}
 		});
-		
 
 		menuBar.add(menuNotifications);
 		// menuBar.add(menuPrivacy);
@@ -312,13 +307,26 @@ public class MainFrame implements EventObserver {
 		JMenu layout = createLayoutChangingMenu();
 		menuBar.add(layout);
 
-		
 		menuBar.add(statusMenu);
-		
+
 		menuBar.add(configMenu);
 		menuBar.add(aboutMenu);
 
+		JMenu roomMenu = new JMenu("Raum");
+		roomMenu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Receiver r = new Receiver();
+				r.setName("Test");
+				r.setRoom(true);
+				EventDispatcher.fireEvent(Events.RECEIVER_SELECTED, r);
+			}
+		});
+
+		menuBar.add(roomMenu);
+
 		frame.setJMenuBar(menuBar);
+
 	}
 
 	/**
@@ -353,7 +361,7 @@ public class MainFrame implements EventObserver {
 
 	/**
 	 * Erzeugt das Menu zum aendern des layouts.
-	 * 
+	 *
 	 * @return layouts.
 	 */
 	public JMenu createLayoutChangingMenu() {
@@ -376,6 +384,7 @@ public class MainFrame implements EventObserver {
 
 		ItemListener layoutListener = new ItemListener() {
 
+			@Override
 			public void itemStateChanged(java.awt.event.ItemEvent e) {
 
 				Object obj = e.getItemSelectable();

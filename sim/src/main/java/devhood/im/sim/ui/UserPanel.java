@@ -24,11 +24,12 @@ import javax.swing.JPopupMenu;
 import org.springframework.context.ApplicationContext;
 
 import devhood.im.sim.config.SimConfiguration;
-import devhood.im.sim.controller.SimControl;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.Events;
+import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
+import devhood.im.sim.service.SimService;
 import devhood.im.sim.service.interfaces.MessageSender;
 import devhood.im.sim.service.interfaces.UserChangeListener;
 import devhood.im.sim.service.interfaces.UserService;
@@ -36,9 +37,9 @@ import devhood.im.sim.ui.util.UiUtil;
 
 /**
  * Panel zur Auswahl der User. Aktualisiert sich selbst via {@link UserService}.
- * 
+ *
  * @author flo
- * 
+ *
  */
 @Named("userPanel")
 public class UserPanel extends JPanel {
@@ -53,7 +54,7 @@ public class UserPanel extends JPanel {
 	private SimConfiguration simConfiguration;
 
 	@Inject
-	private SimControl simControl;
+	private SimService simControl;
 
 	@Inject
 	private ApplicationContext applicationContext;
@@ -71,6 +72,7 @@ public class UserPanel extends JPanel {
 
 		setUserChangeListener();
 		startRefreshUsers();
+
 	}
 
 	/**
@@ -86,14 +88,13 @@ public class UserPanel extends JPanel {
 			final JLabel userLabel = createUserLabel(user);
 			currentUsers.add(userLabel);
 		}
-		
 
 		return currentUsers;
 	}
 
 	/**
 	 * Erzeugt das Label zur Anzeige des Benutzers im UserPanel.
-	 * 
+	 *
 	 * @param user
 	 *            User.
 	 * @return Label
@@ -139,9 +140,9 @@ public class UserPanel extends JPanel {
 		userLabel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-
-				EventDispatcher.fireEvent(Events.USER_SELECTED,
-						userLabel.getText());
+				Receiver r = new Receiver();
+				r.setName(userLabel.getText());
+				EventDispatcher.fireEvent(Events.RECEIVER_SELECTED, r);
 
 			}
 

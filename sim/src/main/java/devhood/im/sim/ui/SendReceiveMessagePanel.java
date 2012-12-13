@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -32,7 +31,6 @@ import javax.swing.ComponentInputMap;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -57,15 +55,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 
 import devhood.im.sim.config.SimConfiguration;
-import devhood.im.sim.controller.SimControl;
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
-import devhood.im.sim.model.FileSendRequestMessage;
-import devhood.im.sim.model.Message;
-import devhood.im.sim.model.MessageType;
+import devhood.im.sim.messages.BroadcastMessage;
+import devhood.im.sim.messages.FileSendRequestMessage;
+import devhood.im.sim.messages.Message;
+import devhood.im.sim.messages.RoomMessage;
+import devhood.im.sim.messages.SingleMessage;
+import devhood.im.sim.messages.UserStatusMessage;
 import devhood.im.sim.model.MessagingError;
+import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.User;
+import devhood.im.sim.service.MessageFactory;
+import devhood.im.sim.service.SimService;
 import devhood.im.sim.service.interfaces.MessageSender;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.util.SimpleTabCache;
@@ -76,9 +79,9 @@ import devhood.im.sim.ui.util.UserColorFactory;
 
 /**
  * Panel to send and receive messages.
- * 
+ *
  * @author flo
- * 
+ *
  */
 @Named("sendReceiveMessagePanel")
 public class SendReceiveMessagePanel extends JPanel implements EventObserver {
@@ -109,7 +112,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	private List<String> unreadTabsList = new ArrayList<String>();
 
 	@Inject
-	private SimControl simControl;
+	private SimService simControl;
 
 	@Inject
 	private UserService userService;
@@ -153,7 +156,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			}
 		});
 
-		addToTabPane(simConfiguration.getStreamTabName(), null);
+		addToTabPane(simConfiguration.getStreamTabName(), null, false);
 
 		// Lay out the buttons from left to right.
 		JPanel buttonPane = new JPanel(new BorderLayout());
@@ -164,8 +167,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (tabbedPane.getSelectedIndex() != 0) {
-					String toUser = getCurrentSelectedTabTitle();
-					sendMessage(toUser);
+					String toTab = getCurrentSelectedTabTitle();
+					sendMessage(toTab);
 				} else {
 					sendMessage(simConfiguration.getStreamTabName());
 				}
@@ -306,7 +309,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * Loescht den Text aus der Textarea.
-	 * 
+	 *
 	 * @param area
 	 *            textarea.
 	 */
@@ -357,7 +360,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * Gibt den Titel des aktuellen Tabs zurueck.
-	 * 
+	 *
 	 * @return Titel.
 	 */
 	protected String getCurrentSelectedTabTitle() {
@@ -368,7 +371,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * Schlieï¿½t den Tab mit dem angegebenen index:
-	 * 
+	 *
 	 * @param index
 	 *            tab
 	 */
@@ -395,7 +398,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * Versendet die Nachricht, aktualisiert die UI.
 	 */
 	protected void sendMessage(String toUser) {
-		JPanel p = (JPanel) tabbedPane.getSelectedComponent();
+		SimPanel p = (SimPanel) tabbedPane.getSelectedComponent();
 
 		// TODO fragil - haengt damit direkt mit der ui struktur zusammen
 		JTextComponent timeline = (JTextComponent) ((JViewport) ((JScrollPane) p
@@ -408,45 +411,31 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			return;
 		}
 
-		final Message newMessage = new Message();
+		Message newMessage = MessageFactory.createMessage(p.isRoom(), toUser);
+
+		// Nachricht an alle
+		if (toUser.equals(simConfiguration.getStreamTabName())) {
+			newMessage = MessageFactory.createBroadcastMessage();
+			System.out.println("Nachricht an alle");
+		} else {
+			newMessage = MessageFactory.createMessage(p.isRoom(), toUser);
+		}
 
 		List<String> usernames = new ArrayList<String>();
 		usernames.add(toUser);
+
 		newMessage.setReceiver(usernames);
 		newMessage.setSender(simConfiguration.getUsername());
 		newMessage.setText(input.getText());
 
 		clearText(input);
 
-		if (toUser.equals(simConfiguration.getStreamTabName())) { // Ist dies im
-																	// Stremtab
-																	// -
-																	// nachricht
-			// an alle
-			newMessage.setMessageType(MessageType.ALL);
-			newMessage.getReceiver().clear();
-			List<User> users = userService.getUsers();
-			for (User user : users) {
-				newMessage.getReceiver().add(user.getName());
-			}
-			System.out.println("Nachricht an alle");
-		}
-
-		if (!toUser.equals(simConfiguration.getStreamTabName())) { // Ist dies
-																	// im
-																	// Stremtab
-																	// -
-																	// nachricht
-			// an alle
-
-			if (userService.isUserOnline(toUser)) {
-				timeline.setText(getFormattedMessage(newMessage,
-						timeline.getText()));
-			} else {
-				outputStatusMessage("Tut mir leid, " + toUser + " ist offline",
-						timeline);
-			}
-
+		if (p.isRoom() || newMessage instanceof BroadcastMessage
+				|| userService.isUserOnline(toUser)) {
+			timeline.setText(getFormattedMessage(newMessage, timeline.getText()));
+		} else {
+			outputStatusMessage("Tut mir leid, " + toUser + " ist offline",
+					timeline);
 		}
 
 		// clearText(input);
@@ -455,6 +444,10 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		input.requestFocusInWindow();
 
+		sendMessage(newMessage);
+	}
+
+	private void sendMessage(final Message newMessage) {
 		// Versand wird asynchron ausgefuehrt, da potentiell langsam und droht
 		// die ui zu blocken.
 		// TODO Fehlerhandling, wenn versand fehlschlaegt?
@@ -488,14 +481,15 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	public void eventReceived(Events event, Object o) {
 		// Ein user wurde per UserPanel ausgeawehlt, nun wird das Tab
 		// fokussiert.
-		if (Events.USER_SELECTED.equals(event)) {
-			String text = o.toString();
+		if (Events.RECEIVER_SELECTED.equals(event)) {
+			Receiver r = (Receiver) o;
+			String tab = r.getName();
 
-			int index = tabbedPane.indexOfTab(text);
+			int index = tabbedPane.indexOfTab(tab);
 			if (index == -1) {
-				addToTabPane(text, null);
+				addToTabPane(tab, null, r.isRoom());
 			}
-			focusTabPane(text);
+			focusTabPane(tab);
 			// Neue Nachricht verarbeiten.
 		} else if (Events.MESSAGE_RECEIVED.equals(event)) {
 			if (o instanceof Message) {
@@ -527,7 +521,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		} else if (Events.MESSAGE_SEND_FAILED.equals(event)) {
 
 			final MessagingError error = (MessagingError) o;
-			if (MessageType.SINGLE.equals(error.getMessage().getMessageType())) {
+			if (error.getMessage() instanceof SingleMessage) {
 				// Muss per invokeLater auf dem Swing Event Dispatcher Thread
 				// ausgefï¿½hrt werden siehe
 				// http://docs.oracle.com/javase/tutorial/uiswing/concurrency/dispatch.html
@@ -552,7 +546,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		} else if (Events.MESSAGE_FILE_REQUEST_RECEIVED.equals(event)) {
 			ReceiveFileFrame frame = new ReceiveFileFrame();
 			frame.init();
-			frame.setMessageSender((MessageSender) applicationContext
+			frame.setMessageSender(applicationContext
 					.getBean(MessageSender.class));
 			frame.setFileSendRequestMessage((FileSendRequestMessage) o);
 			frame.showFrame();
@@ -561,54 +555,66 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * Z Verarbeitung einer neuen Nachricht.
-	 * 
+	 *
 	 * @param m
 	 *            Message
 	 */
 	protected synchronized void processNewMessage(Message m) {
 		String sender = m.getSender();
 
-		if (MessageType.ALL.equals(m.getMessageType())) {
+		if (m instanceof BroadcastMessage) {
 			sender = simConfiguration.getStreamTabName();
+			processMessage(m, sender);
 		}
-		if (MessageType.USER_STATUS.equals(m.getMessageType())) {
-			// Wenn eine Statusnachricht von sich selbst kommt, nicht
-			// verarbeiten
-			if (simConfiguration.getUsername().equals(m.getSender())) {
-				return;
-			}
-
+		if (m instanceof UserStatusMessage) {
 			String statusMessage = getFormattedUserStatusMessage(m);
 			outputStatusMessage(statusMessage,
 					simConfiguration.getStreamTabName(), sender);
 		}
-		if (!MessageType.USER_STATUS.equals(m.getMessageType())) {
-			final JEditorPane textArea = nameTextAreaMap.get(sender);
-
-			if (textArea != null) {
-				String oldText = textArea.getText();
-				synchronized (this) {
-					textArea.setText(getFormattedMessage(m, oldText));
-					moveCaretDown(textArea);
-				}
-			} else {
-				String textline = getFormattedMessage(m);
-				addToTabPane(sender, textline);
-			}
-
-			// Icon auf ungelesen setzten, falls tab derzeit nicht ausgewaehlt.
-			if (!isTabSelected(sender)) {
-				setIconToUnreadMessages(sender);
-			}
+		if (m instanceof SingleMessage || m instanceof RoomMessage) {
+			processMessage(m, sender);
 		}
 
 		System.out.println("Message: " + m + ", received.");
 
 	}
 
+	private void processMessage(Message m, String sender) {
+		String tabname = extractTabName(m, sender);
+		final JEditorPane textArea = nameTextAreaMap.get(tabname);
+
+		if (textArea != null) {
+			String oldText = textArea.getText();
+			synchronized (this) {
+				textArea.setText(getFormattedMessage(m, oldText));
+				moveCaretDown(textArea);
+			}
+		} else {
+			String textline = getFormattedMessage(m);
+			addToTabPane(tabname, textline, isRoomMessage(m));
+		}
+
+		// Icon auf ungelesen setzten, falls tab derzeit nicht ausgewaehlt.
+		if (!isTabSelected(tabname)) {
+			setIconToUnreadMessages(tabname);
+		}
+	}
+
+	private String extractTabName(Message m, String sender) {
+		String tabname = sender;
+		if (isRoomMessage(m)) {
+			tabname = ((RoomMessage) m).getRoomName();
+		}
+		return tabname;
+	}
+
+	private boolean isRoomMessage(Message m) {
+		return m instanceof RoomMessage;
+	}
+
 	/**
 	 * Gibt zurueck ob der Tab mit dem Namen derzeit ausgewaehlt ist oder nicht.
-	 * 
+	 *
 	 * @param name
 	 *            Name des Tabs
 	 * @return true/false
@@ -622,7 +628,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * Gibt eine Statusmessage aus
-	 * 
+	 *
 	 * @param statusMessage
 	 *            beliebige Statusmeldung
 	 * @param textArea
@@ -640,7 +646,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * GIbt die Nachricht in den Tabs aus.
-	 * 
+	 *
 	 * @param statusMessage
 	 *            Nachricht
 	 * @param tabs
@@ -663,7 +669,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * Gibt die Message formatiert aus.
-	 * 
+	 *
 	 * @param username
 	 *            Username
 	 * @param msg
@@ -682,7 +688,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * Gibt einen beliebigen Text formatiert aus.
-	 * 
+	 *
 	 * @param message
 	 *            Nachricht als Text
 	 * @param oldText
@@ -702,7 +708,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * Gibt die Message formatiert aus.
-	 * 
+	 *
 	 * @param username
 	 *            Username
 	 * @param msg
@@ -747,7 +753,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * Bricht den String nach chars anzahl von Zeichen mit &lt;br&gt; um.
-	 * 
+	 *
 	 * @param s
 	 *            String
 	 * @return verkuerzter String
@@ -767,49 +773,31 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * Gibt die USerstatus message zurueck.
-	 * 
+	 *
 	 * @param m
 	 *            Message
 	 * @return string msg.
 	 */
 	protected String getFormattedUserStatusMessage(Message m) {
 		String msg = "User [" + m.getSender() + "] ist jetzt ";
-		msg = msg + " " + m.getUserStatus().getText();
+		msg = msg + " " + m.toString();
 
 		return msg;
 	}
 
 	/**
 	 * Fuegt ein SendReceiveMessage Tab fuer diese Konversation ein.
-	 * 
+	 *
 	 * @param label
 	 *            Label des Tabs
 	 * @param text
 	 *            Text der in die TextArea geschrieben wird.
 	 */
-	protected void addToTabPane(final String label, String text) {
+	protected void addToTabPane(final String label, String text, boolean room) {
 		String cachedText = nameTimelineCache.get(label);
 		String layoutedText = "";
 		if (cachedText == null) {
-			layoutedText = "<table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">";
-
-			if (!simConfiguration.getStreamTabName().equalsIgnoreCase(label)) {
-				layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><i>Konversation mit User ["
-						+ label + "] gestartet</i></td></tr>";
-			} else {
-				layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><i>"
-						+ simConfiguration.getApplicationName()
-						+ "<br />Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i></td></tr>";
-			}
-
-			// layoutedText +=
-			// "<tr><td colspan=\"2\" valign=\"top\"><br/></td></tr>";
-
-			if (text != null) {
-				layoutedText += text;
-			}
-
-			layoutedText += "</table>";
+			layoutedText = createTabIntroText(label, text);
 		} else {
 			if (text == null) {
 				text = "";
@@ -817,12 +805,13 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			layoutedText = getFormattedMessage(text, cachedText);
 		}
 
-		JPanel textPanel = new JPanel(new BorderLayout());
+		SimPanel tab = new SimPanel(new BorderLayout());
+		tab.setRoom(room);
 
 		JScrollPane timelineScrollPane = createTimelineScrollpane(label,
 				layoutedText);
 
-		textPanel.add(timelineScrollPane, BorderLayout.CENTER);
+		tab.add(timelineScrollPane, BorderLayout.CENTER);
 
 		final JTextArea messageTextArea = new JTextArea(3, 70);
 		messageTextArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
@@ -850,9 +839,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		JScrollPane messageScrollPane = new JScrollPane(messageTextArea);
 
-		textPanel.add(messageScrollPane, BorderLayout.SOUTH);
+		tab.add(messageScrollPane, BorderLayout.SOUTH);
 
-		tabbedPane.addTab(label, simConfiguration.getReadIcon(), textPanel);
+		tabbedPane.addTab(label, simConfiguration.getReadIcon(), tab);
 
 		tabbedPane.addChangeListener(new ChangeListener() {
 
@@ -880,6 +869,30 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	}
 
+	private String createTabIntroText(final String label, String text) {
+		String layoutedText;
+		layoutedText = "<table width=\"100%\" height=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">";
+
+		if (!simConfiguration.getStreamTabName().equalsIgnoreCase(label)) {
+			layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><i>Konversation mit ["
+					+ label + "] gestartet</i></td></tr>";
+		} else {
+			layoutedText += "<tr><td colspan=\"2\" valign=\"top\"><i>"
+					+ simConfiguration.getApplicationName()
+					+ "<br />Achtung: alles im Stream Tab wird an alle Teilnehmer geschickt!</i></td></tr>";
+		}
+
+		// layoutedText +=
+		// "<tr><td colspan=\"2\" valign=\"top\"><br/></td></tr>";
+
+		if (text != null) {
+			layoutedText += text;
+		}
+
+		layoutedText += "</table>";
+		return layoutedText;
+	}
+
 	public void scrollToBottom(String label) {
 		JEditorPane pane = nameTextAreaMap.get(label);
 		Rectangle rect = new Rectangle(0, pane.getHeight(), (int) pane
@@ -890,7 +903,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * wechsetl das tab.
-	 * 
+	 *
 	 * @param e
 	 *            e
 	 */
@@ -901,7 +914,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * Gibt das ausgewaehlte tab zurueck.
-	 * 
+	 *
 	 * @return index.
 	 */
 	public int getCurrentSelectTabIndex() {
@@ -911,7 +924,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	/**
 	 * Fuegt die Shortcuts ALT+1-9 zum tabpane hinzu. Damit kann man per alt+1-9
 	 * zwischen den tabs umschalten.
-	 * 
+	 *
 	 * @param tabbedPane
 	 *            tabbedpane
 	 */
@@ -952,7 +965,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * Schiebt den Cursor ans Ende des Documents.
-	 * 
+	 *
 	 * @param textArea
 	 *            textArea.
 	 */
@@ -962,7 +975,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * Erzeugt das timeline Scrollpane incl inhalt.
-	 * 
+	 *
 	 * @param label
 	 *            Label des Tabs.
 	 * @param text
@@ -995,7 +1008,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			/**
 			 * Bei Klick auf einen Link in der Timeline, wird der Browser
 			 * geï¿½ffnet.
-			 * 
+			 *
 			 * @param e
 			 *            Event.
 			 */
@@ -1016,7 +1029,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * fokussiert das tabpane mit dem Namen.
-	 * 
+	 *
 	 * @param name
 	 *            Name des Panes.
 	 */
@@ -1033,7 +1046,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * Fokussiert das Feld im Tab mit dem Namen.
-	 * 
+	 *
 	 * @param name
 	 *            Name des Tabs.
 	 */
@@ -1044,7 +1057,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	/**
 	 * Setzt das Icon im Tab, so dass es auf ungelesene Nachrichten aufmerksam
 	 * macht.
-	 * 
+	 *
 	 * @param name
 	 *            Name des Tabs.
 	 */
@@ -1060,7 +1073,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	/**
 	 * Entfernt das Icon vom Tab und setzt das standardicon readicon.
-	 * 
+	 *
 	 * @param name
 	 *            Name des Tabs.
 	 */
@@ -1068,5 +1081,24 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		unreadTabsList.remove(name);
 		int index = tabbedPane.indexOfTab(name);
 		tabbedPane.setIconAt(index, simConfiguration.getReadIcon());
+	}
+
+	class SimPanel extends JPanel {
+		public SimPanel(BorderLayout l) {
+			super(l);
+		}
+
+		/**
+		 * Ist dieses Tab ein Raum.
+		 */
+		private boolean room;
+
+		public boolean isRoom() {
+			return room;
+		}
+
+		public void setRoom(boolean room) {
+			this.room = room;
+		}
 	}
 }

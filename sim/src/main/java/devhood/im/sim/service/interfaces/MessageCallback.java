@@ -1,9 +1,9 @@
 package devhood.im.sim.service.interfaces;
 
-import devhood.im.sim.model.FileSendAcceptMessage;
-import devhood.im.sim.model.FileSendRejectMessage;
-import devhood.im.sim.model.FileSendRequestMessage;
-import devhood.im.sim.model.Message;
+import devhood.im.sim.messages.FileSendAcceptMessage;
+import devhood.im.sim.messages.FileSendRejectMessage;
+import devhood.im.sim.messages.FileSendRequestMessage;
+import devhood.im.sim.messages.Message;
 
 /**
  * MessageCallback, Callback bei ankunft einer neuen Nachricht.

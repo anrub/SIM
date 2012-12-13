@@ -18,7 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import devhood.im.sim.model.FileSendRequestMessage;
+import devhood.im.sim.messages.FileSendRequestMessage;
 import devhood.im.sim.service.interfaces.MessageSender;
 
 /**

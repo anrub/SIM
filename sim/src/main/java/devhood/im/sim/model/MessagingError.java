@@ -1,5 +1,7 @@
 package devhood.im.sim.model;
 
+import devhood.im.sim.messages.Message;
+
 /**
  * Klasse zum Transport der Fehlermeldung.
  * 

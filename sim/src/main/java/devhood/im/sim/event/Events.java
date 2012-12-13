@@ -1,6 +1,6 @@
 package devhood.im.sim.event;
 
-import devhood.im.sim.model.FileSendAcceptMessage;
+import devhood.im.sim.messages.FileSendAcceptMessage;
 
 /**
  * Events in der Applikation.
@@ -12,7 +12,7 @@ public enum Events {
 	/**
 	 * Ein User wurde ausgewaehlt. Parameter: String username
 	 */
-	USER_SELECTED,
+	RECEIVER_SELECTED,
 	/**
 	 * Eine neue Nachricht wurde empfangen. Parameter: Message message
 	 */

@@ -27,7 +27,7 @@ import devhood.im.sim.model.User;
 
 /**
  * Impl. des UserDao auf Basis von SQL Server.
- * 
+ *
  * @author fuchs.florian
  */
 @Named("jtdsUserDao")
@@ -56,7 +56,7 @@ public class JtdsUserDao implements UserDao {
 
 	/**
 	 * Gibt die Connection zurueck.
-	 * 
+	 *
 	 * @return Connection
 	 * @throws SQLException
 	 *             Im Fehlerfall.
@@ -76,9 +76,9 @@ public class JtdsUserDao implements UserDao {
 
 
 	// String createTableDdl =
-	// "CREATE TABLE IF NOT EXISTS users (name TEXT PRIMARY KEY NOT NULL, 
+	// "CREATE TABLE IF NOT EXISTS users (name TEXT PRIMARY KEY NOT NULL,
 //	address TEXT NOT NULL, port INTEGER NOT NULL,
-//	lastaccess INTEGER NOT NULL, 
+//	lastaccess INTEGER NOT NULL,
 //	publickey BLOB NOT NULL,
 //	statusType TEXT NOT NULL)";
 
@@ -207,6 +207,7 @@ public class JtdsUserDao implements UserDao {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public synchronized void purgeOfflineUsers() {
 
 		Connection con = null;

@@ -15,6 +15,7 @@ import devhood.im.sim.dao.interfaces.RoomDao;
 import devhood.im.sim.dao.interfaces.UserDao;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
+import devhood.im.sim.model.Room;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.UserChangeListener;
 import devhood.im.sim.service.interfaces.UserService;

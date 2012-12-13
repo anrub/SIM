@@ -16,8 +16,8 @@ import javax.inject.Named;
 
 import devhood.im.sim.dao.interfaces.RoomDao;
 import devhood.im.sim.dao.interfaces.UserDao;
+import devhood.im.sim.model.Room;
 import devhood.im.sim.model.User;
-import devhood.im.sim.service.Room;
 
 /**
  * RoomDao.

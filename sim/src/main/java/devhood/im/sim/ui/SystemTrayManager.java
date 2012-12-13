@@ -66,19 +66,8 @@ public class SystemTrayManager implements EventObserver {
 
 		MenuItem item = new MenuItem("Exit");
 		item.setLabel("Exit");
+		item.addActionListener(new ExitAction(userService));
 
-		item.addActionListener(new ActionListener() {
-
-			/**
-			 * Bei click auf Exit, Anwendung schlie�en.
-			 */
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				userService.logout(simConfiguration.getUsername());
-				System.exit(0);
-
-			}
-		});
 		popup.add(item);
 
 		CheckboxMenuItem systrayMessages = new CheckboxMenuItem(
@@ -195,4 +184,21 @@ public class SystemTrayManager implements EventObserver {
 		systrayIcon.addMouseListener(listener);
 	}
 
+	class ExitAction implements ActionListener {
+		private UserService userService;
+
+		public ExitAction(UserService userService) {
+			this.userService = userService;
+		}
+
+		/**
+		 * Bei click auf Exit, Anwendung schlie�en.
+		 */
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			userService.logout(simConfiguration.getUsername());
+			System.exit(0);
+
+		}
+	}
 }

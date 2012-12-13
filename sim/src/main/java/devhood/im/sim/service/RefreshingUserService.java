@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import devhood.im.sim.config.SimConfiguration;
+import devhood.im.sim.dao.interfaces.RoomDao;
 import devhood.im.sim.dao.interfaces.UserDao;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
@@ -37,6 +38,9 @@ public class RefreshingUserService implements UserService, EventObserver {
 	 */
 	@Inject
 	private UserDao userDao;
+
+	@Inject
+	private RoomDao roomDao;
 
 	/**
 	 * true wenn user min. einmal refresht wurden.
@@ -273,6 +277,16 @@ public class RefreshingUserService implements UserService, EventObserver {
 	@Override
 	public User getUser(String name) {
 		return userDao.getUser(name);
+	}
+
+	@Override
+	public void joinOrCreateRoom(String username, String roomName) {
+		List<User> u = roomDao.getUsers(roomName);
+		Room r = new Room();
+		r.setName(roomName);
+		r.setUsers(new ArrayList<User>());
+		r.getUsers().add(getUser(username));
+		roomDao.saveOrUpdate(r);
 	}
 
 }

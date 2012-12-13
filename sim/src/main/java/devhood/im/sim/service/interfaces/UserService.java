@@ -6,15 +6,15 @@ import devhood.im.sim.model.User;
 
 /**
  * Service zum Zugriff auf User Daten.
- * 
+ *
  * @author flo
- * 
+ *
  */
 public interface UserService {
 
 	/**
 	 * Gibt zurueck ob der User aktuell online ist.
-	 * 
+	 *
 	 * @param user
 	 *            Username
 	 * @return true/false
@@ -23,7 +23,7 @@ public interface UserService {
 
 	/**
 	 * Fuegt einen {@link UserChangeListener} ein.
-	 * 
+	 *
 	 * @param listener
 	 *            listener
 	 */
@@ -36,7 +36,7 @@ public interface UserService {
 
 	/**
 	 * Gibt die aktuellen User im System zurueck.
-	 * 
+	 *
 	 * @return Aktuelle User.
 	 */
 	public List<User> getCurrentUsers();
@@ -48,7 +48,7 @@ public interface UserService {
 
 	/**
 	 * Aktualisiert den User.
-	 * 
+	 *
 	 * @param u
 	 *            User.
 	 */
@@ -56,7 +56,7 @@ public interface UserService {
 
 	/**
 	 * Gibt den User mit dem Namen zurueck.
-	 * 
+	 *
 	 * @param name
 	 *            Name.
 	 * @return
@@ -65,16 +65,18 @@ public interface UserService {
 
 	/**
 	 * Gibt alle User zurueck.
-	 * 
+	 *
 	 * @return User.
 	 */
 	public List<User> getUsers();
 
 	/**
 	 * Loggt den User aus.
-	 * 
+	 *
 	 * @param username
 	 *            username
 	 */
 	public void logout(String username);
+
+	public void joinOrCreateRoom(String username, String name);
 }

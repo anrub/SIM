@@ -483,6 +483,11 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		// fokussiert.
 		if (Events.RECEIVER_SELECTED.equals(event)) {
 			Receiver r = (Receiver) o;
+			if (r.isRoom()) {
+				userService.joinOrCreateRoom(simConfiguration.getUsername(),
+						r.getName());
+			}
+
 			String tab = r.getName();
 
 			int index = tabbedPane.indexOfTab(tab);
@@ -564,7 +569,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		if (m instanceof BroadcastMessage) {
 			sender = simConfiguration.getStreamTabName();
-			processMessage(m, sender);
+			updateView(m, sender);
 		}
 		if (m instanceof UserStatusMessage) {
 			String statusMessage = getFormattedUserStatusMessage(m);
@@ -572,14 +577,14 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 					simConfiguration.getStreamTabName(), sender);
 		}
 		if (m instanceof SingleMessage || m instanceof RoomMessage) {
-			processMessage(m, sender);
+			updateView(m, sender);
 		}
 
 		System.out.println("Message: " + m + ", received.");
 
 	}
 
-	private void processMessage(Message m, String sender) {
+	private void updateView(Message m, String sender) {
 		String tabname = extractTabName(m, sender);
 		final JEditorPane textArea = nameTextAreaMap.get(tabname);
 

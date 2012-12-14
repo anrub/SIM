@@ -6,8 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -24,9 +22,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import devhood.im.sim.config.SimConfiguration;
-import devhood.im.sim.event.EventDispatcher;
-import devhood.im.sim.event.Events;
-import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.UserStatus;
 import devhood.im.sim.ui.action.UpdateUserStatusAction;
 import devhood.im.sim.ui.util.UiUtil;
@@ -67,6 +62,12 @@ public class MainView {
 	private SimConfiguration simConfiguration;
 
 	private JMenuItem configMenuItem;
+
+	private JMenuItem openRoom;
+
+	public void addOpenRoomMouseListener(ActionListener actionListener) {
+		openRoom.addActionListener(actionListener);
+	}
 
 	/**
 	 * Initialises the main frame.
@@ -202,15 +203,8 @@ public class MainView {
 		menuBar.add(aboutMenu);
 
 		JMenu roomMenu = new JMenu("Raum");
-		roomMenu.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				Receiver r = new Receiver();
-				r.setName("Test");
-				r.setRoom(true);
-				EventDispatcher.fireEvent(Events.RECEIVER_SELECTED, r);
-			}
-		});
+		openRoom = new JMenuItem("Raum öffnen");
+		roomMenu.add(openRoom);
 
 		menuBar.add(roomMenu);
 
@@ -388,5 +382,13 @@ public class MainView {
 
 	public void setUserPanel(UserPanelView userPanel) {
 		this.userPanel = userPanel;
+	}
+
+	public JFrame getFrame() {
+		return frame;
+	}
+
+	public void setFrame(JFrame frame) {
+		this.frame = frame;
 	}
 }

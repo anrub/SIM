@@ -19,13 +19,13 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import devhood.im.sim.messages.FileSendRequestMessage;
-import devhood.im.sim.service.interfaces.MessageSender;
+import devhood.im.sim.service.interfaces.MessageSenderService;
 
 /**
  * Frame bei dem Empfang einer Datei.
- * 
+ *
  * @author flo
- * 
+ *
  */
 public class ReceiveFileFrame extends JFrame {
 
@@ -40,7 +40,7 @@ public class ReceiveFileFrame extends JFrame {
 	private Timer progressTimer = new Timer();
 	private TimerTask updateProgressBarTask;
 
-	private MessageSender messageSender;
+	private MessageSenderService messageSender;
 
 	public void init() {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -209,11 +209,11 @@ public class ReceiveFileFrame extends JFrame {
 		this.fileSendRequestMessage = fileSendRequestMessage;
 	}
 
-	public MessageSender getMessageSender() {
+	public MessageSenderService getMessageSender() {
 		return messageSender;
 	}
 
-	public void setMessageSender(MessageSender messageSender) {
+	public void setMessageSender(MessageSenderService messageSender) {
 		this.messageSender = messageSender;
 	}
 }

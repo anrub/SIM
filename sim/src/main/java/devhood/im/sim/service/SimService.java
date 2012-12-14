@@ -17,7 +17,7 @@ import devhood.im.sim.messages.RoomMessage;
 import devhood.im.sim.messages.SingleMessage;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.MessageCallback;
-import devhood.im.sim.service.interfaces.MessageSender;
+import devhood.im.sim.service.interfaces.MessageSenderService;
 import devhood.im.sim.service.interfaces.UserService;
 
 /**
@@ -38,7 +38,7 @@ public class SimService {
 	 * Sender von Messages.
 	 */
 	@Inject
-	private MessageSender messageSender;
+	private MessageSenderService messageSender;
 
 	/**
 	 * Service rund um User Informationen.

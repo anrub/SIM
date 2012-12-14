@@ -63,7 +63,7 @@ import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.MessageFactory;
 import devhood.im.sim.service.SimService;
-import devhood.im.sim.service.interfaces.MessageSender;
+import devhood.im.sim.service.interfaces.MessageSenderService;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.util.SimpleTabCache;
 import devhood.im.sim.ui.util.SmileyFactory;
@@ -106,7 +106,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	private List<String> unreadTabsList = new ArrayList<String>();
 
 	@Inject
-	private SimService simControl;
+	private SimService simService;
 
 	@Inject
 	private UserService userService;
@@ -129,7 +129,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	@Inject
 	private SimpleTabCache nameTimelineCache;
 
-	final JFrame smileyFrame = new JFrame();
+	private final JFrame smileyFrame = new JFrame();
 
 	public void init() {
 		setLayout(new BorderLayout());
@@ -403,7 +403,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 			@Override
 			protected Void doInBackground() throws Exception {
-				simControl.sendMessage(newMessage);
+				simService.sendMessage(newMessage);
 				return null;
 			}
 
@@ -444,7 +444,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	private void handleFileRequestReceived(Object o) {
 		ReceiveFileFrame frame = new ReceiveFileFrame();
 		frame.init();
-		frame.setMessageSender(applicationContext.getBean(MessageSender.class));
+		frame.setMessageSender(applicationContext
+				.getBean(MessageSenderService.class));
 		frame.setFileSendRequestMessage((FileSendRequestMessage) o);
 		frame.showFrame();
 	}

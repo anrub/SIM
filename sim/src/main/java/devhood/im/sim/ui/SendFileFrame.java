@@ -8,8 +8,6 @@ import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -23,13 +21,13 @@ import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.messages.FileSendAcceptMessage;
 import devhood.im.sim.messages.FileSendRejectMessage;
-import devhood.im.sim.service.interfaces.MessageSender;
+import devhood.im.sim.service.interfaces.MessageSenderService;
 
 /**
  * Frame in dem der Versand von Dateien behandelt wird.
- * 
+ *
  * @author flo
- * 
+ *
  */
 public class SendFileFrame extends JFrame implements EventObserver {
 	/**
@@ -53,7 +51,7 @@ public class SendFileFrame extends JFrame implements EventObserver {
 	/**
 	 * Service der den versand durchfuehrt.
 	 */
-	private MessageSender messageSender;
+	private MessageSenderService messageSender;
 
 	/**
 	 * Id des Versands in diesem Frame.
@@ -119,11 +117,9 @@ public class SendFileFrame extends JFrame implements EventObserver {
 						int perc = (int) ((messageSender.getProgress(id) * 100) / fileToSend
 								.length());
 						bar.setValue(perc);
-						if (bar.getValue() != 0  ) {
-							tryLabel.setText("Sende "
-									+ fileToSend.getName()
-									+ " an "
-									+ toUser);
+						if (bar.getValue() != 0) {
+							tryLabel.setText("Sende " + fileToSend.getName()
+									+ " an " + toUser);
 						}
 					} else {
 						close.setVisible(true);
@@ -202,11 +198,11 @@ public class SendFileFrame extends JFrame implements EventObserver {
 		this.toUser = toUser;
 	}
 
-	public MessageSender getMessageSender() {
+	public MessageSenderService getMessageSender() {
 		return messageSender;
 	}
 
-	public void setMessageSender(MessageSender messageSender) {
+	public void setMessageSender(MessageSenderService messageSender) {
 		this.messageSender = messageSender;
 	}
 

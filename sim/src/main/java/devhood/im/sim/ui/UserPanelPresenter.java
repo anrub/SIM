@@ -28,7 +28,7 @@ import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
-import devhood.im.sim.service.interfaces.MessageSender;
+import devhood.im.sim.service.interfaces.MessageSenderService;
 import devhood.im.sim.service.interfaces.UserChangeListener;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.util.UiUtil;
@@ -202,7 +202,7 @@ public class UserPanelPresenter {
 		JFileChooser fc = new JFileChooser();
 		int returnVal = fc.showOpenDialog(userLabel);
 
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
+		if (returnVal == JFileChooser.CANCEL_OPTION) {
 			return;
 		}
 		File file = fc.getSelectedFile();
@@ -217,7 +217,7 @@ public class UserPanelPresenter {
 		// sendFileFrame.
 
 		sendFileFrame.setMessageSender(applicationContext
-				.getBean(MessageSender.class));
+				.getBean(MessageSenderService.class));
 		sendFileFrame.setFileToSend(file);
 		sendFileFrame.setToUser(user.getName());
 		sendFileFrame.showFrame();

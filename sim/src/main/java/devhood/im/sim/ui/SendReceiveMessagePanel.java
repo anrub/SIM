@@ -2,7 +2,6 @@ package devhood.im.sim.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -14,12 +13,10 @@ import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -45,9 +42,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-import javax.swing.text.DefaultCaret;
 import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -118,9 +112,6 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	private UserService userService;
 
 	@Inject
-	private UserPanel userPanel;
-
-	@Inject
 	private UserColorFactory userColorFactory;
 
 	@Inject
@@ -137,6 +128,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	@Inject
 	private SimpleTabCache nameTimelineCache;
+
+	final JFrame smileyFrame = new JFrame();
 
 	public void init() {
 		setLayout(new BorderLayout());
@@ -203,79 +196,29 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			}
 		});
 
-		final JFrame smileyFrame = new JFrame();
+		smileyFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		smileyFrame.setIconImage(UiUtil
 				.createImage("/images/yahoo_smileys/01.gif"));
 		GridBagLayout layout = new GridBagLayout();
 
-		final JPanel panel = new JPanel(layout);
+		final SmileyPanel panel = new SmileyPanel(layout, smileyFactory);
+		panel.setSmileyLabelMouseListener(new MouseAdapter() {
 
-		SwingWorker<Void, Void> w = new SwingWorker<Void, Void>() {
 			@Override
-			protected Void doInBackground() throws Exception {
-				smileyFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				final GridBagConstraints c = new GridBagConstraints();
+			public void mouseClicked(MouseEvent e) {
+				JLabel l = (JLabel) e.getSource();
+				ImageIcon icon = (ImageIcon) l.getIcon();
+				String code = icon.getDescription();
+				JTextArea input = inputTextAreaMap
+						.get(getCurrentSelectedTabTitle());
+				input.insert(" " + code + " ", input.getCaretPosition());
 
-				int x = 0;
-				int y = 0;
-				Set<String[]> keySet = smileyFactory.getSmileys().keySet();
+				focusMessageTextArea(getCurrentSelectedTabTitle());
 
-				Map<String, String[]> tempMapForSorting = new HashMap<String, String[]>();
-				List<String> keyListForSorting = new ArrayList<String>();
-				for (String[] keys : keySet) {
-					tempMapForSorting.put(keys[0], keys);
-					keyListForSorting.add(keys[0]);
-				}
-
-				Collections.sort(keyListForSorting);
-
-				for (String key : keyListForSorting) {
-					c.gridx = x;
-					c.gridy = y;
-					String smileyCode = key.replace("&gt;", ">")
-							.replace("&lt;", "<").replace("&amp;", "&")
-							.replace("&quot;", "\"");
-					ImageIcon img = UiUtil.createImageIcon(
-							"/images/yahoo_smileys/"
-									+ smileyFactory.getSmileys().get(
-											tempMapForSorting.get(key)),
-							smileyCode);
-					JLabel smileyLabel = new JLabel(img);
-					smileyLabel.setToolTipText(smileyCode);
-
-					smileyLabel.addMouseListener(new MouseAdapter() {
-
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							JLabel l = (JLabel) e.getSource();
-							ImageIcon icon = (ImageIcon) l.getIcon();
-							String code = icon.getDescription();
-							JTextArea input = inputTextAreaMap
-									.get(getCurrentSelectedTabTitle());
-							input.insert(" " + code + " ",
-									input.getCaretPosition());
-
-							focusMessageTextArea(getCurrentSelectedTabTitle());
-
-							smileyFrame.dispose();
-						}
-
-					});
-
-					if (y < 10) {
-						y++;
-					} else {
-						y = 0;
-
-						x++;
-					}
-
-					panel.add(smileyLabel, c);
-				}
-				return null;
+				smileyFrame.dispose();
 			}
-		};
-		w.execute();
+
+		});
 
 		smileyFrame.add(panel);
 
@@ -398,12 +341,13 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * Versendet die Nachricht, aktualisiert die UI.
 	 */
 	protected void sendMessage(String toUser) {
-		SimPanel p = (SimPanel) tabbedPane.getSelectedComponent();
+		ConversationTab tab = (ConversationTab) tabbedPane
+				.getSelectedComponent();
 
 		// TODO fragil - haengt damit direkt mit der ui struktur zusammen
-		JTextComponent timeline = (JTextComponent) ((JViewport) ((JScrollPane) p
+		JTextComponent timeline = (JTextComponent) ((JViewport) ((JScrollPane) tab
 				.getComponent(0)).getComponent(0)).getComponent(0);
-		JTextComponent input = (JTextComponent) ((JViewport) ((JScrollPane) p
+		JTextComponent input = (JTextComponent) ((JViewport) ((JScrollPane) tab
 				.getComponent(1)).getComponent(0)).getComponent(0);
 
 		if (StringUtils.isEmpty(input.getText().trim())) {
@@ -411,14 +355,13 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			return;
 		}
 
-		Message newMessage = MessageFactory.createMessage(p.isRoom(), toUser);
+		Message newMessage = null;
 
 		// Nachricht an alle
 		if (toUser.equals(simConfiguration.getStreamTabName())) {
 			newMessage = MessageFactory.createBroadcastMessage();
-			System.out.println("Nachricht an alle");
 		} else {
-			newMessage = MessageFactory.createMessage(p.isRoom(), toUser);
+			newMessage = MessageFactory.createMessage(tab.isRoom(), toUser);
 		}
 
 		List<String> usernames = new ArrayList<String>();
@@ -430,7 +373,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 		clearText(input);
 
-		if (p.isRoom() || newMessage instanceof BroadcastMessage
+		if (tab.isRoom() || !newMessage.isReliable()
 				|| userService.isUserOnline(toUser)) {
 			timeline.setText(getFormattedMessage(newMessage, timeline.getText()));
 		} else {
@@ -479,83 +422,88 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	@Override
 	public void eventReceived(Events event, Object o) {
-		// Ein user wurde per UserPanel ausgeawehlt, nun wird das Tab
-		// fokussiert.
 		if (Events.RECEIVER_SELECTED.equals(event)) {
-			Receiver r = (Receiver) o;
-			if (r.isRoom()) {
-				userService.joinOrCreateRoom(simConfiguration.getUsername(),
-						r.getName());
-			}
-
-			String tab = r.getName();
-
-			int index = tabbedPane.indexOfTab(tab);
-			if (index == -1) {
-				addToTabPane(tab, null, r.isRoom());
-			}
-			focusTabPane(tab);
+			handleReceiverSelected(o);
 			// Neue Nachricht verarbeiten.
 		} else if (Events.MESSAGE_RECEIVED.equals(event)) {
-			if (o instanceof Message) {
-				Message m = (Message) o;
-				processNewMessage(m);
-			} else {
-				throw new IllegalArgumentException("Fuer Event "
-						+ Events.MESSAGE_RECEIVED
-						+ " muss eine Message als Object kkommen! ist aber: "
-						+ o.getClass());
-			}
+			Message m = (Message) o;
+			handleMessageReceived(m);
 			// Zeigt die Tabbed pane mit dem entsprechenden Namen.
 		} else if (Events.SHOW_MSG_TABBED_PANE.equals(event)) {
-			String name = (String) o;
-			focusTabPane(name);
-			// Meldung dass Benutzer offline oder online ist
+			focusTabPane((String) o);
 		} else if (Events.USER_OFFLINE_NOTICE.equals(event)
 				|| Events.USER_ONLINE_NOTICE.equals(event)) {
-			String message = "User "
-					+ o
-					+ " ist jetzt "
-					+ (Events.USER_OFFLINE_NOTICE.equals(event) ? "offline"
-							: "online");
-			outputStatusMessage(message,
-					nameTextAreaMap.get(simConfiguration.getStreamTabName()));
-
-			outputStatusMessage(message, (List<User>) o);
-
+			handleUserOnOffline(event, o);
 		} else if (Events.MESSAGE_SEND_FAILED.equals(event)) {
-
-			final MessagingError error = (MessagingError) o;
-			if (error.getMessage() instanceof SingleMessage) {
-				// Muss per invokeLater auf dem Swing Event Dispatcher Thread
-				// ausgefï¿½hrt werden siehe
-				// http://docs.oracle.com/javase/tutorial/uiswing/concurrency/dispatch.html
-				// http://tips4java.wordpress.com/2008/10/22/text-area-scrolling/
-				SwingUtilities.invokeLater(new Runnable() {
-
-					@Override
-					public void run() {
-						JTextComponent textarea = nameTextAreaMap.get(error
-								.getMessage().getReceiver().get(0));
-						if (textarea == null) {
-							textarea = nameTextAreaMap.get(simConfiguration
-									.getStreamTabName());
-						}
-						outputStatusMessage(
-								"Fehler: Message konnte nicht gesendet werden: "
-										+ error.getException().getMessage(),
-								textarea);
-					}
-				});
-			}
+			handleMessageSendFailed(o);
 		} else if (Events.MESSAGE_FILE_REQUEST_RECEIVED.equals(event)) {
-			ReceiveFileFrame frame = new ReceiveFileFrame();
-			frame.init();
-			frame.setMessageSender(applicationContext
-					.getBean(MessageSender.class));
-			frame.setFileSendRequestMessage((FileSendRequestMessage) o);
-			frame.showFrame();
+			handleFileRequestReceived(o);
 		}
+	}
+
+	private void handleFileRequestReceived(Object o) {
+		ReceiveFileFrame frame = new ReceiveFileFrame();
+		frame.init();
+		frame.setMessageSender(applicationContext.getBean(MessageSender.class));
+		frame.setFileSendRequestMessage((FileSendRequestMessage) o);
+		frame.showFrame();
+	}
+
+	// Ein user wurde per UserPanel ausgeawehlt, nun wird das Tab
+	// fokussiert.
+	private void handleReceiverSelected(Object o) {
+		Receiver r = (Receiver) o;
+		if (r.isRoom()) {
+			userService.joinOrCreateRoom(simConfiguration.getUsername(),
+					r.getName());
+		}
+
+		String tab = r.getName();
+
+		int index = tabbedPane.indexOfTab(tab);
+		if (index == -1) {
+			addToTabPane(tab, null, r.isRoom());
+		}
+		focusTabPane(tab);
+	}
+
+	private void handleMessageSendFailed(Object o) {
+		final MessagingError error = (MessagingError) o;
+		if (error.getMessage() instanceof SingleMessage) {
+			// Muss per invokeLater auf dem Swing Event Dispatcher Thread
+			// ausgefï¿½hrt werden siehe
+			// http://docs.oracle.com/javase/tutorial/uiswing/concurrency/dispatch.html
+			// http://tips4java.wordpress.com/2008/10/22/text-area-scrolling/
+			SwingUtilities.invokeLater(new Runnable() {
+
+				@Override
+				public void run() {
+					JTextComponent textarea = nameTextAreaMap.get(error
+							.getMessage().getReceiver().get(0));
+					if (textarea == null) {
+						textarea = nameTextAreaMap.get(simConfiguration
+								.getStreamTabName());
+					}
+					outputStatusMessage(
+							"Fehler: Message konnte nicht gesendet werden: "
+									+ error.getException().getMessage(),
+							textarea);
+				}
+			});
+		}
+	}
+
+	// Meldung dass Benutzer offline oder online ist
+	private void handleUserOnOffline(Events event, Object o) {
+		String message = "User "
+				+ o
+				+ " ist jetzt "
+				+ (Events.USER_OFFLINE_NOTICE.equals(event) ? "offline"
+						: "online");
+		outputStatusMessage(message,
+				nameTextAreaMap.get(simConfiguration.getStreamTabName()));
+
+		outputStatusMessage(message, (List<User>) o);
 	}
 
 	/**
@@ -564,7 +512,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @param m
 	 *            Message
 	 */
-	protected synchronized void processNewMessage(Message m) {
+	protected synchronized void handleMessageReceived(Message m) {
 		String sender = m.getSender();
 
 		if (m instanceof BroadcastMessage) {
@@ -725,11 +673,12 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	protected String getFormattedMessage(Message m) {
 		String text = StringEscapeUtils.escapeHtml4(m.getText());
 		String sender = m.getSender();
-		String colorHexValue = "#000000";
+
 		String[] chunks = text.split("\\s");
 		String linkPattern = "((file\\:|mailto\\:|(news|(ht|f)tp(s?))\\://){1}\\S+)";
 		StringBuffer msg = new StringBuffer();
 
+		String colorHexValue = "#000000";
 		/* Farbe des Benutzers ermitteln. */
 		if (simConfiguration.getUsername().equals(sender)) {
 			colorHexValue = simConfiguration.getUserColor();
@@ -798,23 +747,25 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 * @param text
 	 *            Text der in die TextArea geschrieben wird.
 	 */
-	protected void addToTabPane(final String label, String text, boolean room) {
+	protected void addToTabPane(final String label, String text, boolean isroom) {
 		String cachedText = nameTimelineCache.get(label);
 		String layoutedText = "";
 		if (cachedText == null) {
 			layoutedText = createTabIntroText(label, text);
 		} else {
-			if (text == null) {
-				text = "";
-			}
+			text = text == null ? "" : text;
+
 			layoutedText = getFormattedMessage(text, cachedText);
 		}
 
-		SimPanel tab = new SimPanel(new BorderLayout());
-		tab.setRoom(room);
+		ConversationTab tab = new ConversationTab(new BorderLayout());
+		tab.setRoom(isroom);
 
-		JScrollPane timelineScrollPane = createTimelineScrollpane(label,
+		TimelineEditorPane timeline = new TimelineEditorPane(label,
 				layoutedText);
+		nameTextAreaMap.put(label, timeline);
+
+		JScrollPane timelineScrollPane = new JScrollPane(timeline);
 
 		tab.add(timelineScrollPane, BorderLayout.CENTER);
 
@@ -979,60 +930,6 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	}
 
 	/**
-	 * Erzeugt das timeline Scrollpane incl inhalt.
-	 *
-	 * @param label
-	 *            Label des Tabs.
-	 * @param text
-	 *            Textinhalt.
-	 * @return
-	 */
-	protected JScrollPane createTimelineScrollpane(String label, String text) {
-
-		final JEditorPane timelineTextArea = new JEditorPane("text/html",
-				"<html><head></head><body></body></html>");
-
-		String oldText = timelineTextArea.getText();
-		StringBuffer newMsg = new StringBuffer(oldText);
-
-		if (oldText.contains("</body>")) {
-			int index = oldText.indexOf("</body>");
-			newMsg.insert(index, text);
-		}
-
-		timelineTextArea.setText(newMsg.toString());
-
-		DefaultCaret caret = (DefaultCaret) timelineTextArea.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-
-		timelineTextArea.setEditable(false);
-		timelineTextArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
-
-		timelineTextArea.addHyperlinkListener(new HyperlinkListener() {
-
-			/**
-			 * Bei Klick auf einen Link in der Timeline, wird der Browser
-			 * geï¿½ffnet.
-			 *
-			 * @param e
-			 *            Event.
-			 */
-			@Override
-			public void hyperlinkUpdate(final HyperlinkEvent e) {
-
-				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-					UiUtil.openUrlInBrowser(e.getURL().toString());
-				}
-			}
-		});
-		nameTextAreaMap.put(label, timelineTextArea);
-
-		JScrollPane timelineScrollPane = new JScrollPane(timelineTextArea);
-
-		return timelineScrollPane;
-	}
-
-	/**
 	 * fokussiert das tabpane mit dem Namen.
 	 *
 	 * @param name
@@ -1088,8 +985,14 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		tabbedPane.setIconAt(index, simConfiguration.getReadIcon());
 	}
 
-	class SimPanel extends JPanel {
-		public SimPanel(BorderLayout l) {
+	/**
+	 * Inhalt eines Tabs.
+	 *
+	 * @author flo
+	 *
+	 */
+	class ConversationTab extends JPanel {
+		public ConversationTab(BorderLayout l) {
 			super(l);
 		}
 

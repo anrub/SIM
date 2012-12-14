@@ -31,6 +31,8 @@ public class MessageFactory {
 	}
 
 	public static Message createBroadcastMessage() {
-		return new BroadcastMessage();
+		Message msg = new BroadcastMessage();
+		msg.setReliable(false);
+		return msg;
 	}
 }

@@ -9,18 +9,19 @@ import javax.swing.UIManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
-import devhood.im.sim.ui.MainFrame;
+import devhood.im.sim.ui.MainPresenter;
+import devhood.im.sim.ui.MainView;
 
 /**
  * Main Class.
- * 
+ *
  * Possible commandline arguments:
- * 
+ *
  * -n nickname -f databasefile
- * 
- * 
+ *
+ *
  * @author flo
- * 
+ *
  */
 public class SimMain {
 
@@ -28,7 +29,7 @@ public class SimMain {
 
 	/**
 	 * Main method, starts the program. <br />
-	 * 
+	 *
 	 * @param args
 	 *            arguments
 	 */
@@ -43,23 +44,23 @@ public class SimMain {
 				if ("-jdbcDriver".equals(args[i]) && i + 1 < args.length) {
 					System.setProperty("sim.db.driver", args[i + 1]);
 				}
-				
+
 				if ("-jdbcUrl".equals(args[i]) && i + 1 < args.length) {
 					System.setProperty("sim.db.url", args[i + 1]);
-				}			
-				
+				}
+
 				if ("-user".equals(args[i]) && i + 1 < args.length) {
 					System.setProperty("sim.db.username", args[i + 1]);
 				}
-				
+
 				if ("-password".equals(args[i]) && i + 1 < args.length) {
 					System.setProperty("sim.db.password", args[i + 1]);
 				}
-				
+
 				if ("-userDao".equals(args[i]) && i + 1 < args.length) {
 					System.setProperty("sim.userDao", args[i + 1]);
 				}
-				
+
 				if ("-f".equals(args[i]) && i + 1 < args.length) {
 					System.setProperty("sim.dbPath", args[i + 1]);
 				}
@@ -88,7 +89,7 @@ public class SimMain {
 	}
 
 	/**
-	 * Startet den {@link ApplicationContext} und zeigt das {@link MainFrame}
+	 * Startet den {@link ApplicationContext} und zeigt das {@link MainView}
 	 * an.
 	 */
 	public void startup() {
@@ -97,7 +98,7 @@ public class SimMain {
 		context.setValidating(false);
 		context.load("classpath:/devhood/im/sim/applicationContext.xml");
 		context.refresh();
-		MainFrame mainFrame = (MainFrame) context.getBean("mainFrame");
-		mainFrame.initMainFrame();
+		MainPresenter presenter = context.getBean(MainPresenter.class);
+		presenter.init();
 	}
 }

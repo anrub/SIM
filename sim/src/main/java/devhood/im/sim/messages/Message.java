@@ -26,6 +26,12 @@ public class Message implements Serializable {
 	 */
 	private String text;
 
+	/**
+	 * Flag gibt an, ob die Message sicher empfangen werden muss, oder ob ein
+	 * Verlust in Ordnung ist. Default: true, Empfang notwendig.
+	 */
+	private boolean reliable = true;
+
 	public String getText() {
 		return text;
 	}
@@ -54,6 +60,14 @@ public class Message implements Serializable {
 
 	public void setReceiver(List<String> receiver) {
 		this.receiver = receiver;
+	}
+
+	public boolean isReliable() {
+		return reliable;
+	}
+
+	public void setReliable(boolean reliable) {
+		this.reliable = reliable;
 	}
 
 }

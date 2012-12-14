@@ -17,7 +17,6 @@ import devhood.im.sim.messages.RoomMessage;
 import devhood.im.sim.messages.SingleMessage;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.MessageCallback;
-import devhood.im.sim.service.interfaces.MessageProcessor;
 import devhood.im.sim.service.interfaces.MessageSender;
 import devhood.im.sim.service.interfaces.UserService;
 
@@ -30,33 +29,16 @@ import devhood.im.sim.service.interfaces.UserService;
 @Named("simControl")
 public class SimService {
 	/**
-	 * Der aktuelle User, der die Anwendung verwendet.
-	 */
-	private User currentUser;
-
-	/**
 	 * Konfiguration von SIM.
 	 */
 	@Inject
 	private SimConfiguration simConfiguration;
 
 	/**
-	 * Empfaenger von Messages.
-	 */
-	@Inject
-	private PeerToPeerMessageReceiver messageReceiver;
-
-	/**
 	 * Sender von Messages.
 	 */
 	@Inject
 	private MessageSender messageSender;
-
-	// private List<Conversation> conversations
-	// TODO Messages auch hier halten
-	private List<Message> messages;
-	// TODO messageProcessors, sind objs. die auf die, die message prozessieren
-	private List<MessageProcessor> messageProcessors;
 
 	/**
 	 * Service rund um User Informationen.
@@ -123,10 +105,6 @@ public class SimService {
 
 	public List<User> getCurrentUsers() {
 		return userService.getCurrentUsers();
-	}
-
-	public User getCurrentUser() {
-		return currentUser;
 	}
 
 }

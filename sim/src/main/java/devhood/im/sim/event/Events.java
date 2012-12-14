@@ -4,11 +4,12 @@ import devhood.im.sim.messages.FileSendAcceptMessage;
 
 /**
  * Events in der Applikation.
- * 
+ *
  * @author flo
- * 
+ *
  */
 public enum Events {
+	SHOW_CONFIGURATION_FRAME,
 	/**
 	 * Ein User wurde ausgewaehlt. Parameter: String username
 	 */

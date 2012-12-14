@@ -14,6 +14,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseListener;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -53,6 +54,7 @@ public class SystemTrayManager implements EventObserver {
 	@Inject
 	private SimConfiguration simConfiguration;
 
+	@PostConstruct
 	public void init() {
 		EventDispatcher.add(this);
 

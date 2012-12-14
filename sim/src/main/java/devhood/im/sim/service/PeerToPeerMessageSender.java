@@ -473,20 +473,18 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	@Override
 	public void sendMessageToAllUsers(final Message m) {
 		List<User> users = userDao.getUsers();
-		for (final User user : users) {
-			threadPool.execute(new Runnable() {
-				@Override
-				public void run() {
-					sendMessage(user, m);
-				}
-			});
-		}
+
+		sendMessage(m, users);
 	}
 
 	@Override
 	public void sendMessageToRoom(final RoomMessage m) {
 		List<User> users = roomDao.getUsers(m.getRoomName());
 
+		sendMessage(m, users);
+	}
+
+	private void sendMessage(final Message m, List<User> users) {
 		for (final User user : users) {
 			threadPool.execute(new Runnable() {
 				@Override
@@ -507,7 +505,7 @@ public class PeerToPeerMessageSender implements EventObserver, Runnable,
 	 */
 	@Override
 	public void sendMessage(User user, Message m) {
-		if ( user.getName().equals(m.getSender())) {
+		if (user.getName().equals(m.getSender())) {
 			return;
 		}
 

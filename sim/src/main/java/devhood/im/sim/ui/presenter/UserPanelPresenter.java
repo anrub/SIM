@@ -1,4 +1,4 @@
-package devhood.im.sim.ui;
+package devhood.im.sim.ui.presenter;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -24,16 +24,19 @@ import org.springframework.context.ApplicationContext;
 
 import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
 import devhood.im.sim.service.interfaces.UserChangeListener;
 import devhood.im.sim.service.interfaces.UserService;
+import devhood.im.sim.ui.SendFileFrame;
 import devhood.im.sim.ui.util.UiUtil;
+import devhood.im.sim.ui.view.UserPanelView;
 
 @Named
-public class UserPanelPresenter {
+public class UserPanelPresenter implements EventObserver {
 
 	/**
 	 * RegistryService zum Zugriff auf Stammdaten, zb User.
@@ -50,12 +53,22 @@ public class UserPanelPresenter {
 	@Inject
 	private UserPanelView view;
 
+	public UserPanelPresenter() {
+		EventDispatcher.add(this);
+	}
+
+	@Override
+	public void eventReceived(Events event, Object o) {
+
+	}
+
+
 	@PostConstruct
 	public void init() {
 
-		for (JLabel userLabel : getCurrentUsers()) {
-			view.add(userLabel);
-		}
+//		for (JLabel userLabel : getCurrentUsers()) {
+//			view.add(userLabel);
+//		}
 
 		setUserChangeListener();
 		startRefreshUsers();
@@ -211,7 +224,8 @@ public class UserPanelPresenter {
 			return;
 		}
 
-		SendFileFrame sendFileFrame = applicationContext.getBean(SendFileFrame.class);
+		SendFileFrame sendFileFrame = applicationContext
+				.getBean(SendFileFrame.class);
 		sendFileFrame.setFileToSend(file);
 		sendFileFrame.setToUser(user.getName());
 		sendFileFrame.showFrame();

@@ -1,10 +1,12 @@
-package devhood.im.sim.ui;
+package devhood.im.sim.ui.presenter;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.inject.Named;
 import javax.swing.JFrame;
+
+import devhood.im.sim.ui.view.JoinRoomView;
 
 @Named
 public class JoinRoomPresenter {

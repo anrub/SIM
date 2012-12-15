@@ -1,4 +1,4 @@
-package devhood.im.sim.ui;
+package devhood.im.sim.ui.presenter;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +15,8 @@ import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Receiver;
+import devhood.im.sim.ui.SystemTrayManager;
+import devhood.im.sim.ui.view.MainView;
 
 @Named
 public class MainPresenter implements EventObserver {

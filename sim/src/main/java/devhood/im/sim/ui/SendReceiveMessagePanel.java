@@ -2,7 +2,6 @@ package devhood.im.sim.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
-import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -64,6 +63,7 @@ import devhood.im.sim.model.User;
 import devhood.im.sim.service.MessageFactory;
 import devhood.im.sim.service.SimService;
 import devhood.im.sim.service.interfaces.UserService;
+import devhood.im.sim.ui.presenter.SmileyPanelPresenter;
 import devhood.im.sim.ui.util.SimpleTabCache;
 import devhood.im.sim.ui.util.SmileyFactory;
 import devhood.im.sim.ui.util.Splitter;
@@ -121,6 +121,9 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 	@Inject
 	private ApplicationContext applicationContext;
+
+	@Inject
+	private SmileyPanelPresenter smileyPanelPresenter;
 
 	/**
 	 * Simpler cache für die tabs.
@@ -195,13 +198,10 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			}
 		});
 
-		smileyFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		smileyFrame.setIconImage(UiUtil
-				.createImage("/images/yahoo_smileys/01.gif"));
-		GridBagLayout layout = new GridBagLayout();
+		final JButton smileyButton = new JButton(UiUtil.createImageIcon(
+				"/images/yahoo_smileys/01.gif", ":)"));
 
-		final SmileyPanel panel = new SmileyPanel(layout, smileyFactory);
-		panel.setSmileyLabelMouseListener(new MouseAdapter() {
+		smileyPanelPresenter.setSmileyIconMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -214,23 +214,16 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 
 				focusMessageTextArea(getCurrentSelectedTabTitle());
 
-				smileyFrame.dispose();
+				smileyPanelPresenter.hide();
 			}
 
 		});
 
-		smileyFrame.add(panel);
-
-		final JButton smileyButton = new JButton(UiUtil.createImageIcon(
-				"/images/yahoo_smileys/01.gif", ":)"));
 		smileyButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				panel.repaint();
-				smileyFrame.pack();
-				smileyFrame.setVisible(true);
-				smileyFrame.setLocationRelativeTo(smileyButton);
+				smileyPanelPresenter.show(smileyButton);
 			}
 		});
 		buttonsRight.add(smileyButton);

@@ -1,4 +1,4 @@
-package devhood.im.sim.ui;
+package devhood.im.sim.ui.view;
 
 import java.awt.FlowLayout;
 import java.awt.event.MouseListener;

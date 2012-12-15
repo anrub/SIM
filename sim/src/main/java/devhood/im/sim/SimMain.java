@@ -9,8 +9,8 @@ import javax.swing.UIManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
-import devhood.im.sim.ui.MainPresenter;
-import devhood.im.sim.ui.MainView;
+import devhood.im.sim.ui.presenter.MainPresenter;
+import devhood.im.sim.ui.view.MainView;
 
 /**
  * Main Class.

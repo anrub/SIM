@@ -1,4 +1,4 @@
-package devhood.im.sim.ui;
+package devhood.im.sim.ui.view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -23,6 +23,7 @@ import javax.swing.UIManager;
 
 import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.model.UserStatus;
+import devhood.im.sim.ui.SendReceiveMessagePanel;
 import devhood.im.sim.ui.action.UpdateUserStatusAction;
 import devhood.im.sim.ui.util.UiUtil;
 

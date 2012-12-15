@@ -1,4 +1,4 @@
-package devhood.im.sim.ui;
+package devhood.im.sim.ui.presenter;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -10,6 +10,7 @@ import javax.inject.Named;
 import javax.swing.JOptionPane;
 
 import devhood.im.sim.config.SimConfiguration;
+import devhood.im.sim.ui.view.ConfigurationView;
 
 @Named
 public class ConfigurationPresenter {

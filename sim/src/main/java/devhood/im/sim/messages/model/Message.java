@@ -1,4 +1,4 @@
-package devhood.im.sim.messages;
+package devhood.im.sim.messages.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
  * @author flo
  *
  */
-public class Message implements Serializable {
+abstract public class Message implements Serializable {
 	/**
 	 * Sender Name.
 	 */

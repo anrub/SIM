@@ -1,6 +1,8 @@
-package devhood.im.sim.service.interfaces;
+package devhood.im.sim.messages.interfaces;
 
 import java.io.File;
+
+import devhood.im.sim.messages.MessagingException;
 
 public interface FileMessageHandler {
 
@@ -13,7 +15,8 @@ public interface FileMessageHandler {
 	 *            Empfaenger.
 	 * @return id der uebertragung
 	 */
-	public String sendFileRequest(File file, String toUser);
+	public String sendFileRequest(File file, String toUser)
+			throws MessagingException;
 
 	/**
 	 * Akzeptiert einen Dateiversand.
@@ -25,7 +28,8 @@ public interface FileMessageHandler {
 	 * @param storeInPath
 	 *            Verzeichnis in dem die Datei abgelegt wird.
 	 */
-	public void acceptFileMessage(String username, String id, String storeInPath);
+	public void acceptFileMessage(String username, String id, String storeInPath)
+			throws MessagingException;
 
 	/**
 	 * Lehnt den Dateiversand ab.
@@ -35,7 +39,8 @@ public interface FileMessageHandler {
 	 * @param username
 	 *            username.
 	 */
-	public void rejectFileMessage(String id, String username);
+	public void rejectFileMessage(String id, String username)
+			throws MessagingException;
 
 	/**
 	 * Gibt den aktuellen Zustand des Dateiversands zurueck.

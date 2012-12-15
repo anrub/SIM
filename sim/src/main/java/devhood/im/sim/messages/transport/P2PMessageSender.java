@@ -1,4 +1,4 @@
-package devhood.im.sim.service;
+package devhood.im.sim.messages.transport;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -26,15 +26,12 @@ import org.springframework.context.ApplicationContext;
 import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.dao.interfaces.RoomDao;
 import devhood.im.sim.dao.interfaces.UserDao;
-import devhood.im.sim.event.EventDispatcher;
-import devhood.im.sim.event.EventObserver;
-import devhood.im.sim.event.Events;
-import devhood.im.sim.messages.Message;
-import devhood.im.sim.messages.RoomMessage;
-import devhood.im.sim.model.MessagingError;
+import devhood.im.sim.messages.MessagingException;
+import devhood.im.sim.messages.interfaces.TextMessageSender;
+import devhood.im.sim.messages.model.Message;
+import devhood.im.sim.messages.model.RoomMessage;
+import devhood.im.sim.messages.observer.MessageObserver;
 import devhood.im.sim.model.User;
-import devhood.im.sim.service.interfaces.MessageCallback;
-import devhood.im.sim.service.interfaces.TextMessageSender;
 
 /**
  * Peer to Peer Implementierung des {@link MessageService}. Dieser Service
@@ -47,7 +44,7 @@ import devhood.im.sim.service.interfaces.TextMessageSender;
  *
  */
 @Named
-public class P2PMessageSender implements EventObserver, Runnable, TextMessageSender {
+class P2PMessageSender implements Runnable, TextMessageSender {
 
 	private Logger log = Logger.getLogger(P2PMessageSender.class.toString());
 
@@ -81,7 +78,7 @@ public class P2PMessageSender implements EventObserver, Runnable, TextMessageSen
 	/**
 	 * Callback bei empfangener Nachricht.
 	 */
-	private MessageCallback messageCallback;
+	private MessageObserver messageObserver;
 
 	/**
 	 * Startet Message Server in neuem Thread.
@@ -96,23 +93,16 @@ public class P2PMessageSender implements EventObserver, Runnable, TextMessageSen
 		serverSocket = new ServerSocket(0);
 		simConfiguration.setPort(serverSocket.getLocalPort());
 
-		EventDispatcher.fireEvent(Events.SERVER_INITIALISED, null);
-
 		thread = new Thread(null, this,
 				"Sys: Message Receiving Thread - initial.");
 		thread.start();
-
-		EventDispatcher.add(this);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Stoppt Server.
 	 */
-	@Override
-	public void eventReceived(Events event, Object o) {
-		if (Events.LOGOUT.equals(event)) {
-			thread.interrupt();
-		}
+	public void stop() {
+		thread.interrupt();
 	}
 
 	/**
@@ -140,7 +130,13 @@ public class P2PMessageSender implements EventObserver, Runnable, TextMessageSen
 			threadPool.execute(new Runnable() {
 				@Override
 				public void run() {
-					sendMessage(user, m);
+					try {
+						sendMessage(user, m);
+					} catch (MessagingException e) {
+						log.log(Level.WARNING,
+								"Message konnte nicht gesendet werden: ["
+										+ e.getFailedMessage() + "]", e);
+					}
 				}
 			});
 		}
@@ -155,7 +151,7 @@ public class P2PMessageSender implements EventObserver, Runnable, TextMessageSen
 	 *            Message
 	 */
 	@Override
-	public void sendMessage(User user, Message m) {
+	public void sendMessage(User user, Message m) throws MessagingException {
 		if (user.getName().equals(m.getSender())) {
 			return;
 		}
@@ -198,13 +194,10 @@ public class P2PMessageSender implements EventObserver, Runnable, TextMessageSen
 		} catch (UnknownHostException e) {
 			log.log(Level.SEVERE,
 					"message sent - client socket Verbindung Fehler", e);
-			EventDispatcher.fireEvent(Events.MESSAGE_SEND_FAILED,
-					new MessagingError(e, m));
+			throw new MessagingException(e, m);
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "message sent - IOException: ", e);
-
-			EventDispatcher.fireEvent(Events.MESSAGE_SEND_FAILED,
-					new MessagingError(e, m));
+			throw new MessagingException(e, m);
 		}
 
 	}
@@ -220,7 +213,7 @@ public class P2PMessageSender implements EventObserver, Runnable, TextMessageSen
 				P2PMessageReceiver msgRec = (P2PMessageReceiver) context
 						.getBean("peerToPeerMessageReceiver");
 				msgRec.setClientSocket(clientSocket);
-				msgRec.setMessageCallback(messageCallback);
+				msgRec.setMessageCallback(messageObserver);
 				Thread worker = new Thread(null, msgRec,
 						"Sys: Message Receiving Thread");
 				worker.start();
@@ -230,13 +223,13 @@ public class P2PMessageSender implements EventObserver, Runnable, TextMessageSen
 		}
 	}
 
-	public MessageCallback getMessageCallback() {
-		return messageCallback;
+	public MessageObserver getMessageCallback() {
+		return messageObserver;
 	}
 
 	@Override
-	public void setMessageCallback(MessageCallback messageCallback) {
-		this.messageCallback = messageCallback;
+	public void setMessageCallback(MessageObserver messageCallback) {
+		this.messageObserver = messageCallback;
 	}
 
 }

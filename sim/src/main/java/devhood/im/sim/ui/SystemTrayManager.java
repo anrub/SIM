@@ -19,15 +19,15 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import devhood.im.sim.config.SimConfiguration;
-import devhood.im.sim.event.EventDispatcher;
-import devhood.im.sim.event.EventObserver;
-import devhood.im.sim.event.Events;
-import devhood.im.sim.messages.BroadcastMessage;
-import devhood.im.sim.messages.Message;
-import devhood.im.sim.messages.RoomMessage;
-import devhood.im.sim.messages.SingleMessage;
-import devhood.im.sim.messages.UserStatusMessage;
+import devhood.im.sim.messages.model.BroadcastMessage;
+import devhood.im.sim.messages.model.Message;
+import devhood.im.sim.messages.model.RoomMessage;
+import devhood.im.sim.messages.model.SingleMessage;
+import devhood.im.sim.messages.model.UserStatusMessage;
 import devhood.im.sim.service.interfaces.UserService;
+import devhood.im.sim.ui.event.EventDispatcher;
+import devhood.im.sim.ui.event.EventObserver;
+import devhood.im.sim.ui.event.Events;
 
 /**
  * Verwaltet das SystemTray.

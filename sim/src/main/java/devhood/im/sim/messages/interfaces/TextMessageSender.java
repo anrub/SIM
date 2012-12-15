@@ -1,7 +1,9 @@
-package devhood.im.sim.service.interfaces;
+package devhood.im.sim.messages.interfaces;
 
-import devhood.im.sim.messages.Message;
-import devhood.im.sim.messages.RoomMessage;
+import devhood.im.sim.messages.MessagingException;
+import devhood.im.sim.messages.model.Message;
+import devhood.im.sim.messages.model.RoomMessage;
+import devhood.im.sim.messages.observer.MessageObserver;
 import devhood.im.sim.model.User;
 
 /**
@@ -19,7 +21,8 @@ public interface TextMessageSender {
 	 * @param message
 	 *            Message.
 	 */
-	public void sendMessage(User user, Message message);
+	public void sendMessage(User user, Message message)
+			throws MessagingException;
 
 	/**
 	 * Versendet die Nachricht an alle User im System.
@@ -35,8 +38,7 @@ public interface TextMessageSender {
 	 * @param messageCallback
 	 *            callback
 	 */
-	public void setMessageCallback(MessageCallback messageCallback);
-
+	public void setMessageCallback(MessageObserver messageCallback);
 
 	public void sendMessageToRoom(RoomMessage m);
 }

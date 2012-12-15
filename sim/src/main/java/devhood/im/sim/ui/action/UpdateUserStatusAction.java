@@ -6,11 +6,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import devhood.im.sim.config.SimConfiguration;
-import devhood.im.sim.messages.Message;
+import devhood.im.sim.messages.MessageContext;
+import devhood.im.sim.messages.MessageFactory;
+import devhood.im.sim.messages.MessagingException;
+import devhood.im.sim.messages.model.Message;
 import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
-import devhood.im.sim.service.MessageFactory;
-import devhood.im.sim.service.SimService;
 import devhood.im.sim.service.interfaces.UserService;
 
 @Named
@@ -24,7 +25,7 @@ public class UpdateUserStatusAction implements Action {
 	private UserService userService;
 
 	@Inject
-	private SimService simService;
+	private MessageContext simService;
 
 	@Override
 	public void execute() {
@@ -39,7 +40,12 @@ public class UpdateUserStatusAction implements Action {
 			statusMessage.getReceiver().add(user.getName());
 		}
 
-		simService.sendMessage(statusMessage);
+		try {
+			simService.sendMessage(statusMessage);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public String getStatusText() {
@@ -66,11 +72,11 @@ public class UpdateUserStatusAction implements Action {
 		this.userService = userService;
 	}
 
-	public SimService getSimService() {
+	public MessageContext getSimService() {
 		return simService;
 	}
 
-	public void setSimService(SimService simService) {
+	public void setSimService(MessageContext simService) {
 		this.simService = simService;
 	}
 

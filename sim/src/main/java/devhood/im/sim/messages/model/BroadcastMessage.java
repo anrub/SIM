@@ -1,4 +1,4 @@
-package devhood.im.sim.messages;
+package devhood.im.sim.messages.model;
 
 /**
  * Nachricht an alle.

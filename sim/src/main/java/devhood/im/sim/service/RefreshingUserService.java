@@ -7,28 +7,28 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.dao.interfaces.RoomDao;
 import devhood.im.sim.dao.interfaces.UserDao;
-import devhood.im.sim.event.EventObserver;
-import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Room;
 import devhood.im.sim.model.User;
-import devhood.im.sim.service.interfaces.UserChangeListener;
+import devhood.im.sim.service.interfaces.UserChangeObserver;
 import devhood.im.sim.service.interfaces.UserService;
 
 /**
- * Dieser {@link UserService} aktualisiert sich selbst und den übergebenen User
- * regelmäßig.
+ * Dieser {@link UserService} aktualisiert sich selbst und den uebergebenen User
+ * regelmaessg.
  *
  * @author flo
  *
  */
 @Named("refreshingUserService")
-public class RefreshingUserService implements UserService, EventObserver {
+public class RefreshingUserService implements UserService {
+
 	/**
 	 * Aktuelle User im System.
 	 */
@@ -44,14 +44,9 @@ public class RefreshingUserService implements UserService, EventObserver {
 	private RoomDao roomDao;
 
 	/**
-	 * true wenn user min. einmal refresht wurden.
-	 */
-	private boolean usersLoaded;
-
-	/**
 	 * Listener wird aufgerufen, wenn User im System hinzu- oder wegkommen.
 	 */
-	private List<UserChangeListener> userChangeListeners = new ArrayList<UserChangeListener>();
+	private List<UserChangeObserver> userChangeListeners = new ArrayList<UserChangeObserver>();
 
 	/**
 	 * Liste von Usern, die momentan aktiv refresht werden. (eigtl nur der
@@ -72,18 +67,13 @@ public class RefreshingUserService implements UserService, EventObserver {
 	private SimConfiguration simConfiguration;
 
 	/**
-	 * Initialisiert, füllt das UserPanel.
+	 * Initialisiert.
 	 */
+	@PostConstruct
 	public void init() {
 		refreshUsers();
 		startUserRefreshingTimer();
-	}
-
-	@Override
-	public void eventReceived(Events event, Object o) {
-		if (Events.SERVER_INITIALISED.equals(event)) {
-			refresh(simConfiguration.getCurrentUser());
-		}
+		refresh(simConfiguration.getCurrentUser());
 	}
 
 	/**
@@ -185,29 +175,29 @@ public class RefreshingUserService implements UserService, EventObserver {
 
 		if (offlineUsers.size() > 0) {
 			if (userChangeListeners.size() > 0) {
-				for (UserChangeListener userChangeListener : userChangeListeners) {
-					userChangeListener.userRemoved(offlineUsers);
+				for (UserChangeObserver userChangeListener : userChangeListeners) {
+					userChangeListener.onUserRemoved(offlineUsers);
 				}
 			}
 		}
 
 		if (userChangeListeners.size() > 0) {
 			if (newUsers.size() > 0) {
-				for (UserChangeListener userChangeListener : userChangeListeners) {
-					userChangeListener.userAdded(newUsers);
+				for (UserChangeObserver userChangeListener : userChangeListeners) {
+					userChangeListener.onUserAdded(newUsers);
 				}
 			}
 		}
 	}
 
 	/**
-	 * Fuegt einen {@link UserChangeListener} ein.
+	 * Fuegt einen {@link UserChangeObserver} ein.
 	 *
 	 * @param listener
 	 *            Listener.
 	 */
 	@Override
-	public void addUserChangeListener(UserChangeListener listener) {
+	public void registerUserChangeObserver(UserChangeObserver listener) {
 		this.userChangeListeners.add(listener);
 	}
 
@@ -224,9 +214,7 @@ public class RefreshingUserService implements UserService, EventObserver {
 				public void run() {
 					try {
 						userDao.purgeOfflineUsers();
-
 						refreshUsers();
-						usersLoaded = true;
 					} catch (Exception e) {
 						// Sollte eine Exception fliegen, soll der Timer
 						// weiterlaufen.
@@ -282,7 +270,6 @@ public class RefreshingUserService implements UserService, EventObserver {
 
 	@Override
 	public void joinOrCreateRoom(String username, String roomName) {
-		List<User> u = roomDao.getUsers(roomName);
 		Room r = new Room();
 		r.setName(roomName);
 		r.setUsers(new ArrayList<User>());

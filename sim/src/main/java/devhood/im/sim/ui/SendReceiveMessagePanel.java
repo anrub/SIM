@@ -48,21 +48,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 
 import devhood.im.sim.config.SimConfiguration;
-import devhood.im.sim.event.EventDispatcher;
-import devhood.im.sim.event.EventObserver;
-import devhood.im.sim.event.Events;
-import devhood.im.sim.messages.BroadcastMessage;
-import devhood.im.sim.messages.FileSendRequestMessage;
-import devhood.im.sim.messages.Message;
-import devhood.im.sim.messages.RoomMessage;
-import devhood.im.sim.messages.SingleMessage;
-import devhood.im.sim.messages.UserStatusMessage;
-import devhood.im.sim.model.MessagingError;
+import devhood.im.sim.messages.MessageContext;
+import devhood.im.sim.messages.MessageFactory;
+import devhood.im.sim.messages.MessagingException;
+import devhood.im.sim.messages.model.BroadcastMessage;
+import devhood.im.sim.messages.model.FileSendRequestMessage;
+import devhood.im.sim.messages.model.Message;
+import devhood.im.sim.messages.model.RoomMessage;
+import devhood.im.sim.messages.model.SingleMessage;
+import devhood.im.sim.messages.model.UserStatusMessage;
 import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.User;
-import devhood.im.sim.service.MessageFactory;
-import devhood.im.sim.service.SimService;
 import devhood.im.sim.service.interfaces.UserService;
+import devhood.im.sim.ui.event.EventDispatcher;
+import devhood.im.sim.ui.event.EventObserver;
+import devhood.im.sim.ui.event.Events;
 import devhood.im.sim.ui.presenter.SmileyPanelPresenter;
 import devhood.im.sim.ui.util.SimpleTabCache;
 import devhood.im.sim.ui.util.SmileyFactory;
@@ -105,7 +105,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	private List<String> unreadTabsList = new ArrayList<String>();
 
 	@Inject
-	private SimService simService;
+	private MessageContext simService;
 
 	@Inject
 	private UserService userService;
@@ -394,8 +394,12 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		SwingWorker<Void, Message> worker = new SwingWorker<Void, Message>() {
 
 			@Override
-			protected Void doInBackground() throws Exception {
-				simService.sendMessage(newMessage);
+			protected Void doInBackground() {
+				try {
+					simService.sendMessage(newMessage);
+				} catch (MessagingException e) {
+					handleMessageSendFailed(e);
+				}
 				return null;
 			}
 
@@ -414,20 +418,18 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	@Override
 	public void eventReceived(Events event, Object o) {
+		if (Events.MESSAGE_RECEIVED.equals(event)) {
+			Message m = (Message) o;
+			handleMessageReceived(m);
+		}
 		if (Events.RECEIVER_SELECTED.equals(event)) {
 			handleReceiverSelected(o);
 			// Neue Nachricht verarbeiten.
-		} else if (Events.MESSAGE_RECEIVED.equals(event)) {
-			Message m = (Message) o;
-			handleMessageReceived(m);
-			// Zeigt die Tabbed pane mit dem entsprechenden Namen.
 		} else if (Events.SHOW_MSG_TABBED_PANE.equals(event)) {
 			focusTabPane((String) o);
 		} else if (Events.USER_OFFLINE_NOTICE.equals(event)
 				|| Events.USER_ONLINE_NOTICE.equals(event)) {
 			handleUserOnOffline(event, o);
-		} else if (Events.MESSAGE_SEND_FAILED.equals(event)) {
-			handleMessageSendFailed(o);
 		} else if (Events.MESSAGE_FILE_REQUEST_RECEIVED.equals(event)) {
 			handleFileRequestReceived(o);
 		}
@@ -458,9 +460,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		focusTabPane(tab);
 	}
 
-	private void handleMessageSendFailed(Object o) {
-		final MessagingError error = (MessagingError) o;
-		if (error.getMessage() instanceof SingleMessage) {
+	private void handleMessageSendFailed(final MessagingException error) {
+		if (error.getFailedMessage() instanceof SingleMessage) {
 			// Muss per invokeLater auf dem Swing Event Dispatcher Thread
 			// ausgefï¿½hrt werden siehe
 			// http://docs.oracle.com/javase/tutorial/uiswing/concurrency/dispatch.html
@@ -470,15 +471,14 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				@Override
 				public void run() {
 					JTextComponent textarea = nameTextAreaMap.get(error
-							.getMessage().getReceiver().get(0));
+							.getFailedMessage().getReceiver().get(0));
 					if (textarea == null) {
 						textarea = nameTextAreaMap.get(simConfiguration
 								.getStreamTabName());
 					}
 					outputStatusMessage(
 							"Fehler: Message konnte nicht gesendet werden: "
-									+ error.getException().getMessage(),
-							textarea);
+									+ error.getMessage(), textarea);
 				}
 			});
 		}

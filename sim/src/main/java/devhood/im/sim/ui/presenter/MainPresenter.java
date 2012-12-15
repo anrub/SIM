@@ -11,11 +11,11 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 
 import devhood.im.sim.config.SimConfiguration;
-import devhood.im.sim.event.EventDispatcher;
-import devhood.im.sim.event.EventObserver;
-import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Receiver;
 import devhood.im.sim.ui.SystemTrayManager;
+import devhood.im.sim.ui.event.EventDispatcher;
+import devhood.im.sim.ui.event.EventObserver;
+import devhood.im.sim.ui.event.Events;
 import devhood.im.sim.ui.view.MainView;
 
 @Named

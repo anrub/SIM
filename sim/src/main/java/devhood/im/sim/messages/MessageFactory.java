@@ -1,18 +1,14 @@
-package devhood.im.sim.service;
+package devhood.im.sim.messages;
 
-import devhood.im.sim.messages.BroadcastMessage;
-import devhood.im.sim.messages.Message;
-import devhood.im.sim.messages.RoomMessage;
-import devhood.im.sim.messages.SingleMessage;
-import devhood.im.sim.messages.UserStatusMessage;
+import devhood.im.sim.messages.model.BroadcastMessage;
+import devhood.im.sim.messages.model.Message;
+import devhood.im.sim.messages.model.RoomMessage;
+import devhood.im.sim.messages.model.SingleMessage;
+import devhood.im.sim.messages.model.UserStatusMessage;
 import devhood.im.sim.model.UserStatus;
 
 public class MessageFactory {
-	public static Message createMessage() {
-		return new Message();
-	}
-
-	public static RoomMessage createRoomMessage() {
+	public static Message createRoomMessage() {
 		return new RoomMessage();
 	}
 

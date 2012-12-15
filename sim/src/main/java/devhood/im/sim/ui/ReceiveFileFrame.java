@@ -23,8 +23,9 @@ import javax.swing.JProgressBar;
 
 import org.springframework.context.annotation.Scope;
 
-import devhood.im.sim.messages.FileSendRequestMessage;
-import devhood.im.sim.service.interfaces.FileMessageHandler;
+import devhood.im.sim.messages.MessagingException;
+import devhood.im.sim.messages.interfaces.FileMessageHandler;
+import devhood.im.sim.messages.model.FileSendRequestMessage;
 
 /**
  * Frame bei dem Empfang einer Datei.
@@ -112,10 +113,7 @@ public class ReceiveFileFrame extends JFrame {
 					final File file = fc.getSelectedFile();
 					id = fileSendRequestMessage.getId();
 
-					messageSender.acceptFileMessage(
-							fileSendRequestMessage.getSender(),
-							fileSendRequestMessage.getId(),
-							file.getAbsolutePath());
+					safeAcceptFileMessage(file);
 					ok.setVisible(false);
 
 					sizeToReceive = fileSendRequestMessage.getSize();
@@ -164,14 +162,36 @@ public class ReceiveFileFrame extends JFrame {
 
 				}
 			}
+
+			private void safeAcceptFileMessage(final File file) {
+				try {
+					messageSender.acceptFileMessage(
+							fileSendRequestMessage.getSender(),
+							fileSendRequestMessage.getId(),
+							file.getAbsolutePath());
+				} catch (MessagingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		});
 
 		reject.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				messageSender.rejectFileMessage(fileSendRequestMessage.getId(),
-						fileSendRequestMessage.getSender());
+				safeSendRejectFileMessage();
 				dispose();
+			}
+
+			private void safeSendRejectFileMessage() {
+				try {
+					messageSender.rejectFileMessage(
+							fileSendRequestMessage.getId(),
+							fileSendRequestMessage.getSender());
+				} catch (MessagingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 

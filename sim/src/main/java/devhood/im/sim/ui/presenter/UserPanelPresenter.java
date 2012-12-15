@@ -23,20 +23,20 @@ import javax.swing.JPopupMenu;
 import org.springframework.context.ApplicationContext;
 
 import devhood.im.sim.config.SimConfiguration;
-import devhood.im.sim.event.EventDispatcher;
-import devhood.im.sim.event.EventObserver;
-import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
-import devhood.im.sim.service.interfaces.UserChangeListener;
+import devhood.im.sim.service.interfaces.UserChangeObserver;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.SendFileFrame;
+import devhood.im.sim.ui.event.EventDispatcher;
+import devhood.im.sim.ui.event.EventObserver;
+import devhood.im.sim.ui.event.Events;
 import devhood.im.sim.ui.util.UiUtil;
 import devhood.im.sim.ui.view.UserPanelView;
 
 @Named
-public class UserPanelPresenter implements EventObserver {
+public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 
 	/**
 	 * RegistryService zum Zugriff auf Stammdaten, zb User.
@@ -62,17 +62,11 @@ public class UserPanelPresenter implements EventObserver {
 
 	}
 
-
 	@PostConstruct
 	public void init() {
-
-//		for (JLabel userLabel : getCurrentUsers()) {
-//			view.add(userLabel);
-//		}
-
-		setUserChangeListener();
 		startRefreshUsers();
 
+		userService.registerUserChangeObserver(this);
 	}
 
 	/**
@@ -168,28 +162,6 @@ public class UserPanelPresenter implements EventObserver {
 	}
 
 	/**
-	 * Fuegt den {@link UserChangeListener} an, der auf hinzufuegen/entfernen
-	 * von Usern reagiert.
-	 */
-	public void setUserChangeListener() {
-
-		userService.addUserChangeListener(new UserChangeListener() {
-
-			@Override
-			public void userRemoved(List<User> user) {
-				EventDispatcher.fireEvent(Events.USER_OFFLINE_NOTICE, user);
-				refreshUi();
-			}
-
-			@Override
-			public void userAdded(List<User> user) {
-				EventDispatcher.fireEvent(Events.USER_ONLINE_NOTICE, user);
-				refreshUi();
-			}
-		});
-	}
-
-	/**
 	 * Aktualisiert regelmaessig das UserPanel mit den aktuellen Daten aus dem
 	 * {@link UserService}.
 	 */
@@ -230,6 +202,18 @@ public class UserPanelPresenter implements EventObserver {
 		sendFileFrame.setToUser(user.getName());
 		sendFileFrame.showFrame();
 
+	}
+
+	@Override
+	public void onUserRemoved(List<User> user) {
+		EventDispatcher.fireEvent(Events.USER_OFFLINE_NOTICE, user);
+		refreshUi();
+	}
+
+	@Override
+	public void onUserAdded(List<User> user) {
+		EventDispatcher.fireEvent(Events.USER_ONLINE_NOTICE, user);
+		refreshUi();
 	}
 
 	public UserPanelView getView() {

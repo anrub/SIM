@@ -1,4 +1,4 @@
-package devhood.im.sim.service;
+package devhood.im.sim.messages.transport;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,25 +16,24 @@ import javax.inject.Named;
 import org.springframework.context.annotation.Scope;
 
 import devhood.im.sim.config.SimConfiguration;
-import devhood.im.sim.messages.FileSendAcceptMessage;
-import devhood.im.sim.messages.FileSendRejectMessage;
-import devhood.im.sim.messages.FileSendRequestMessage;
-import devhood.im.sim.messages.Message;
-import devhood.im.sim.service.interfaces.MessageCallback;
+import devhood.im.sim.messages.model.FileSendAcceptMessage;
+import devhood.im.sim.messages.model.FileSendRejectMessage;
+import devhood.im.sim.messages.model.FileSendRequestMessage;
+import devhood.im.sim.messages.model.Message;
+import devhood.im.sim.messages.observer.MessageObserver;
 
 /**
  * Bekommt vom ServerSocket eine neue Verbindung zu einem Client und empfängt
  * eine neue Message
- * 
+ *
  * @author Tobi
- * 
+ *
  */
 @Named("peerToPeerMessageReceiver")
 @Scope("prototype")
-public class P2PMessageReceiver implements Runnable {
+class P2PMessageReceiver implements Runnable {
 
-	private Logger log = Logger.getLogger(P2PMessageReceiver.class
-			.toString());
+	private Logger log = Logger.getLogger(P2PMessageReceiver.class.toString());
 
 	/**
 	 * Socket für den Server.
@@ -44,7 +43,7 @@ public class P2PMessageReceiver implements Runnable {
 	/**
 	 * Callback bei eingehender Nachricht.
 	 */
-	private MessageCallback messageCallback;
+	private MessageObserver messageCallback;
 
 	@Inject
 	private SimConfiguration simConfiguration;
@@ -55,19 +54,19 @@ public class P2PMessageReceiver implements Runnable {
 
 	/**
 	 * Initialisiert Worker mit aktueller Verbindung
-	 * 
+	 *
 	 * @param clientSocket
 	 *            aktuelle Client Socket Connection
 	 */
 	public P2PMessageReceiver(Socket clientSocket,
-			MessageCallback messageCallback) {
+			MessageObserver messageCallback) {
 		this.clientSocket = clientSocket;
 		this.messageCallback = messageCallback;
 	}
 
 	/**
 	 * Empfängt neue Nachricht eines Clients und ruft den
-	 * {@link MessageCallback} auf.
+	 * {@link MessageObserver} auf.
 	 */
 	@Override
 	public void run() {
@@ -104,15 +103,15 @@ public class P2PMessageReceiver implements Runnable {
 			} else {
 				if (message instanceof FileSendRequestMessage) {
 					messageCallback
-							.messageFileRequestReceivedCallback((FileSendRequestMessage) message);
+							.onFileSendRequestMessage((FileSendRequestMessage) message);
 				} else if (message instanceof FileSendAcceptMessage) {
 					messageCallback
-							.messageFileRequestAcceptCallback((FileSendAcceptMessage) message);
+							.onFileSendAcceptMessage((FileSendAcceptMessage) message);
 				} else if (message instanceof FileSendRejectMessage) {
 					messageCallback
-							.messageFileRequestRejectCallback((FileSendRejectMessage) message);
+							.onFileSendRejectMessage((FileSendRejectMessage) message);
 				} else if (message instanceof Message) {
-					messageCallback.messageReceivedCallback(message);
+					messageCallback.onMessage(message);
 				}
 			}
 
@@ -141,11 +140,11 @@ public class P2PMessageReceiver implements Runnable {
 		this.clientSocket = clientSocket;
 	}
 
-	public MessageCallback getMessageCallback() {
+	public MessageObserver getMessageCallback() {
 		return messageCallback;
 	}
 
-	public void setMessageCallback(MessageCallback messageCallback) {
+	public void setMessageCallback(MessageObserver messageCallback) {
 		this.messageCallback = messageCallback;
 	}
 }

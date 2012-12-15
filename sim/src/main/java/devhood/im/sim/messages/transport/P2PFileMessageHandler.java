@@ -1,4 +1,4 @@
-package devhood.im.sim.service;
+package devhood.im.sim.messages.transport;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
@@ -29,15 +30,14 @@ import javax.inject.Named;
 
 import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.dao.interfaces.UserDao;
-import devhood.im.sim.event.EventDispatcher;
-import devhood.im.sim.event.EventObserver;
-import devhood.im.sim.event.Events;
-import devhood.im.sim.messages.FileSendAcceptMessage;
-import devhood.im.sim.messages.FileSendRejectMessage;
-import devhood.im.sim.messages.FileSendRequestMessage;
-import devhood.im.sim.model.MessagingError;
+import devhood.im.sim.messages.MessageContext;
+import devhood.im.sim.messages.MessagingException;
+import devhood.im.sim.messages.interfaces.FileMessageHandler;
+import devhood.im.sim.messages.model.FileSendAcceptMessage;
+import devhood.im.sim.messages.model.FileSendRejectMessage;
+import devhood.im.sim.messages.model.FileSendRequestMessage;
+import devhood.im.sim.messages.observer.MessageObserverAdapter;
 import devhood.im.sim.model.User;
-import devhood.im.sim.service.interfaces.FileMessageHandler;
 
 /**
  * FileMessageHandler der Files sendet und empfaengt.
@@ -46,7 +46,8 @@ import devhood.im.sim.service.interfaces.FileMessageHandler;
  *
  */
 @Named
-public class P2PFileMessageHandler implements EventObserver, FileMessageHandler {
+class P2PFileMessageHandler extends MessageObserverAdapter implements
+		FileMessageHandler {
 
 	private Logger log = Logger.getLogger(P2PFileMessageHandler.class
 			.toString());
@@ -77,16 +78,22 @@ public class P2PFileMessageHandler implements EventObserver, FileMessageHandler 
 	@Inject
 	private UserDao userDao;
 
+	@Inject
+	private MessageContext messageContext;
+
 	private P2PMessageSender messageSender;
 
 	@Inject
 	public P2PFileMessageHandler(P2PMessageSender messageSender) {
-		this();
 		this.messageSender = messageSender;
 	}
 
 	public P2PFileMessageHandler() {
-		EventDispatcher.add(this);
+	}
+
+	@PostConstruct
+	public void init() {
+		messageContext.registerMessageObserver(this);
 	}
 
 	/**
@@ -99,7 +106,8 @@ public class P2PFileMessageHandler implements EventObserver, FileMessageHandler 
 	 *            Empfaenger der Ablehnung.
 	 */
 	@Override
-	public void rejectFileMessage(String id, String username) {
+	public void rejectFileMessage(String id, String username)
+			throws MessagingException {
 		FileSendRejectMessage m = new FileSendRejectMessage();
 		m.setId(id);
 		m.setText("Id: " + id + " wurde abgelehnt.");
@@ -125,7 +133,8 @@ public class P2PFileMessageHandler implements EventObserver, FileMessageHandler 
 	 *            user der die Anfrage bekommt.
 	 */
 	@Override
-	public String sendFileRequest(File file, String toUser) {
+	public String sendFileRequest(File file, String toUser)
+			throws MessagingException {
 		FileSendRequestMessage msg = new FileSendRequestMessage();
 		msg.getReceiver().add(toUser);
 		msg.setSender(simConfiguration.getUsername());
@@ -152,7 +161,8 @@ public class P2PFileMessageHandler implements EventObserver, FileMessageHandler 
 	 * @param m
 	 *            {@link FileSendAcceptMessage} msg.
 	 */
-	public void startFileSendTransfer(FileSendAcceptMessage m) {
+	public void startFileSendTransfer(FileSendAcceptMessage m)
+			throws MessagingException {
 		File file = idFileMap.get(m.getId());
 		idFileMap.remove(m.getId());
 
@@ -219,13 +229,11 @@ public class P2PFileMessageHandler implements EventObserver, FileMessageHandler 
 			} catch (UnknownHostException e) {
 				log.log(Level.SEVERE,
 						"message sent - client socket Verbindung Fehler", e);
-				EventDispatcher.fireEvent(Events.MESSAGE_SEND_FAILED,
-						new MessagingError(e, m));
+				throw new MessagingException(e, m);
+
 			} catch (IOException e) {
 				log.log(Level.SEVERE, "message sent - IOException: ", e);
-
-				EventDispatcher.fireEvent(Events.MESSAGE_SEND_FAILED,
-						new MessagingError(e, m));
+				throw new MessagingException(e, m);
 			}
 
 		}
@@ -262,7 +270,8 @@ public class P2PFileMessageHandler implements EventObserver, FileMessageHandler 
 	 *            Pfad, in dem die Datei abgelegt werden soll.
 	 */
 	@Override
-	public void acceptFileMessage(String username, String id, String storeInPath) {
+	public void acceptFileMessage(String username, String id, String storeInPath)
+			throws MessagingException {
 		FileSendAcceptMessage msg = new FileSendAcceptMessage();
 		msg.setId(id);
 		msg.setSender(simConfiguration.getUsername());
@@ -398,17 +407,20 @@ public class P2PFileMessageHandler implements EventObserver, FileMessageHandler 
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public void eventReceived(Events event, Object o) {
-		if (Events.MESSAGE_FILE_ACCEPT_RECEIVED.equals(event)) {
-			startFileSendTransfer((FileSendAcceptMessage) o);
-		} else if (Events.MESSAGE_FILE_REQUEST_RECEIVED.equals(event)) {
-			FileSendRequestMessage msg = (FileSendRequestMessage) o;
-			idFilenameMap.put(msg.getId(), msg.getFilename());
+	public void onFileSendAcceptMessage(FileSendAcceptMessage m) {
+		try {
+			startFileSendTransfer(m);
+		} catch (MessagingException e) {
+			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public void onFileSendRequestMessage(FileSendRequestMessage m) {
+		FileSendRequestMessage msg = m;
+		idFilenameMap.put(msg.getId(), msg.getFilename());
+
 	}
 
 }

@@ -26,6 +26,8 @@ public class UserPanelView extends JPanel {
 
 	private JPanel users = new JPanel();
 
+	private Map<String, JPanel> conversationNameComponentMap = new HashMap<String, JPanel>();
+
 	@PostConstruct
 	public void init() {
 		BoxLayout layout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
@@ -36,14 +38,12 @@ public class UserPanelView extends JPanel {
 
 		outlookBar.addBar("Stream", users);
 
-		outlookBar.addBar("#Webteam", users);
+		outlookBar.addBar("#ChatRoom", users);
 
 		JScrollPane scrollPane = new JScrollPane(outlookBar);
 
 		add(scrollPane);
 	}
-
-	private Map<String, JPanel> converationNameComponentMap = new HashMap<String, JPanel>();
 
 	public void addConversation(String name) {
 		JPanel component = new JPanel();
@@ -52,7 +52,7 @@ public class UserPanelView extends JPanel {
 
 		outlookBar.addBar(name, component);
 
-		converationNameComponentMap.put(name, component);
+		conversationNameComponentMap.put(name, component);
 	}
 
 	/**

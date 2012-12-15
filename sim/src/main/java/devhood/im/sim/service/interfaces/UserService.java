@@ -22,12 +22,12 @@ public interface UserService {
 	public boolean isUserOnline(String user);
 
 	/**
-	 * Fuegt einen {@link UserChangeListener} ein.
+	 * Fuegt einen {@link UserChangeObserver} ein.
 	 *
 	 * @param listener
 	 *            listener
 	 */
-	public void addUserChangeListener(UserChangeListener listener);
+	public void registerUserChangeObserver(UserChangeObserver listener);
 
 	/**
 	 * Loescht inaktive User aus dem System.

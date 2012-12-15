@@ -9,6 +9,9 @@ import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -18,8 +21,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
+import org.springframework.context.annotation.Scope;
+
 import devhood.im.sim.messages.FileSendRequestMessage;
-import devhood.im.sim.service.interfaces.MessageSenderService;
+import devhood.im.sim.service.interfaces.FileMessageHandler;
 
 /**
  * Frame bei dem Empfang einer Datei.
@@ -27,6 +32,8 @@ import devhood.im.sim.service.interfaces.MessageSenderService;
  * @author flo
  *
  */
+@Named
+@Scope("prototype")
 public class ReceiveFileFrame extends JFrame {
 
 	private JPanel panel = new JPanel();
@@ -40,8 +47,10 @@ public class ReceiveFileFrame extends JFrame {
 	private Timer progressTimer = new Timer();
 	private TimerTask updateProgressBarTask;
 
-	private MessageSenderService messageSender;
+	@Inject
+	private FileMessageHandler messageSender;
 
+	@PostConstruct
 	public void init() {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setAlwaysOnTop(true);
@@ -209,11 +218,11 @@ public class ReceiveFileFrame extends JFrame {
 		this.fileSendRequestMessage = fileSendRequestMessage;
 	}
 
-	public MessageSenderService getMessageSender() {
+	public FileMessageHandler getMessageSender() {
 		return messageSender;
 	}
 
-	public void setMessageSender(MessageSenderService messageSender) {
+	public void setMessageSender(FileMessageHandler messageSender) {
 		this.messageSender = messageSender;
 	}
 }

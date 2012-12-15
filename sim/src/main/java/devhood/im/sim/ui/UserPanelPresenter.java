@@ -28,7 +28,6 @@ import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
-import devhood.im.sim.service.interfaces.MessageSenderService;
 import devhood.im.sim.service.interfaces.UserChangeListener;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.util.UiUtil;
@@ -212,12 +211,7 @@ public class UserPanelPresenter {
 			return;
 		}
 
-		SendFileFrame sendFileFrame = new SendFileFrame();
-		sendFileFrame.init();
-		// sendFileFrame.
-
-		sendFileFrame.setMessageSender(applicationContext
-				.getBean(MessageSenderService.class));
+		SendFileFrame sendFileFrame = applicationContext.getBean(SendFileFrame.class);
 		sendFileFrame.setFileToSend(file);
 		sendFileFrame.setToUser(user.getName());
 		sendFileFrame.showFrame();

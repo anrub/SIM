@@ -2,7 +2,7 @@ package devhood.im.sim.service.interfaces;
 
 import java.io.File;
 
-public interface FileMessageSender {
+public interface FileMessageHandler {
 
 	/**
 	 * Sendet eine Anfrage zum Dateiversand.

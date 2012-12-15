@@ -35,26 +35,21 @@ import devhood.im.sim.event.Events;
 import devhood.im.sim.messages.FileSendAcceptMessage;
 import devhood.im.sim.messages.FileSendRejectMessage;
 import devhood.im.sim.messages.FileSendRequestMessage;
-import devhood.im.sim.messages.Message;
-import devhood.im.sim.messages.RoomMessage;
 import devhood.im.sim.model.MessagingError;
 import devhood.im.sim.model.User;
-import devhood.im.sim.service.interfaces.MessageCallback;
-import devhood.im.sim.service.interfaces.TextMessageSender;
-import devhood.im.sim.service.interfaces.MessageSenderService;
+import devhood.im.sim.service.interfaces.FileMessageHandler;
 
 /**
- * MessageSender der auch Files senden kann.
+ * FileMessageHandler der Files sendet und empfaengt.
  *
  * @author flo
  *
  */
 @Named
-public class P2PFileMessageSender implements EventObserver,
-		MessageSenderService {
+public class P2PFileMessageHandler implements EventObserver, FileMessageHandler {
 
-	private Logger log = Logger
-			.getLogger(P2PFileMessageSender.class.toString());
+	private Logger log = Logger.getLogger(P2PFileMessageHandler.class
+			.toString());
 
 	/**
 	 * Filetransfer: Mapping id->File.
@@ -82,15 +77,15 @@ public class P2PFileMessageSender implements EventObserver,
 	@Inject
 	private UserDao userDao;
 
-	private TextMessageSender messageSender;
+	private P2PMessageSender messageSender;
 
 	@Inject
-	public P2PFileMessageSender(P2PMessageSender messageSender) {
+	public P2PFileMessageHandler(P2PMessageSender messageSender) {
 		this();
 		this.messageSender = messageSender;
 	}
 
-	public P2PFileMessageSender() {
+	public P2PFileMessageHandler() {
 		EventDispatcher.add(this);
 	}
 
@@ -118,7 +113,7 @@ public class P2PFileMessageSender implements EventObserver,
 		idReceiverMap.remove(m.getId());
 
 		User u = userDao.getUser(username);
-		sendMessage(u, m);
+		messageSender.sendMessage(u, m);
 	}
 
 	/**
@@ -143,7 +138,7 @@ public class P2PFileMessageSender implements EventObserver,
 		msg.setId(id);
 
 		User u = userDao.getUser(toUser);
-		sendMessage(u, msg);
+		messageSender.sendMessage(u, msg);
 
 		idFileMap.put(msg.getId(), file);
 
@@ -279,7 +274,7 @@ public class P2PFileMessageSender implements EventObserver,
 
 		msg.setText(id);
 		User u = userDao.getUser(username);
-		sendMessage(u, msg);
+		messageSender.sendMessage(u, msg);
 	}
 
 	/**
@@ -414,26 +409,6 @@ public class P2PFileMessageSender implements EventObserver,
 			FileSendRequestMessage msg = (FileSendRequestMessage) o;
 			idFilenameMap.put(msg.getId(), msg.getFilename());
 		}
-	}
-
-	@Override
-	public void sendMessage(User user, Message message) {
-		messageSender.sendMessage(user, message);
-	}
-
-	@Override
-	public void sendMessageToAllUsers(Message message) {
-		messageSender.sendMessageToAllUsers(message);
-	}
-
-	@Override
-	public void setMessageCallback(MessageCallback messageCallback) {
-		messageSender.setMessageCallback(messageCallback);
-	}
-
-	@Override
-	public void sendMessageToRoom(RoomMessage m) {
-		messageSender.sendMessageToRoom(m);
 	}
 
 }

@@ -8,6 +8,9 @@ import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,12 +19,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
+import org.springframework.context.annotation.Scope;
+
 import devhood.im.sim.event.EventDispatcher;
 import devhood.im.sim.event.EventObserver;
 import devhood.im.sim.event.Events;
 import devhood.im.sim.messages.FileSendAcceptMessage;
 import devhood.im.sim.messages.FileSendRejectMessage;
-import devhood.im.sim.service.interfaces.MessageSenderService;
+import devhood.im.sim.service.interfaces.FileMessageHandler;
 
 /**
  * Frame in dem der Versand von Dateien behandelt wird.
@@ -29,6 +34,8 @@ import devhood.im.sim.service.interfaces.MessageSenderService;
  * @author flo
  *
  */
+@Named
+@Scope("prototype")
 public class SendFileFrame extends JFrame implements EventObserver {
 	/**
 	 * Timer zum aktualisierem der Progressbar.
@@ -51,13 +58,15 @@ public class SendFileFrame extends JFrame implements EventObserver {
 	/**
 	 * Service der den versand durchfuehrt.
 	 */
-	private MessageSenderService messageSender;
+	@Inject
+	private FileMessageHandler messageSender;
 
 	/**
 	 * Id des Versands in diesem Frame.
 	 */
 	private String id;
 
+	@PostConstruct
 	public void init() {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setAlwaysOnTop(true);
@@ -198,11 +207,11 @@ public class SendFileFrame extends JFrame implements EventObserver {
 		this.toUser = toUser;
 	}
 
-	public MessageSenderService getMessageSender() {
+	public FileMessageHandler getMessageSender() {
 		return messageSender;
 	}
 
-	public void setMessageSender(MessageSenderService messageSender) {
+	public void setMessageSender(FileMessageHandler messageSender) {
 		this.messageSender = messageSender;
 	}
 

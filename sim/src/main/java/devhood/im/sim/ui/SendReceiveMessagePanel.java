@@ -63,7 +63,6 @@ import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.MessageFactory;
 import devhood.im.sim.service.SimService;
-import devhood.im.sim.service.interfaces.MessageSenderService;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.util.SimpleTabCache;
 import devhood.im.sim.ui.util.SmileyFactory;
@@ -442,10 +441,8 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	}
 
 	private void handleFileRequestReceived(Object o) {
-		ReceiveFileFrame frame = new ReceiveFileFrame();
-		frame.init();
-		frame.setMessageSender(applicationContext
-				.getBean(MessageSenderService.class));
+		ReceiveFileFrame frame = applicationContext
+				.getBean(ReceiveFileFrame.class);
 		frame.setFileSendRequestMessage((FileSendRequestMessage) o);
 		frame.showFrame();
 	}

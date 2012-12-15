@@ -17,7 +17,7 @@ import devhood.im.sim.messages.RoomMessage;
 import devhood.im.sim.messages.SingleMessage;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.MessageCallback;
-import devhood.im.sim.service.interfaces.MessageSenderService;
+import devhood.im.sim.service.interfaces.TextMessageSender;
 import devhood.im.sim.service.interfaces.UserService;
 
 /**
@@ -38,7 +38,7 @@ public class SimService {
 	 * Sender von Messages.
 	 */
 	@Inject
-	private MessageSenderService messageSender;
+	private TextMessageSender textMmessageSender;
 
 	/**
 	 * Service rund um User Informationen.
@@ -51,7 +51,7 @@ public class SimService {
 	 */
 	public void init() {
 		// TODO Sender kriegt Callback zum empfangen?! klingt komisch.
-		messageSender.setMessageCallback(new MessageCallback() {
+		textMmessageSender.setMessageCallback(new MessageCallback() {
 
 			@Override
 			public void messageReceivedCallback(Message m) {
@@ -92,13 +92,13 @@ public class SimService {
 	public void sendMessage(Message m) {
 		List<String> receiver = m.getReceiver();
 		if (m instanceof RoomMessage) {
-			messageSender.sendMessageToRoom((RoomMessage) m);
+			textMmessageSender.sendMessageToRoom((RoomMessage) m);
 		} else if (m instanceof SingleMessage) {
 			String singleReceiver = receiver.get(0);
 			User user = userService.getUser(singleReceiver);
-			messageSender.sendMessage(user, m);
+			textMmessageSender.sendMessage(user, m);
 		} else if (m instanceof BroadcastMessage) {
-			messageSender.sendMessageToAllUsers(m);
+			textMmessageSender.sendMessageToAllUsers(m);
 		}
 
 	}

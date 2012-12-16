@@ -95,7 +95,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	private Map<String, JTextArea> inputTextAreaMap = new HashMap<String, JTextArea>();
 
 	/**
-	 * DateFormat.
+	 * DateFormat.addtab
 	 */
 	private DateFormat df = new SimpleDateFormat("HH:mm:ss");
 

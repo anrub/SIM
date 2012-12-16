@@ -2,11 +2,10 @@ package devhood.im.sim.ui;
 
 //Import the GUI classes
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -14,9 +13,9 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import devhood.im.sim.ui.action.Action;
 
 /**
  * A JOutlookBar provides a component that is similar to a JTabbedPane, but
@@ -42,7 +41,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 	 * A LinkedHashMap of bars: we use a linked hash map to preserve the order
 	 * of the bars
 	 */
-	private Map bars = new LinkedHashMap();
+	private Map<String, BarInfo> bars = new LinkedHashMap<String, BarInfo>();
 
 	/**
 	 * The currently visible bar (zero-based index)
@@ -53,6 +52,10 @@ public class JOutlookBar extends JPanel implements ActionListener {
 	 * A place-holder for the currently visible component
 	 */
 	private JComponent visibleComponent = null;
+
+	private Map<JComponent, String> componentNameMap = new HashMap<JComponent, String>();
+
+	private Map<String, JComponent> nameComponent = new HashMap<String, JComponent>();
 
 	/**
 	 * Creates a new JOutlookBar; after which you should make repeated calls to
@@ -76,7 +79,17 @@ public class JOutlookBar extends JPanel implements ActionListener {
 		BarInfo barInfo = new BarInfo(name, component);
 		barInfo.getButton().addActionListener(this);
 		this.bars.put(name, barInfo);
+		this.componentNameMap.put(component, name);
+		this.nameComponent.put(name, component);
 		render();
+	}
+
+	public String getSelectedBarName() {
+		return componentNameMap.get(getVisibleComponent());
+	}
+
+	public JComponent getBar(String name) {
+		return nameComponent.get(name);
 	}
 
 	/**
@@ -153,7 +166,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 		BarInfo barInfo = null;
 		for (int i = 0; i < topBars; i++) {
 			String barName = (String) itr.next();
-			barInfo = (BarInfo) this.bars.get(barName);
+			barInfo = this.bars.get(barName);
 			this.topPanel.add(barInfo.getButton());
 		}
 		this.topPanel.validate();
@@ -176,7 +189,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 		bottomLayout.setRows(bottomBars);
 		for (int i = 0; i < bottomBars; i++) {
 			String barName = (String) itr.next();
-			barInfo = (BarInfo) this.bars.get(barName);
+			barInfo = this.bars.get(barName);
 			this.bottomPanel.add(barInfo.getButton());
 		}
 		this.bottomPanel.validate();
@@ -194,10 +207,11 @@ public class JOutlookBar extends JPanel implements ActionListener {
 		int currentBar = 0;
 		for (Iterator i = this.bars.keySet().iterator(); i.hasNext();) {
 			String barName = (String) i.next();
-			BarInfo barInfo = (BarInfo) this.bars.get(barName);
+			BarInfo barInfo = this.bars.get(barName);
 			if (barInfo.getButton() == e.getSource()) {
 				// Found the selected button
 				this.visibleBar = currentBar;
+				onBarSelected();
 				render();
 				return;
 			}
@@ -205,34 +219,21 @@ public class JOutlookBar extends JPanel implements ActionListener {
 		}
 	}
 
+	private Action onbarSelectedAction;
+
 	/**
-	 * Debug, dummy method
+	 * um auf auswahl zu reagieren.
+	 *
+	 * @param action
 	 */
-	public static JPanel getDummyPanel(String name) {
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel(name, JLabel.CENTER));
-		return panel;
+	public void setOnBarSelected(Action action) {
+		onbarSelectedAction = action;
 	}
 
-	/**
-	 * Debug test...
-	 */
-	public static void main(String[] args) {
-		JFrame frame = new JFrame("JOutlookBar Test");
-		JOutlookBar outlookBar = new JOutlookBar();
-		outlookBar.addBar("One", getDummyPanel("One"));
-		outlookBar.addBar("Two", getDummyPanel("Two"));
-		outlookBar.addBar("Three", getDummyPanel("Three"));
-		outlookBar.addBar("Four", getDummyPanel("Four"));
-		outlookBar.addBar("Five", getDummyPanel("Five"));
-		outlookBar.setVisibleBar(2);
-		frame.getContentPane().add(outlookBar);
-
-		frame.setSize(800, 600);
-		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		frame.setLocation(d.width / 2 - 400, d.height / 2 - 300);
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	private void onBarSelected() {
+		if (onbarSelectedAction != null) {
+			onbarSelectedAction.execute();
+		}
 	}
 
 	/**
@@ -324,5 +325,17 @@ public class JOutlookBar extends JPanel implements ActionListener {
 		public JComponent getComponent() {
 			return this.component;
 		}
+	}
+
+	public JComponent getVisibleComponent() {
+		return visibleComponent;
+	}
+
+	public void setVisibleComponent(JComponent visibleComponent) {
+		this.visibleComponent = visibleComponent;
+	}
+
+	public boolean hasBar(String name) {
+		return bars.containsKey(name);
 	}
 }

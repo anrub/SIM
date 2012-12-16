@@ -11,9 +11,7 @@ import java.net.UnknownHostException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
@@ -25,15 +23,13 @@ import javax.swing.UIManager;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import devhood.im.sim.model.User;
-import devhood.im.sim.model.UserStatus;
 import devhood.im.sim.ui.util.UiUtil;
 
 /**
  * Konfigurationsklasse von SIM.
- * 
+ *
  * @author flo
- * 
+ *
  */
 @Named("simConfiguration")
 public class SimConfiguration {
@@ -53,7 +49,7 @@ public class SimConfiguration {
 	private String smileyOverview = "https://github.com/anrub/SIM/wiki";
 
 	/**
-	 * 
+	 *
 	 */
 	private int maxLinkLength = 75;
 
@@ -124,8 +120,8 @@ public class SimConfiguration {
 	/**
 	 * Icon des Konfigframes.
 	 */
-	private ImageIcon configurationFrameIcon = UiUtil
-			.createImageIcon("/images/configIcon.png","Konfiguration");
+	private ImageIcon configurationFrameIcon = UiUtil.createImageIcon(
+			"/images/configIcon.png", "Konfiguration");
 
 	/**
 	 * Look and Feel - default System Laf.
@@ -159,11 +155,6 @@ public class SimConfiguration {
 	private boolean showStatusInTray = true;
 
 	/**
-	 * Eigener User.
-	 */
-	private User currentUser;
-
-	/**
 	 * Welches UserDao soll genutzt werden? "jtds","single","sqlite" Default:
 	 * jtds
 	 */
@@ -180,59 +171,24 @@ public class SimConfiguration {
 	 */
 	private int minColorDiff = 70;
 
-	
-
 	/**
 	 * Key der Konfig ob die Tabs gecached werde sollen.
 	 */
 	public static String TAB_CACHE_KEY = "userColor";
-	
-	/**
-	 * Gibt den eigenen Benutzer zurueck.
-	 * 
-	 * @return eigener User.
-	 */
-	public User getCurrentUser() {
-		if (currentUser == null) {
-			String x = UserStatus.AVAILABLE.toString();
-			currentUser = new User(username, getCurrentHostname(), getPort(),
-					new Date(), getKeyPair().getPublic(),
-					UserStatus.AVAILABLE.getText());
-		} else {
-			currentUser.setAddress(getCurrentHostname());
-			currentUser.setPort(getPort());
-			currentUser.setPublicKey(getKeyPair().getPublic());
-			currentUser.setName(username);
-		}
-
-		return currentUser;
-	}
 
 	/**
 	 * Ermittelt die aktuelle IP..
-	 * 
+	 *
 	 * @return ip
 	 */
-	protected String getCurrentHostname() {
+	public String getCurrentHostname() {
 		String myHostName = null;
 		try {
 			String hostName = InetAddress.getLocalHost().getHostName();
-
-			// InetAddress addrs[] = null;
-			//
-			// addrs = InetAddress.getAllByName(hostName);
-			//
-			// for (InetAddress addr : addrs) {
-			// if (!addr.isLoopbackAddress() && addr.isSiteLocalAddress()) {
-			// myIp = addr.getHostAddress();
-			// }
-			// }
-
 			myHostName = hostName;
-
 		} catch (UnknownHostException e) {
 			log.log(Level.SEVERE,
-					"Lokale IP Adresse konnte nicht ermittelt werden!", e);
+					"Lokaler Hostname konnte nicht ermittelt werden!", e);
 		}
 
 		return myHostName;
@@ -240,7 +196,7 @@ public class SimConfiguration {
 
 	/**
 	 * Gibt das KeyPair fuer die Verschluesselung der Messages zurueck.
-	 * 
+	 *
 	 * @return KeyPair
 	 */
 	public KeyPair getKeyPair() {
@@ -262,7 +218,7 @@ public class SimConfiguration {
 	/**
 	 * Versucht die Versionsnummer aus der Datei /SIM_VERSION.txt aus dem
 	 * classpath zu lesen.
-	 * 
+	 *
 	 * @return Versionsnummer oder ""
 	 */
 	public String getVersion() {
@@ -287,7 +243,7 @@ public class SimConfiguration {
 
 	/**
 	 * Gibt das attribut USER_COLOR_KEY aus den preferences zurueck.
-	 * 
+	 *
 	 * @return usercolor
 	 */
 	public String getUserColor() {
@@ -300,7 +256,7 @@ public class SimConfiguration {
 
 	/**
 	 * Gibt die User color als int[] R,G,B zurueck.
-	 * 
+	 *
 	 * @return color
 	 */
 	public int[] getUserColorRgb(String color) {
@@ -325,7 +281,7 @@ public class SimConfiguration {
 
 	/**
 	 * Gibt die User color zurueck.
-	 * 
+	 *
 	 * @return color
 	 */
 	public int[] getUserColorRgb() {
@@ -336,7 +292,7 @@ public class SimConfiguration {
 
 	/**
 	 * Gibt den RGB Wert zurueck.
-	 * 
+	 *
 	 * @return RGB int Wert.
 	 */
 	public int getUserColorRgbValue() {
@@ -346,7 +302,7 @@ public class SimConfiguration {
 
 	/**
 	 * Gibt den hexwert von c 2 stellig zurueck.
-	 * 
+	 *
 	 * @param c
 	 *            c
 	 * @return hexwert
@@ -362,7 +318,7 @@ public class SimConfiguration {
 
 	/**
 	 * Speichert die usercolor in den Preferences.
-	 * 
+	 *
 	 * @param c
 	 *            Color.
 	 */
@@ -383,10 +339,10 @@ public class SimConfiguration {
 	public Preferences getPreferences() {
 		return Preferences.userNodeForPackage(SimConfiguration.class);
 	}
-	
+
 	/**
 	 * Gibt zurueck ob der TabCache aktiviert ist oder nicht.
-	 * 
+	 *
 	 * @return true/false;
 	 */
 	public boolean isTabCacheEnabled() {

@@ -1,7 +1,5 @@
 package devhood.im.sim.ui.action;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -31,11 +29,11 @@ public class UpdateUserStatusAction implements Action {
 	public void execute() {
 		UserStatus status = UserStatus.get(statusText);
 
-		simConfiguration.getCurrentUser().setStatusType(status);
+		userService.getCurrentUser().setStatusType(status);
 		Message statusMessage = MessageFactory.createUserStatusMessage(status);
-		statusMessage.setSender(simConfiguration.getCurrentUser().getName());
+		statusMessage.setSender(userService.getCurrentUser().getName());
 
-		List<User> users = userService.getUsers();
+		Iterable<User> users = userService.getUsers();
 		for (User user : users) {
 			statusMessage.getReceiver().add(user.getName());
 		}

@@ -7,9 +7,9 @@ import java.util.Map;
 
 /**
  * Status eines Benutzers.
- * 
+ *
  * @author flo
- * 
+ *
  */
 public enum UserStatus implements Serializable {
 
@@ -50,6 +50,7 @@ public enum UserStatus implements Serializable {
 		return lookup.get(text);
 	}
 
+	@Override
 	public String toString() {
 		return text;
 	}

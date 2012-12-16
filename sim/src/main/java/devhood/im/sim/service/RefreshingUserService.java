@@ -11,11 +11,15 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
+
 import devhood.im.sim.config.SimConfiguration;
-import devhood.im.sim.dao.interfaces.RoomDao;
-import devhood.im.sim.dao.interfaces.UserDao;
 import devhood.im.sim.model.Room;
 import devhood.im.sim.model.User;
+import devhood.im.sim.model.UserStatus;
+import devhood.im.sim.repository.RoomDao;
+import devhood.im.sim.repository.UserDao;
 import devhood.im.sim.service.interfaces.UserChangeObserver;
 import devhood.im.sim.service.interfaces.UserService;
 
@@ -26,7 +30,8 @@ import devhood.im.sim.service.interfaces.UserService;
  * @author flo
  *
  */
-@Named("refreshingUserService")
+@Named
+@Transactional
 public class RefreshingUserService implements UserService {
 
 	/**
@@ -66,6 +71,9 @@ public class RefreshingUserService implements UserService {
 	@Inject
 	private SimConfiguration simConfiguration;
 
+	@Inject
+	private ApplicationContext applicationContext;
+
 	/**
 	 * Initialisiert.
 	 */
@@ -73,7 +81,46 @@ public class RefreshingUserService implements UserService {
 	public void init() {
 		refreshUsers();
 		startUserRefreshingTimer();
-		refresh(simConfiguration.getCurrentUser());
+		refresh(getCurrentUser());
+	}
+
+	private User currentUser;
+
+	@Override
+	public User getCurrentUser() {
+		if (currentUser == null) {
+			currentUser = getUser(simConfiguration.getUsername());
+
+			if (currentUser == null) {
+				currentUser = new User(simConfiguration.getUsername(),
+						simConfiguration.getCurrentHostname(),
+						simConfiguration.getPort(), new Date(),
+						simConfiguration.getKeyPair().getPublic(),
+						UserStatus.AVAILABLE.getText());
+			}
+		} else {
+			currentUser.setAddress(simConfiguration.getCurrentHostname());
+			currentUser.setPort(simConfiguration.getPort());
+			currentUser.setPublicKey(simConfiguration.getKeyPair().getPublic());
+			currentUser.setName(simConfiguration.getUsername());
+			userDao.save(currentUser);
+		}
+
+		if (currentUser.getRooms().size() == 0) {
+			Room stream = roomDao.findByName(simConfiguration
+					.getStreamTabName());
+			if (stream == null) {
+				stream = new Room();
+			}
+			stream.getUsers().add(currentUser);
+			stream.setName(simConfiguration.getStreamTabName());
+
+			userDao.save(currentUser);
+			currentUser.getRooms().add(stream);
+			roomDao.save(stream);
+		}
+
+		return currentUser;
 	}
 
 	/**
@@ -95,8 +142,8 @@ public class RefreshingUserService implements UserService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<User> getUsers() {
-		return userDao.getUsers();
+	public Iterable<User> getUsers() {
+		return userDao.findAll();
 	}
 
 	/**
@@ -104,7 +151,7 @@ public class RefreshingUserService implements UserService {
 	 */
 	@Override
 	public void refreshUsers() {
-		List<User> users = userDao.getUsers();
+		Iterable<User> users = userDao.findAll();
 		processNewOrRemovedUsers(users);
 	}
 
@@ -119,9 +166,13 @@ public class RefreshingUserService implements UserService {
 				@Override
 				public void run() {
 					try {
-						User u = simConfiguration.getCurrentUser();
-						u.setLastaccess(new Date());
-						userDao.refresh(u);
+						User u = getUser(simConfiguration.getUsername());
+						if (u == null) {
+							u = getCurrentUser();
+						}
+
+						u.setLastaccess(new Date().getTime());
+						userDao.save(u);
 					} catch (Exception e) {
 						// Wenn Exception fliegt, soll der Timer weiterlaufen.
 						e.printStackTrace();
@@ -144,13 +195,14 @@ public class RefreshingUserService implements UserService {
 	 * @param users
 	 *            aktuelle USer aus der dB.
 	 */
-	public void processNewOrRemovedUsers(List<User> users) {
+	public void processNewOrRemovedUsers(Iterable<User> users) {
 		List<User> newUsers = new ArrayList<User>();
 		List<User> offlineUsers = new ArrayList<User>();
+		List<User> usersList = getList(users);
 
 		for (User u : users) {
 			if (currentUsers.size() == 0) {
-				currentUsers.addAll(users);
+				currentUsers.addAll(usersList);
 				continue;
 			}
 
@@ -165,7 +217,7 @@ public class RefreshingUserService implements UserService {
 		Iterator<User> it = currentUsers.iterator();
 		while (it.hasNext()) {
 			User user = it.next();
-			if (!users.contains(user)) {
+			if (!usersList.contains(user)) {
 				if (!simConfiguration.getUsername().equals(user.getName())) {
 					offlineUsers.add(user);
 				}
@@ -188,6 +240,15 @@ public class RefreshingUserService implements UserService {
 				}
 			}
 		}
+	}
+
+	public List getList(Iterable o) {
+		List users = new ArrayList();
+		for (Object u : o) {
+			users.add(u);
+		}
+
+		return users;
 	}
 
 	/**
@@ -213,7 +274,9 @@ public class RefreshingUserService implements UserService {
 				@Override
 				public void run() {
 					try {
-						userDao.purgeOfflineUsers();
+						UserService s = applicationContext
+								.getBean(UserService.class);
+						s.purgeOfflineUsers();
 						refreshUsers();
 					} catch (Exception e) {
 						// Sollte eine Exception fliegen, soll der Timer
@@ -251,8 +314,9 @@ public class RefreshingUserService implements UserService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Transactional
 	public void purgeOfflineUsers() {
-		userDao.purgeOfflineUsers();
+		userDao.purgeOfflineUsers(new Date().getTime() - (60 * 5000 * 1));
 	}
 
 	/**
@@ -260,21 +324,38 @@ public class RefreshingUserService implements UserService {
 	 */
 	@Override
 	public void logout(String username) {
-		userDao.logout(username);
+		User u = getUser(username);
+		userDao.deleteRelationsToRoom(u.getId());
+		userDao.deleteByUsername(username);
 	}
 
 	@Override
 	public User getUser(String name) {
-		return userDao.getUser(name);
+		return userDao.findByTheUsersName(name);
 	}
 
 	@Override
+	@Transactional
 	public void joinOrCreateRoom(String username, String roomName) {
-		Room r = new Room();
+		Room r = roomDao.findByName(roomName);
+		if (r == null) {
+			r = new Room();
+		}
 		r.setName(roomName);
-		r.setUsers(new ArrayList<User>());
-		r.getUsers().add(getUser(username));
-		roomDao.saveOrUpdate(r);
+		User user = getUser(username);
+
+		if (!r.getUsers().contains(user)) {
+			r.getUsers().add(getUser(username));
+			roomDao.save(r);
+		}
+
+	}
+
+	@Override
+	public List<Room> getRooms() {
+		Iterable<Room> roomsIt = roomDao.findAll();
+		List<Room> rooms = getList(roomsIt);
+		return rooms;
 	}
 
 }

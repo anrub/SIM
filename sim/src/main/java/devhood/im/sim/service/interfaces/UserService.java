@@ -2,6 +2,7 @@ package devhood.im.sim.service.interfaces;
 
 import java.util.List;
 
+import devhood.im.sim.model.Room;
 import devhood.im.sim.model.User;
 
 /**
@@ -11,6 +12,8 @@ import devhood.im.sim.model.User;
  *
  */
 public interface UserService {
+
+	public User getCurrentUser();
 
 	/**
 	 * Gibt zurueck ob der User aktuell online ist.
@@ -68,7 +71,7 @@ public interface UserService {
 	 *
 	 * @return User.
 	 */
-	public List<User> getUsers();
+	public Iterable<User> getUsers();
 
 	/**
 	 * Loggt den User aus.
@@ -79,4 +82,6 @@ public interface UserService {
 	public void logout(String username);
 
 	public void joinOrCreateRoom(String username, String name);
+
+	List<Room> getRooms();
 }

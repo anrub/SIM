@@ -99,6 +99,6 @@ public class SimMain {
 		context.load("classpath:/devhood/im/sim/applicationContext.xml");
 		context.refresh();
 		MainPresenter presenter = context.getBean(MainPresenter.class);
-		presenter.init();
+		presenter.initMain();
 	}
 }

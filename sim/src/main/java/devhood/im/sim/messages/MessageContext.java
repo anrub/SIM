@@ -55,7 +55,7 @@ public class MessageContext {
 	 * Initialisiert die Bean.
 	 */
 	public void init() {
-		userService.refresh(simConfiguration.getCurrentUser());
+		userService.refresh(userService.getCurrentUser());
 
 		textMmessageSender.setMessageCallback(new MessageObserver() {
 

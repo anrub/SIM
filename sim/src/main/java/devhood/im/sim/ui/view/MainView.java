@@ -46,6 +46,7 @@ public class MainView {
 	/**
 	 * Das UserPanel.
 	 */
+	@Inject
 	private UserPanelView userPanel;
 
 	/**

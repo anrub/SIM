@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -24,14 +25,14 @@ import javax.inject.Named;
 import org.springframework.context.ApplicationContext;
 
 import devhood.im.sim.config.SimConfiguration;
-import devhood.im.sim.dao.interfaces.RoomDao;
-import devhood.im.sim.dao.interfaces.UserDao;
 import devhood.im.sim.messages.MessagingException;
 import devhood.im.sim.messages.interfaces.TextMessageSender;
 import devhood.im.sim.messages.model.Message;
 import devhood.im.sim.messages.model.RoomMessage;
 import devhood.im.sim.messages.observer.MessageObserver;
 import devhood.im.sim.model.User;
+import devhood.im.sim.repository.RoomDao;
+import devhood.im.sim.repository.UserDao;
 
 /**
  * Peer to Peer Implementierung des {@link MessageService}. Dieser Service
@@ -113,9 +114,19 @@ class P2PMessageSender implements Runnable, TextMessageSender {
 	 */
 	@Override
 	public void sendMessageToAllUsers(final Message m) {
-		List<User> users = userDao.getUsers();
+		Iterable<User> usersIt = userDao.findAll();
+		List<User> users = getList(usersIt);
 
 		sendMessage(m, users);
+	}
+
+	public List<User> getList(Iterable<User> user) {
+		List<User> users = new ArrayList<User>();
+		for (User u : user) {
+			users.add(u);
+		}
+
+		return users;
 	}
 
 	@Override

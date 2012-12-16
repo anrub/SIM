@@ -1,26 +1,43 @@
 package devhood.im.sim.model;
 
-import java.io.Serializable;
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
 /**
  * User.
- * 
+ *
  * @author flo
- * 
+ *
  */
-public class User implements Serializable {
+@Entity
+public class User extends AbstractPersistable<Long> {
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "RoomUser", joinColumns = { @JoinColumn(nullable = true, name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(nullable = true, name = "room_id", referencedColumnName = "id") })
+	@Column(nullable = true)
+	private List<Room> rooms = new ArrayList<Room>();
 
 	/**
 	 * name of user. to send the messages to the user.
 	 */
+	@Column(unique = true)
 	private String name;
 
 	/**
 	 * letzter zugriff des users.
 	 */
-	private Date lastaccess;
+	private long lastaccess;
 
 	/**
 	 * address.
@@ -35,6 +52,7 @@ public class User implements Serializable {
 	/**
 	 * public key eines users
 	 */
+	@Column(columnDefinition = "blob")
 	private PublicKey publicKey;
 
 	/**
@@ -42,12 +60,16 @@ public class User implements Serializable {
 	 */
 	private int port;
 
+	public User() {
+
+	}
+
 	public User(String name, String address, int port, Date lastaccess,
 			PublicKey publicKey, String statusType) {
 		this.name = name;
 		this.address = address;
 		this.port = port;
-		this.lastaccess = lastaccess;
+		this.lastaccess = lastaccess.getTime();
 		this.publicKey = publicKey;
 		this.statusType = UserStatus.get(statusType);
 	}
@@ -78,6 +100,7 @@ public class User implements Serializable {
 		return name.hashCode();
 	}
 
+	@Override
 	public String toString() {
 		return name;
 	}
@@ -106,14 +129,6 @@ public class User implements Serializable {
 		this.name = name;
 	}
 
-	public Date getLastaccess() {
-		return lastaccess;
-	}
-
-	public void setLastaccess(Date lastaccess) {
-		this.lastaccess = lastaccess;
-	}
-
 	public UserStatus getStatusType() {
 		return statusType;
 	}
@@ -128,6 +143,22 @@ public class User implements Serializable {
 
 	public void setPublicKey(PublicKey publicKey) {
 		this.publicKey = publicKey;
+	}
+
+	public long getLastaccess() {
+		return lastaccess;
+	}
+
+	public void setLastaccess(long lastaccess) {
+		this.lastaccess = lastaccess;
+	}
+
+	public List<Room> getRooms() {
+		return rooms;
+	}
+
+	public void setRooms(List<Room> rooms) {
+		this.rooms = rooms;
 	}
 
 }

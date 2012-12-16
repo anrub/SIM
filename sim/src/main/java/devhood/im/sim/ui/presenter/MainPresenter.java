@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.model.Receiver;
+import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.SystemTrayManager;
 import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.EventObserver;
@@ -43,7 +44,7 @@ public class MainPresenter implements EventObserver {
 		EventDispatcher.add(this);
 	}
 
-	public void init() {
+	public void initMain() {
 		String title = simConfiguration.getApplicationName() + " - "
 				+ simConfiguration.getUsername() + " "
 				+ simConfiguration.getVersion();
@@ -73,7 +74,8 @@ public class MainPresenter implements EventObserver {
 			}
 		});
 
-		mainView.setUserPanel(userPanelPresenter.getView());
+		userService.joinOrCreateRoom(simConfiguration.getUsername(),
+				simConfiguration.getStreamTabName());
 	}
 
 	/**
@@ -95,14 +97,23 @@ public class MainPresenter implements EventObserver {
 		});
 	}
 
+	@Inject
+	private UserService userService;
+
 	/**
 	 * Empfaengt Events von {@link EventDispatcher}.
 	 */
 	@Override
 	public void eventReceived(Events event, Object o) {
 		if (Events.SHOW_FRAME.equals(event)) {
+
 			mainView.setVisible(true);
 			mainView.focus();
+		} else if (Events.RECEIVER_SELECTED.equals(event)) {
+			Receiver r = (Receiver) o;
+			if (r.isRoom()) {
+				userPanelPresenter.openRoom(r.getName());
+			}
 		}
 	}
 }

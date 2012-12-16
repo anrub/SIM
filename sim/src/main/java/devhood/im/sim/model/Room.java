@@ -1,12 +1,23 @@
 package devhood.im.sim.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 
-public class Room {
+import org.springframework.data.jpa.domain.AbstractPersistable;
+
+@Entity
+public class Room extends AbstractPersistable<Long> {
+	@Column(unique = true)
 	private String name;
 
-	private List<User> users;
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "rooms")
+	@Column(nullable = true)
+	private List<User> users = new ArrayList<User>();
 
 	public String getName() {
 		return name;

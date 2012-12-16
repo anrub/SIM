@@ -29,7 +29,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import devhood.im.sim.config.SimConfiguration;
-import devhood.im.sim.dao.interfaces.UserDao;
 import devhood.im.sim.messages.MessageContext;
 import devhood.im.sim.messages.MessagingException;
 import devhood.im.sim.messages.interfaces.FileMessageHandler;
@@ -38,6 +37,7 @@ import devhood.im.sim.messages.model.FileSendRejectMessage;
 import devhood.im.sim.messages.model.FileSendRequestMessage;
 import devhood.im.sim.messages.observer.MessageObserverAdapter;
 import devhood.im.sim.model.User;
+import devhood.im.sim.repository.UserDao;
 
 /**
  * FileMessageHandler der Files sendet und empfaengt.
@@ -120,7 +120,7 @@ class P2PFileMessageHandler extends MessageObserverAdapter implements
 		}
 		idReceiverMap.remove(m.getId());
 
-		User u = userDao.getUser(username);
+		User u = userDao.findByTheUsersName(username);
 		messageSender.sendMessage(u, m);
 	}
 
@@ -146,7 +146,7 @@ class P2PFileMessageHandler extends MessageObserverAdapter implements
 		String id = UUID.randomUUID().toString();
 		msg.setId(id);
 
-		User u = userDao.getUser(toUser);
+		User u = userDao.findByTheUsersName(toUser);
 		messageSender.sendMessage(u, msg);
 
 		idFileMap.put(msg.getId(), file);
@@ -171,7 +171,7 @@ class P2PFileMessageHandler extends MessageObserverAdapter implements
 			Socket socket = null;
 
 			try {
-				User user = userDao.getUser(m.getSender());
+				User user = userDao.findByTheUsersName(m.getSender());
 				String addr = user.getAddress();
 				socket = new Socket(addr, userport);
 
@@ -282,7 +282,7 @@ class P2PFileMessageHandler extends MessageObserverAdapter implements
 		msg.setPortToUser(port);
 
 		msg.setText(id);
-		User u = userDao.getUser(username);
+		User u = userDao.findByTheUsersName(username);
 		messageSender.sendMessage(u, msg);
 	}
 

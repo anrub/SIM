@@ -8,15 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import devhood.im.sim.model.Room;
 import devhood.im.sim.repository.RoomRepository;
-import devhood.im.sim.service.interfaces.UserService;
 
-/**
- * Dieser {@link UserService} aktualisiert sich selbst und den uebergebenen User
- * regelmaessg.
- *
- * @author flo
- *
- */
 @Named
 @Transactional
 public class DeleteOrphanRooms {

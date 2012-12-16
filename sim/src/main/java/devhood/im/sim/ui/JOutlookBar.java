@@ -15,7 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import devhood.im.sim.ui.action.Action;
+import devhood.im.sim.ui.action.BarAction;
 
 /**
  * A JOutlookBar provides a component that is similar to a JTabbedPane, but
@@ -204,35 +204,44 @@ public class JOutlookBar extends JPanel implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() instanceof JButton) {
+			String title = ((JButton) e.getSource()).getText();
+			showTabSelection(title, true);
+		}
+	}
+
+	public void showTabSelection(String buttonName, boolean executeListeners) {
 		int currentBar = 0;
 		for (Iterator i = this.bars.keySet().iterator(); i.hasNext();) {
 			String barName = (String) i.next();
 			BarInfo barInfo = this.bars.get(barName);
-			if (barInfo.getButton() == e.getSource()) {
+			if (barInfo.getName().equals(buttonName)) {
 				// Found the selected button
 				this.visibleBar = currentBar;
-				onBarSelected();
 				render();
+				if (executeListeners) {
+					onBarSelected(barName);
+				}
 				return;
 			}
 			currentBar++;
 		}
 	}
 
-	private Action onbarSelectedAction;
+	private BarAction onbarSelectedAction;
 
 	/**
 	 * um auf auswahl zu reagieren.
 	 *
 	 * @param action
 	 */
-	public void setOnBarSelected(Action action) {
+	public void setOnBarSelected(BarAction action) {
 		onbarSelectedAction = action;
 	}
 
-	private void onBarSelected() {
+	private void onBarSelected(String barName) {
 		if (onbarSelectedAction != null) {
-			onbarSelectedAction.execute();
+			onbarSelectedAction.execute(barName);
 		}
 	}
 

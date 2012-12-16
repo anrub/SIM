@@ -11,7 +11,7 @@ import devhood.im.sim.messages.model.FileSendAcceptMessage;
 public enum Events {
 	SHOW_CONFIGURATION_FRAME,
 	/**
-	 * Ein User wurde ausgewaehlt. Parameter: String username
+	 * Ein Empfaenger wurde ausgewaehlt. Parameter: Receiver receiver
 	 */
 	RECEIVER_SELECTED,
 	/**

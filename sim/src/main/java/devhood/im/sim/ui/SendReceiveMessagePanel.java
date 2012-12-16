@@ -29,7 +29,6 @@ import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -64,6 +63,7 @@ import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.EventObserver;
 import devhood.im.sim.ui.event.Events;
 import devhood.im.sim.ui.presenter.SmileyPanelPresenter;
+import devhood.im.sim.ui.presenter.UserPanelPresenter;
 import devhood.im.sim.ui.util.SimpleTabCache;
 import devhood.im.sim.ui.util.SmileyFactory;
 import devhood.im.sim.ui.util.Splitter;
@@ -125,13 +125,14 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	@Inject
 	private SmileyPanelPresenter smileyPanelPresenter;
 
+	@Inject
+	private UserPanelPresenter userPanelPresenter;
+
 	/**
 	 * Simpler cache für die tabs.
 	 */
 	@Inject
 	private SimpleTabCache nameTimelineCache;
-
-	private final JFrame smileyFrame = new JFrame();
 
 	public void init() {
 		setLayout(new BorderLayout());
@@ -151,7 +152,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			}
 		});
 
-		addToTabPane(simConfiguration.getStreamTabName(), null, false);
+		addToTabPane(simConfiguration.getStreamTabName(), null, true);
 
 		// Lay out the buttons from left to right.
 		JPanel buttonPane = new JPanel(new BorderLayout());
@@ -424,7 +425,6 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		}
 		if (Events.RECEIVER_SELECTED.equals(event)) {
 			handleReceiverSelected(o);
-			// Neue Nachricht verarbeiten.
 		} else if (Events.SHOW_MSG_TABBED_PANE.equals(event)) {
 			focusTabPane((String) o);
 		} else if (Events.USER_OFFLINE_NOTICE.equals(event)
@@ -806,6 +806,14 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 				setIconToReadMessages(title);
 
 				scrollToBottom(title);
+
+				ConversationTab tab = (ConversationTab) src
+						.getSelectedComponent();
+
+				if (tab.isRoom()) {
+					userPanelPresenter.openRoom(title);
+				}
+
 			}
 		});
 

@@ -31,7 +31,7 @@ import devhood.im.sim.messages.model.Message;
 import devhood.im.sim.messages.model.RoomMessage;
 import devhood.im.sim.messages.observer.MessageObserver;
 import devhood.im.sim.model.User;
-import devhood.im.sim.repository.RoomDao;
+import devhood.im.sim.repository.RoomRepository;
 import devhood.im.sim.repository.UserDao;
 
 /**
@@ -50,7 +50,7 @@ class P2PMessageSender implements Runnable, TextMessageSender {
 	private Logger log = Logger.getLogger(P2PMessageSender.class.toString());
 
 	@Inject
-	private RoomDao roomDao;
+	private RoomRepository roomDao;
 
 	@Inject
 	private UserDao userDao;

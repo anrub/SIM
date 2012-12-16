@@ -48,8 +48,6 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	private MouseListener sendFileListener;
 	private MouseListener selectUserMouseListener;
 
-	private JPopupMenu popupMenu = new JPopupMenu();
-
 	private ApplicationContext applicationContext;
 
 	@PostConstruct
@@ -119,6 +117,7 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 				showSendFileFrame(user, userLabel);
 			}
 		});
+		JPopupMenu popupMenu = new JPopupMenu();
 		popupMenu.add(sendFileItem);
 
 		userLabel.addMouseListener(new SelectUserLabelMouseListener(user
@@ -162,14 +161,6 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	public void setSelectUserMouseListener(MouseListener mouseAdapter) {
 		this.selectUserMouseListener = mouseAdapter;
 
-	}
-
-	public JPopupMenu getPopupMenu() {
-		return popupMenu;
-	}
-
-	public void setPopupMenu(JPopupMenu popupMenu) {
-		this.popupMenu = popupMenu;
 	}
 
 	public MouseListener getSendFileListener() {

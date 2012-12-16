@@ -8,6 +8,7 @@ import java.util.TimerTask;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.swing.SwingUtilities;
 
 import org.springframework.context.ApplicationContext;
 
@@ -17,7 +18,7 @@ import devhood.im.sim.model.Room;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.UserChangeObserver;
 import devhood.im.sim.service.interfaces.UserService;
-import devhood.im.sim.ui.action.Action;
+import devhood.im.sim.ui.action.BarAction;
 import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.EventObserver;
 import devhood.im.sim.ui.event.Events;
@@ -58,13 +59,24 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 
 		userService.registerUserChangeObserver(this);
 
-		view.getOutlookBar().setOnBarSelected(new Action() {
+		view.getOutlookBar().setOnBarSelected(new BarAction() {
+			@Override
+			public void execute(String barName) {
+				SwingUtilities.invokeLater(new Runnable() {
+
+					@Override
+					public void run() {
+						Receiver r = new Receiver();
+						r.setName(view.getSelectedRoom());
+						r.setRoom(true);
+						EventDispatcher.fireEvent(Events.RECEIVER_SELECTED, r);
+					}
+				});
+			}
+
 			@Override
 			public void execute() {
-				Receiver r = new Receiver();
-				r.setName(view.getSelectedRoom());
-				r.setRoom(true);
-				EventDispatcher.fireEvent(Events.RECEIVER_SELECTED, r);
+
 			}
 		});
 
@@ -76,6 +88,8 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 
 		if (!view.hasRoom(r)) {
 			view.addRoom(r);
+		} else {
+			view.getOutlookBar().showTabSelection(name, false);
 		}
 	}
 

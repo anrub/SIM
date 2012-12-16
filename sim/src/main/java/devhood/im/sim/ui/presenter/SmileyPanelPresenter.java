@@ -1,6 +1,5 @@
 package devhood.im.sim.ui.presenter;
 
-import java.awt.GridBagConstraints;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,17 +44,10 @@ public class SmileyPanelPresenter {
 
 	public void initPanel() {
 		initialized = true;
-
-		final GridBagConstraints c = new GridBagConstraints();
-
-		int x = 0;
-		int y = 0;
-
 		List<String> sortedKeyList = initSmileys();
 
 		for (String key : sortedKeyList) {
-			c.gridx = x;
-			c.gridy = y;
+
 			String smileyCode = key.replace("&gt;", ">").replace("&lt;", "<")
 					.replace("&amp;", "&").replace("&quot;", "\"");
 			ImageIcon img = UiUtil
@@ -66,18 +58,9 @@ public class SmileyPanelPresenter {
 							smileyCode);
 			JLabel smileyLabel = new JLabel(img);
 			smileyLabel.setToolTipText(smileyCode);
-
 			smileyLabel.addMouseListener(smileyIconMouseListener);
 
-			if (y < 10) {
-				y++;
-			} else {
-				y = 0;
-
-				x++;
-			}
-
-			view.addSmiley(smileyLabel, c);
+			view.addSmiley(smileyLabel);
 		}
 
 		view.revalidate();

@@ -18,7 +18,7 @@ import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.model.Room;
 import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
-import devhood.im.sim.repository.RoomDao;
+import devhood.im.sim.repository.RoomRepository;
 import devhood.im.sim.repository.UserDao;
 import devhood.im.sim.service.interfaces.UserChangeObserver;
 import devhood.im.sim.service.interfaces.UserService;
@@ -46,7 +46,7 @@ public class RefreshingUserService implements UserService {
 	private UserDao userDao;
 
 	@Inject
-	private RoomDao roomDao;
+	private RoomRepository roomDao;
 
 	/**
 	 * Listener wird aufgerufen, wenn User im System hinzu- oder wegkommen.
@@ -324,8 +324,6 @@ public class RefreshingUserService implements UserService {
 	 */
 	@Override
 	public void logout(String username) {
-		User u = getUser(username);
-		userDao.deleteRelationsToRoom(u.getId());
 		userDao.deleteByUsername(username);
 	}
 
@@ -347,6 +345,10 @@ public class RefreshingUserService implements UserService {
 		if (!r.getUsers().contains(user)) {
 			r.getUsers().add(getUser(username));
 			roomDao.save(r);
+		}
+		if (!user.getRooms().contains(r)) {
+			user.getRooms().add(r);
+			userDao.save(user);
 		}
 
 	}

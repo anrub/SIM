@@ -101,6 +101,7 @@ public class MainView {
 
 		frame.getContentPane().add(splitPane, BorderLayout.CENTER);
 
+		frame.setPreferredSize(new Dimension(750, 450));
 		// 4. Size the frame.
 		frame.pack();
 	}

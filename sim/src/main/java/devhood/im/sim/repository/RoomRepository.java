@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import devhood.im.sim.model.Room;
 import devhood.im.sim.model.User;
 
-public interface RoomDao extends CrudRepository<Room, Long> {
+public interface RoomRepository extends CrudRepository<Room, Long> {
 
 	@Transactional(readOnly = true)
 	@Query("select r.users from Room r where r.name = ?1")

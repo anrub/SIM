@@ -21,6 +21,11 @@ public class SmileyView extends JFrame {
 
 	private JPanel smileyPanel = new JPanel();
 
+	private GridBagConstraints c = new GridBagConstraints();
+
+	private int x = 0;
+	private int y = 0;
+
 	@Inject
 	public SmileyFactory smileyFactory;
 
@@ -33,8 +38,19 @@ public class SmileyView extends JFrame {
 		smileyPanel.setLayout(layout);
 	}
 
-	public void addSmiley(JLabel smileyLabel, GridBagConstraints c) {
+	public void addSmiley(JLabel smileyLabel) {
+		c.gridx = x;
+		c.gridy = y;
 		smileyPanel.add(smileyLabel, c);
+
+		if (y < 10) {
+			y++;
+		} else {
+			y = 0;
+
+			x++;
+		}
+
 	}
 
 	@Override

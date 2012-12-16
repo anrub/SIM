@@ -1,45 +1,91 @@
 package devhood.im.sim.repository;
 
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import devhood.im.sim.model.User;
 
 /**
- * RegistryService - Liefert persistente Daten, z.B. User.
+ * UserDao Wrapper, benoetigt um manytomany relation zu loeschen.
  *
  * @author flo
  *
  */
-public interface UserDao extends CrudRepository<User, Long> {
+@Named
+public class UserDao {
+	@Inject
+	private UserRepository userRepository;
 
-	/**
-	 * Such einen User anhand seines Namens
-	 *
-	 * @return User Benutzer oder null
-	 */
-	@Transactional(readOnly = true)
-	@Query("from User u where u.name = ?1")
-	public User findByTheUsersName(String name);
+	@PersistenceContext
+	private EntityManager em;
 
-	@Modifying
-	@Transactional
-	@Query("delete from User u where u.name = ?1")
-	public void deleteByUsername(String username);
+	public void deleteByUsername(String username) {
+		User u = userRepository.findByTheUsersName(username);
+		deleteRelationsToRoom(u.getId());
+		userRepository.deleteByUsername(username);
+	}
 
-	@Modifying
-	@Transactional
-	@Query(nativeQuery = true, value = "delete from roomuser where user_id = ?1")
-	public void deleteRelationsToRoom(Long userid);
+	public User findByTheUsersName(String name) {
+		return userRepository.findByTheUsersName(name);
+	}
 
-	/**
-	 * Loescht die offline user aus der db.
-	 */
-	@Modifying
-	@Transactional
-	@Query("delete from User u where u.lastaccess <= ?1")
-	public void purgeOfflineUsers(long dateTime);
+	public void deleteRelationsToRoom(Long userid) {
+		userRepository.deleteRelationsToRoom(userid);
+	}
+
+	public <S extends User> S save(S entity) {
+		return userRepository.save(entity);
+	}
+
+	public void purgeOfflineUsers(long dateTime) {
+		List<User> users = userRepository.getInactiveUser(dateTime);
+		for (User u : users) {
+			deleteByUsername(u.getName());
+		}
+	}
+
+	public <S extends User> Iterable<S> save(Iterable<S> entities) {
+		return userRepository.save(entities);
+	}
+
+	public User findOne(Long id) {
+		return userRepository.findOne(id);
+	}
+
+	public boolean exists(Long id) {
+		return userRepository.exists(id);
+	}
+
+	public Iterable<User> findAll() {
+		return userRepository.findAll();
+	}
+
+	public Iterable<User> findAll(Iterable<Long> ids) {
+		return userRepository.findAll(ids);
+	}
+
+	public long count() {
+		return userRepository.count();
+	}
+
+	public void delete(Long id) {
+		userRepository.delete(id);
+	}
+
+	public void delete(User entity) {
+		userRepository.delete(entity);
+	}
+
+	public void delete(Iterable<? extends User> entities) {
+		userRepository.delete(entities);
+	}
+
+	public void deleteAll() {
+		userRepository.deleteAll();
+	}
 
 }

@@ -160,7 +160,7 @@ public class SystemTrayManager implements EventObserver {
 	}
 
 	/**
-	 * Zeigt die nachricht im systray an, wenn die Option nicht gew�hlt wurde.
+	 * Zeigt die nachricht im systray an, wenn die Option nicht gewählt wurde.
 	 *
 	 * @param title
 	 *            Titel
@@ -194,7 +194,7 @@ public class SystemTrayManager implements EventObserver {
 		}
 
 		/**
-		 * Bei click auf Exit, Anwendung schlie�en.
+		 * Bei click auf Exit, Anwendung schließen.
 		 */
 		@Override
 		public void actionPerformed(ActionEvent arg0) {

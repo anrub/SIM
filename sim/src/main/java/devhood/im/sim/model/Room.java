@@ -1,7 +1,7 @@
 package devhood.im.sim.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +17,7 @@ public class Room extends AbstractPersistable<Long> {
 
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "rooms")
 	@Column(nullable = true)
-	private List<User> users = new ArrayList<User>();
+	private Set<User> users = new HashSet<User>();
 
 	public String getName() {
 		return name;
@@ -27,11 +27,11 @@ public class Room extends AbstractPersistable<Long> {
 		this.name = name;
 	}
 
-	public List<User> getUsers() {
+	public Set<User> getUsers() {
 		return users;
 	}
 
-	public void setUsers(List<User> users) {
+	public void setUsers(Set<User> users) {
 		this.users = users;
 	}
 }

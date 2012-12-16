@@ -1,5 +1,7 @@
 package devhood.im.sim.ui.presenter;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -53,6 +55,8 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 
 	}
 
+	private Receiver currentReceiver;
+
 	@PostConstruct
 	public void init() {
 		startRefreshUsers();
@@ -69,6 +73,7 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 						Receiver r = new Receiver();
 						r.setName(view.getSelectedRoom());
 						r.setRoom(true);
+						currentReceiver = r;
 						EventDispatcher.fireEvent(Events.RECEIVER_SELECTED, r);
 					}
 				});
@@ -80,6 +85,40 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 			}
 		});
 
+		view.setQuitChatMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+
+					@Override
+					public void run() {
+
+						userService.quitRoom(currentReceiver.getName());
+						EventDispatcher.fireEvent(Events.CLOSE_TAB,
+								currentReceiver.getName());
+						view.getOutlookBar().showTabSelection(
+								simConfiguration.getStreamTabName(), true);
+					}
+				});
+			}
+		});
+
+		view.getOutlookBar().setFirstBarLabel(
+				simConfiguration.getStreamTabName());
+
+		view.setFirstBarLabel(simConfiguration.getStreamTabName());
+		view.setNoQuitPossibleRoom(simConfiguration.getStreamTabName());
+	}
+
+	public Receiver getCurrentReceiver() {
+		if (currentReceiver == null) {
+			String title = view.getOutlookBar().getTitleOfButton(0);
+			currentReceiver = new Receiver();
+			currentReceiver.setRoom(true);
+			currentReceiver.setName(title);
+		}
+		return currentReceiver;
 	}
 
 	public void openRoom(String name) {
@@ -91,6 +130,10 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 		} else {
 			view.getOutlookBar().showTabSelection(name, false);
 		}
+		Receiver receiver = new Receiver();
+		receiver.setRoom(true);
+		receiver.setName(name);
+		currentReceiver = receiver;
 	}
 
 	/**
@@ -140,13 +183,11 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 	@Override
 	public void onUserRemoved(List<User> user) {
 		EventDispatcher.fireEvent(Events.USER_OFFLINE_NOTICE, user);
-		refreshUi();
 	}
 
 	@Override
 	public void onUserAdded(List<User> user) {
 		EventDispatcher.fireEvent(Events.USER_ONLINE_NOTICE, user);
-		refreshUi();
 	}
 
 	public UserPanelView getView() {

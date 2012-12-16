@@ -6,9 +6,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -24,6 +27,7 @@ import javax.swing.UIManager;
 import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.model.UserStatus;
 import devhood.im.sim.ui.SendReceiveMessagePanel;
+import devhood.im.sim.ui.action.Action;
 import devhood.im.sim.ui.action.UpdateUserStatusAction;
 import devhood.im.sim.ui.util.UiUtil;
 
@@ -42,6 +46,8 @@ public class MainView {
 	private JFrame frame;
 
 	private JMenu statusMenu;
+
+	private JMenu exitMenu;
 
 	/**
 	 * Das UserPanel.
@@ -194,25 +200,44 @@ public class MainView {
 				simConfiguration.getConfigurationFrameIcon());
 		configMenu.add(configMenuItem);
 
+		JMenu lafMenu = createLayoutChangingMenu();
+		menuBar.add(lafMenu);
+
+		configMenu.add(lafMenu);
+
 		menuBar.add(menuNotifications);
 		// menuBar.add(menuPrivacy);
 
-		JMenu layout = createLayoutChangingMenu();
-		menuBar.add(layout);
 
 		menuBar.add(statusMenu);
-
 		menuBar.add(configMenu);
-		menuBar.add(aboutMenu);
 
 		JMenu roomMenu = new JMenu("Raum");
-		openRoom = new JMenuItem("Raum öffnen");
+		openRoom = new JMenuItem("Raum Ã¶ffnen");
 		roomMenu.add(openRoom);
 
 		menuBar.add(roomMenu);
 
+		// shift to the right
+		menuBar.add(Box.createGlue());
+
+		exitMenu = new JMenu("Exit");
+		menuBar.add(exitMenu);
+
+		menuBar.add(aboutMenu);
+
+
 		frame.setJMenuBar(menuBar);
 
+	}
+
+	public void addExitMenuActionListener(final Action action) {
+		exitMenu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				action.execute();
+			}
+		});
 	}
 
 	public void addConfigMenuActionListener(ActionListener actionListener) {

@@ -84,4 +84,6 @@ public interface UserService {
 	public void joinOrCreateRoom(String username, String name);
 
 	List<Room> getRooms();
+
+	public void quitRoom(String name);
 }

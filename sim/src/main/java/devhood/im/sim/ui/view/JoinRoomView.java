@@ -22,7 +22,7 @@ public class JoinRoomView extends JDialog {
 		JLabel label = new JLabel("Name:");
 
 		roomName = new JTextField(20);
-		button = new JButton("Raum öffnen");
+		button = new JButton("Raum Ã¶ffnen");
 
 		p.add(label);
 		p.add(roomName);

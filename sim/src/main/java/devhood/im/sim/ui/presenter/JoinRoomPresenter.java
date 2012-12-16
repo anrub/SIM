@@ -6,6 +6,8 @@ import java.awt.event.MouseEvent;
 import javax.inject.Named;
 import javax.swing.JFrame;
 
+import org.apache.commons.lang3.StringUtils;
+
 import devhood.im.sim.ui.view.JoinRoomView;
 
 @Named
@@ -22,7 +24,9 @@ public class JoinRoomPresenter {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				roomName = view.getRoomName();
-				view.dispose();
+				if (!StringUtils.isEmpty(roomName)) {
+					view.dispose();
+				}
 			}
 		});
 

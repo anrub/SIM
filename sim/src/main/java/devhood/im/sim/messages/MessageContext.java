@@ -3,6 +3,7 @@ package devhood.im.sim.messages;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -54,31 +55,11 @@ public class MessageContext {
 	/**
 	 * Initialisiert die Bean.
 	 */
+	@PostConstruct
 	public void init() {
 		userService.refresh(userService.getCurrentUser());
 
-		textMmessageSender.setMessageCallback(new MessageObserver() {
-
-			@Override
-			public void onMessage(Message m) {
-				notifyOnMessage(m);
-			}
-
-			@Override
-			public void onFileSendRequestMessage(FileSendRequestMessage m) {
-				notifyOnFileSendRequestMessage(m);
-			}
-
-			@Override
-			public void onFileSendRejectMessage(FileSendRejectMessage m) {
-				notifyOnFileSendRejectMessage(m);
-			}
-
-			@Override
-			public void onFileSendAcceptMessage(FileSendAcceptMessage m) {
-				notifyOnFileSendAcceptMessage(m);
-			}
-		});
+		textMmessageSender.setMessageCallback(new DelegatingMessageObserver());
 	}
 
 	private void notifyOnFileSendAcceptMessage(FileSendAcceptMessage m) {
@@ -123,6 +104,28 @@ public class MessageContext {
 			textMmessageSender.sendMessageToAllUsers(m);
 		}
 
+	}
+
+	class DelegatingMessageObserver implements MessageObserver {
+		@Override
+		public void onMessage(Message m) {
+			notifyOnMessage(m);
+		}
+
+		@Override
+		public void onFileSendRequestMessage(FileSendRequestMessage m) {
+			notifyOnFileSendRequestMessage(m);
+		}
+
+		@Override
+		public void onFileSendRejectMessage(FileSendRejectMessage m) {
+			notifyOnFileSendRejectMessage(m);
+		}
+
+		@Override
+		public void onFileSendAcceptMessage(FileSendAcceptMessage m) {
+			notifyOnFileSendAcceptMessage(m);
+		}
 	}
 
 }

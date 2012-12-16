@@ -25,6 +25,7 @@ import devhood.im.sim.messages.model.RoomMessage;
 import devhood.im.sim.messages.model.SingleMessage;
 import devhood.im.sim.messages.model.UserStatusMessage;
 import devhood.im.sim.service.interfaces.UserService;
+import devhood.im.sim.ui.action.ExitAction;
 import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.EventObserver;
 import devhood.im.sim.ui.event.Events;
@@ -54,6 +55,9 @@ public class SystemTrayManager implements EventObserver {
 	@Inject
 	private SimConfiguration simConfiguration;
 
+	@Inject
+	private ExitAction exitAction;
+
 	@PostConstruct
 	public void init() {
 		EventDispatcher.add(this);
@@ -68,7 +72,7 @@ public class SystemTrayManager implements EventObserver {
 
 		MenuItem item = new MenuItem("Exit");
 		item.setLabel("Exit");
-		item.addActionListener(new ExitAction(userService));
+		item.addActionListener(exitAction);
 
 		popup.add(item);
 
@@ -186,21 +190,4 @@ public class SystemTrayManager implements EventObserver {
 		systrayIcon.addMouseListener(listener);
 	}
 
-	class ExitAction implements ActionListener {
-		private UserService userService;
-
-		public ExitAction(UserService userService) {
-			this.userService = userService;
-		}
-
-		/**
-		 * Bei click auf Exit, Anwendung schließen.
-		 */
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			userService.logout(simConfiguration.getUsername());
-			System.exit(0);
-
-		}
-	}
 }

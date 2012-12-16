@@ -88,23 +88,21 @@ public class RefreshingUserService implements UserService {
 
 	@Override
 	public User getCurrentUser() {
-		if (currentUser == null) {
-			currentUser = getUser(simConfiguration.getUsername());
+		currentUser = getUser(simConfiguration.getUsername());
 
-			if (currentUser == null) {
-				currentUser = new User(simConfiguration.getUsername(),
-						simConfiguration.getCurrentHostname(),
-						simConfiguration.getPort(), new Date(),
-						simConfiguration.getKeyPair().getPublic(),
-						UserStatus.AVAILABLE.getText());
-			}
+		if (currentUser == null) {
+			currentUser = new User(simConfiguration.getUsername(),
+					simConfiguration.getCurrentHostname(),
+					simConfiguration.getPort(), new Date(), simConfiguration
+							.getKeyPair().getPublic(),
+					UserStatus.AVAILABLE.getText());
 		} else {
 			currentUser.setAddress(simConfiguration.getCurrentHostname());
 			currentUser.setPort(simConfiguration.getPort());
 			currentUser.setPublicKey(simConfiguration.getKeyPair().getPublic());
 			currentUser.setName(simConfiguration.getUsername());
-			userDao.save(currentUser);
 		}
+		userDao.save(currentUser);
 
 		if (currentUser.getRooms().size() == 0) {
 			Room stream = roomDao.findByName(simConfiguration
@@ -346,7 +344,7 @@ public class RefreshingUserService implements UserService {
 			r.getUsers().add(getUser(username));
 			roomDao.save(r);
 		}
-		if (!user.getRooms().contains(r)) {
+		if (user != null && !user.getRooms().contains(r)) {
 			user.getRooms().add(r);
 			userDao.save(user);
 		}
@@ -357,7 +355,22 @@ public class RefreshingUserService implements UserService {
 	public List<Room> getRooms() {
 		Iterable<Room> roomsIt = roomDao.findAll();
 		List<Room> rooms = getList(roomsIt);
+
 		return rooms;
+	}
+
+	@Override
+	public void quitRoom(String name) {
+		User u = getCurrentUser();
+		Room r = roomDao.findByName(name);
+		try {
+			roomDao.quitRoom(u.getId(), r.getId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (r.getUsers().size() <= 1) {
+			roomDao.delete(r);
+		}
 	}
 
 }

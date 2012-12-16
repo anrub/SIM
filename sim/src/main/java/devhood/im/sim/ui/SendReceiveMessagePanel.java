@@ -419,6 +419,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 */
 	@Override
 	public void eventReceived(Events event, Object o) {
+
 		if (Events.MESSAGE_RECEIVED.equals(event)) {
 			Message m = (Message) o;
 			handleMessageReceived(m);
@@ -432,7 +433,14 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			handleUserOnOffline(event, o);
 		} else if (Events.MESSAGE_FILE_REQUEST_RECEIVED.equals(event)) {
 			handleFileRequestReceived(o);
+		} else if (Events.CLOSE_TAB.equals(event)) {
+			handleCloseTab((String) o);
 		}
+	}
+
+	private void handleCloseTab(String o) {
+		int index = tabbedPane.indexOfTab(o);
+		closeTab(index);
 	}
 
 	private void handleFileRequestReceived(Object o) {

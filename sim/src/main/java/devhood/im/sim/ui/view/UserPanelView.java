@@ -7,8 +7,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
@@ -28,10 +31,10 @@ import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.Room;
 import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
-import devhood.im.sim.ui.JOutlookBar;
 import devhood.im.sim.ui.SendFileFrame;
 import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.Events;
+import devhood.im.sim.ui.util.JOutlookBar;
 import devhood.im.sim.ui.util.UiUtil;
 
 /**
@@ -50,6 +53,10 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
 
+	private MouseListener visiblecomponentMouseListener;
+
+	private MouseListener quitChatMouseListener;
+
 	@PostConstruct
 	public void init() {
 		BoxLayout layout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
@@ -60,14 +67,40 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 		add(scrollPane);
 	}
 
+	/**
+	 * Raum, der nicht verlassen werde kann.
+	 */
+	private String noQuitPossibleRoom;
+
 	public void addRoom(Room room) {
 		JPanel users = updateUsers(room, room.getUsers());
+		boolean quitPossible = !room.getName().equals(noQuitPossibleRoom);
+
+		final JMenuItem quitChatItem = new JMenuItem("Quit Room");
+
+		quitChatItem.addMouseListener(quitChatMouseListener);
+
+		final JPopupMenu quitChatPopup = new JPopupMenu();
+		quitChatPopup.add(quitChatItem);
+
+		if (quitPossible) {
+			users.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseReleased(MouseEvent e) {
+					if (e.isPopupTrigger()) {
+						quitChatPopup.show(e.getComponent(), e.getX(), e.getY());
+					}
+				}
+			});
+		}
 
 		outlookBar.addBar(room.getName(), users);
 	}
 
 	private JPanel updateUsers(Room room, Collection<User> userList) {
 		JPanel users = new JPanel();
+
+		users.addMouseListener(visiblecomponentMouseListener);
 
 		if (hasRoom(room)) {
 			users = (JPanel) getOutlookBar().getBar(room.getName());
@@ -86,18 +119,44 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 		return users;
 	}
 
+	private String firstBarLabel;
+
 	/**
 	 * Aktualisiert das UserPanel.
 	 */
 	public void refreshUi(List<Room> rooms) {
-		for (Room r : rooms) {
+		LinkedList<Room> orderedRoomList = new LinkedList<Room>();
+		for (Room room : rooms) {
+			if (firstBarLabel != null && firstBarLabel.equals(room.getName())) {
+				orderedRoomList.addFirst(room);
+			} else {
+				orderedRoomList.add(room);
+			}
+		}
+
+		List<String> currentRooms = new ArrayList<String>();
+
+		for (Room r : orderedRoomList) {
 			if (!hasRoom(r)) {
 				addRoom(r);
 			} else {
-
 				addRoom(r);
 			}
+			currentRooms.add(r.getName());
 		}
+
+		Set<String> bars = outlookBar.getBars();
+		List<String> toRemove = new ArrayList<String>();
+
+		for (String bar : bars) {
+			if (!currentRooms.contains(bar)) {
+				toRemove.add(bar);
+			}
+		}
+		outlookBar.removeBar(toRemove.toArray(new String[] {}));
+
+		validate();
+		repaint();
 	}
 
 	/**
@@ -220,7 +279,7 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 		File file = fc.getSelectedFile();
 		if (file.length() == 0) {
 			JOptionPane.showMessageDialog(null,
-					"Die Datei hat eine Größe von 0!");
+					"Die Datei hat eine Grï¿½ï¿½e von 0!");
 			return;
 		}
 
@@ -239,5 +298,34 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
+	}
+
+	public void addVisibleUserComponentMouseListener(MouseAdapter mouseAdapter) {
+		this.visiblecomponentMouseListener = mouseAdapter;
+
+	}
+
+	public MouseListener getQuitChatMouseListener() {
+		return quitChatMouseListener;
+	}
+
+	public void setQuitChatMouseListener(MouseListener quitChatMouseListener) {
+		this.quitChatMouseListener = quitChatMouseListener;
+	}
+
+	public String getFirstBarLabel() {
+		return firstBarLabel;
+	}
+
+	public void setFirstBarLabel(String firstBarLabel) {
+		this.firstBarLabel = firstBarLabel;
+	}
+
+	public String getNoQuitPossibleRoom() {
+		return noQuitPossibleRoom;
+	}
+
+	public void setNoQuitPossibleRoom(String noQuitPossibleRoom) {
+		this.noQuitPossibleRoom = noQuitPossibleRoom;
 	}
 }

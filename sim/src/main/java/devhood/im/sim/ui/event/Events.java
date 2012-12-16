@@ -58,5 +58,10 @@ public enum Events {
 	/**
 	 * Ein Dateiversand wurde abgelehnt.
 	 */
-	MESSAGE_FILE_REJECT_RECEIVED;
+	MESSAGE_FILE_REJECT_RECEIVED,
+
+	/**
+	 * Schliesst ein offenes Tab, Parameter: String name
+	 */
+	CLOSE_TAB;
 }

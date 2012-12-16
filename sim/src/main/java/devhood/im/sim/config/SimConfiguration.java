@@ -25,6 +25,7 @@ import javax.inject.Named;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 
 import devhood.im.sim.ui.util.UiUtil;
@@ -199,7 +200,7 @@ public class SimConfiguration {
 		String s = p.get(AUTOJOIN_KEY, null);
 		List<String> autojoinRooms = new ArrayList<String>();
 
-		if (s != null) {
+		if (!StringUtils.isEmpty(s)) {
 			String[] rooms = s.split(",");
 			for (String room : rooms) {
 				autojoinRooms.add(room);

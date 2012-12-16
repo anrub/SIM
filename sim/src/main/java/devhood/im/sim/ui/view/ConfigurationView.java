@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -18,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
+import net.miginfocom.swing.MigLayout;
 import devhood.im.sim.config.SimConfiguration;
 
 /**
@@ -32,6 +35,10 @@ public class ConfigurationView extends JFrame {
 	@Inject
 	private SimConfiguration simConfiguration;
 
+	private JButton autojoinroomsbutton = new JButton("Speichern");
+
+	JTextField autojoinRooms = new JTextField(50);
+
 	@PostConstruct
 	public void init() {
 		setTitle("Einstellungen");
@@ -40,6 +47,17 @@ public class ConfigurationView extends JFrame {
 
 		JPanel notificationsPanel = createNotificationsPanel();
 		JPanel colorPanel = createColorPanel();
+
+		JPanel autojoinPanel = new JPanel(new MigLayout());
+		JLabel autojoinLabel = new JLabel(
+				"Automatisch Raum öffnen (Komma getrennt):");
+		autojoinPanel.add(autojoinLabel);
+
+		autojoinPanel.add(autojoinRooms);
+
+		autojoinPanel.add(autojoinroomsbutton);
+
+		pane.addTab("Räume", autojoinPanel);
 
 		JPanel lafPanel = new JPanel();
 		JPanel aboutPanel = new JPanel();
@@ -157,4 +175,28 @@ public class ConfigurationView extends JFrame {
 		return chooser.getSelectionModel().getSelectedColor();
 	}
 
+	public JButton getAutojoinroomsbutton() {
+		return autojoinroomsbutton;
+	}
+
+	public void setAutojoinroomsbutton(JButton autojoinroomsbutton) {
+		this.autojoinroomsbutton = autojoinroomsbutton;
+	}
+
+	public String getAutojoinRooms() {
+		return autojoinRooms.getText();
+	}
+
+	public void setAutojoinroomsbutton(List<String> autojoinRooms) {
+		Iterator<String> it = autojoinRooms.iterator();
+		String rooms = "";
+		while (it.hasNext()) {
+			rooms = rooms + it.next();
+
+			if (it.hasNext()) {
+				rooms = rooms + ",";
+			}
+		}
+		this.autojoinRooms.setText(rooms);
+	}
 }

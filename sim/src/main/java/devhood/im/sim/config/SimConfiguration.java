@@ -11,12 +11,16 @@ import java.net.UnknownHostException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
@@ -175,6 +179,35 @@ public class SimConfiguration {
 	 * Key der Konfig ob die Tabs gecached werde sollen.
 	 */
 	public static String TAB_CACHE_KEY = "userColor";
+
+	public List<String> autojoinRooms = new LinkedList<String>();
+
+	@PostConstruct
+	public void init() {
+		autojoinRooms.add(getStreamTabName());
+	}
+
+	public static String AUTOJOIN_KEY = "autojoinRooms";
+
+	public void saveAutojoinRooms(String rooms) {
+		Preferences p = getPreferences();
+		p.put(AUTOJOIN_KEY, rooms);
+	}
+
+	public List<String> getAutojoinRooms() {
+		Preferences p = getPreferences();
+		String s = p.get(AUTOJOIN_KEY, null);
+		List<String> autojoinRooms = new ArrayList<String>();
+
+		if (s != null) {
+			String[] rooms = s.split(",");
+			for (String room : rooms) {
+				autojoinRooms.add(room);
+			}
+		}
+
+		return autojoinRooms;
+	}
 
 	/**
 	 * Ermittelt die aktuelle IP..

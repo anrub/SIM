@@ -11,6 +11,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
@@ -21,6 +22,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
  *
  */
 @Entity
+@Table(name = "UserWithRooms")
 public class User extends AbstractPersistable<Long> {
 
 	@ManyToMany(fetch = FetchType.EAGER)

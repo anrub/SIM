@@ -82,6 +82,21 @@ public class MainPresenter implements EventObserver {
 
 		userService.joinOrCreateRoom(simConfiguration.getUsername(),
 				simConfiguration.getStreamTabName());
+
+		Receiver streamTabreceiver = new Receiver();
+		streamTabreceiver.setRoom(true);
+		streamTabreceiver.setName(simConfiguration.getStreamTabName());
+		EventDispatcher.fireEvent(Events.RECEIVER_SELECTED, streamTabreceiver);
+
+		for (String room : simConfiguration.getAutojoinRooms()) {
+			userService.joinOrCreateRoom(simConfiguration.getUsername(), room);
+			Receiver receiver = new Receiver();
+			receiver.setName(room);
+			receiver.setRoom(true);
+			EventDispatcher.fireEvent(Events.RECEIVER_SELECTED, receiver);
+		}
+
+		EventDispatcher.fireEvent(Events.RECEIVER_SELECTED, streamTabreceiver);
 	}
 
 	/**

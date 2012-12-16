@@ -3,6 +3,8 @@ package devhood.im.sim.ui.presenter;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -34,9 +36,22 @@ public class ConfigurationPresenter {
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
+
+		configurationView.getAutojoinroomsbutton().addMouseListener(
+				new MouseAdapter() {
+					@Override
+					public void mousePressed(MouseEvent e) {
+						simConfiguration.saveAutojoinRooms(configurationView
+								.getAutojoinRooms());
+					}
+				});
+
 	}
 
 	public void show() {
+		configurationView.setAutojoinroomsbutton(simConfiguration
+				.getAutojoinRooms());
+
 		configurationView.pack();
 		configurationView.setVisible(true);
 	}

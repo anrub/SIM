@@ -66,6 +66,8 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	 */
 	private String noQuitPossibleRoom;
 
+	private String tooltip;
+
 	@Inject
 	private SimConfiguration simConfiguration;
 
@@ -205,7 +207,9 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	 */
 	public JLabel createUserLabel(final User user) {
 		final JLabel userLabel = new JLabel(user.getName());
-		userLabel.setToolTipText(user.getStatusType().getText());
+		if (tooltip != null) {
+			userLabel.setToolTipText(tooltip);
+		}
 
 		final JMenuItem sendFileItem = new JMenuItem("Send File");
 		sendFileItem.addMouseListener(new MouseAdapter() {
@@ -371,5 +375,13 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	public void setAddToAutojoinListener(ItemListener itemListener) {
 		this.addToAutojoinListener = itemListener;
 
+	}
+
+	public String getTooltip() {
+		return tooltip;
+	}
+
+	public void setTooltip(String tooltip) {
+		this.tooltip = tooltip;
 	}
 }

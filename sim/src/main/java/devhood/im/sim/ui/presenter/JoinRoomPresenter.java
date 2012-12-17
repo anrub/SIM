@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 
 import javax.inject.Named;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,8 +25,18 @@ public class JoinRoomPresenter {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				roomName = view.getRoomName();
+
 				if (!StringUtils.isEmpty(roomName)) {
-					view.dispose();
+					if (roomName.length() > 15) {
+						JOptionPane
+								.showMessageDialog(
+										view,
+										"Raumnamen dürfen maximal 15 Zeichen lang sein!",
+										"Raumname zu lang!",
+										JOptionPane.WARNING_MESSAGE);
+					} else {
+						view.dispose();
+					}
 				}
 			}
 		});

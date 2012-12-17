@@ -81,9 +81,15 @@ public class JOutlookBar extends JPanel implements ActionListener {
 	 * @param componenet
 	 *            The component to add to the bar
 	 */
-	public void addBar(String name, JComponent component) {
+	public void addBar(String name, JComponent component, Icon icon) {
 		component.addMouseListener(visiblecomponentMouseListener);
-		BarInfo barInfo = new BarInfo(name, component);
+		BarInfo barInfo = null;
+		if (icon != null) {
+			barInfo = new BarInfo(name, component, icon);
+		} else {
+			barInfo = new BarInfo(name, component);
+		}
+
 		barInfo.getButton().addActionListener(this);
 		this.bars.put(name, barInfo);
 		this.componentNameMap.put(component, name);
@@ -312,6 +318,11 @@ public class JOutlookBar extends JPanel implements ActionListener {
 			this.name = name;
 			this.component = component;
 			this.button = new JButton(name);
+		}
+
+		public BarInfo(String name, JComponent component, Icon icon) {
+			this(name, component);
+			this.button.setIcon(icon);
 		}
 
 		/**

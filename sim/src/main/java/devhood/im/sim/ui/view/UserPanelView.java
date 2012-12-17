@@ -114,7 +114,22 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 			});
 		}
 
-		outlookBar.addBar(room.getName(), users);
+		boolean userIsInRoom = false;
+		for (User user : room.getUsers()) {
+			String name = user.getName();
+			String ownUsername = simConfiguration.getUsername();
+			if (name.equals(ownUsername)) {
+				userIsInRoom = true;
+			}
+		}
+
+		if (userIsInRoom) {
+			outlookBar.addBar(room.getName(), users, UiUtil.createImageIcon(
+					"/images/icn_member_ambassador.gif", ""));
+		} else {
+			outlookBar.addBar(room.getName(), users, null);
+		}
+
 	}
 
 	private JPanel updateUsers(Room room, Collection<User> userList) {

@@ -100,6 +100,7 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 						userService.quitRoom(currentReceiver.getName());
 						EventDispatcher.fireEvent(Events.CLOSE_TAB,
 								currentReceiver.getName());
+						refreshUi();
 						view.getOutlookBar().showTabSelection(
 								simConfiguration.getStreamTabName(), true);
 					}

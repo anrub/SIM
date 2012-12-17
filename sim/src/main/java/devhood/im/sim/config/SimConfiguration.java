@@ -12,6 +12,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -139,6 +140,8 @@ public class SimConfiguration {
 	@Value("#{systemProperties['sim.username']}")
 	private String username;
 
+	private String systemUsername = System.getProperty("user.name");
+
 	/**
 	 * Erweiterte Konfigurationen, die z.B bestimmte MessageProcessors nutzen.
 	 */
@@ -193,9 +196,17 @@ public class SimConfiguration {
 	public void saveAutojoinRooms(String rooms) {
 		Preferences p = getPreferences();
 		p.put(AUTOJOIN_KEY, rooms);
+
+		try {
+			p.sync();
+		} catch (BackingStoreException e) {
+			e.printStackTrace();
+		}
+
+		List<String> S = getAutojoinRooms();
 	}
 
-	public List<String> getAutojoinRooms() {
+	public void addAutojoinRooms(String roomName) {
 		Preferences p = getPreferences();
 		String s = p.get(AUTOJOIN_KEY, null);
 		List<String> autojoinRooms = new ArrayList<String>();
@@ -207,6 +218,58 @@ public class SimConfiguration {
 			}
 		}
 
+		if (!autojoinRooms.contains(roomName)) {
+			s = s + (s.length() > 0 ? "," : "") + roomName;
+			saveAutojoinRooms(s);
+		}
+	}
+
+	public void removeAutojoinroom(String roomName) {
+		Preferences p = getPreferences();
+		String s = p.get(AUTOJOIN_KEY, null);
+		List<String> autojoinRooms = new ArrayList<String>();
+
+		if (!StringUtils.isEmpty(s)) {
+			String[] rooms = s.split(",");
+			for (String room : rooms) {
+				if (!room.equals(roomName)) {
+					autojoinRooms.add(room);
+				}
+			}
+		}
+
+		if (!autojoinRooms.contains(roomName)) {
+			Iterator<String> it = autojoinRooms.iterator();
+			String roomString = "";
+			while (it.hasNext()) {
+				roomString += it.next();
+				if (it.hasNext()) {
+					roomString += ",";
+				}
+			}
+
+			saveAutojoinRooms(roomString);
+		}
+	}
+
+	public List<String> getAutojoinRooms(String s) {
+		List<String> autojoinRooms = new ArrayList<String>();
+
+		if (!StringUtils.isEmpty(s)) {
+			String[] rooms = s.split(",");
+			for (String room : rooms) {
+				autojoinRooms.add(room);
+			}
+		}
+
+		return autojoinRooms;
+
+	}
+
+	public List<String> getAutojoinRooms() {
+		Preferences p = getPreferences();
+		String s = p.get(AUTOJOIN_KEY, null);
+		List<String> autojoinRooms = getAutojoinRooms(s);
 		return autojoinRooms;
 	}
 
@@ -574,6 +637,14 @@ public class SimConfiguration {
 
 	public void setConfigurationFrameIcon(ImageIcon configurationFrameIcon) {
 		this.configurationFrameIcon = configurationFrameIcon;
+	}
+
+	public String getSystemUsername() {
+		return systemUsername;
+	}
+
+	public void setSystemUsername(String systemUsername) {
+		this.systemUsername = systemUsername;
 	}
 
 }

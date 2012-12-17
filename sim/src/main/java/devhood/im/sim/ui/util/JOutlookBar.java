@@ -25,7 +25,7 @@ import devhood.im.sim.ui.action.BarAction;
  * A JOutlookBar provides a component that is similar to a JTabbedPane, but
  * instead of maintaining tabs, it uses Outlook-style bars to control the
  * visible component
- * 
+ *
  * Quelle: http://www.informit.com/guides/content.aspx?g=java&seqNum=236
  */
 public class JOutlookBar extends JPanel implements ActionListener {
@@ -75,7 +75,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 
 	/**
 	 * Adds the specified component to the JOutlookBar and sets the bar's name
-	 * 
+	 *
 	 * @param name
 	 *            The name of the outlook bar
 	 * @param componenet
@@ -105,7 +105,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 
 	/**
 	 * Adds the specified component to the JOutlookBar and sets the bar's name
-	 * 
+	 *
 	 * @param name
 	 *            The name of the outlook bar
 	 * @param icon
@@ -122,13 +122,17 @@ public class JOutlookBar extends JPanel implements ActionListener {
 
 	/**
 	 * Removes the specified bar from the JOutlookBar
-	 * 
+	 *
 	 * @param name
 	 *            The name of the bar to remove
 	 */
 	public void removeBar(String... names) {
 		for (String name : names) {
 			this.bars.remove(name);
+			Object o = nameComponent.get(name);
+			componentNameMap.remove(o);
+
+			nameComponent.remove(name);
 		}
 		render();
 
@@ -136,7 +140,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 
 	/**
 	 * Returns the index of the currently visible bar (zero-based)
-	 * 
+	 *
 	 * @return The index of the currently visible bar
 	 */
 	public int getVisibleBar() {
@@ -146,7 +150,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 	/**
 	 * Programmatically sets the currently visible bar; the visible bar index
 	 * must be in the range of 0 to size() - 1
-	 * 
+	 *
 	 * @param visibleBar
 	 *            The zero-based index of the component to make visible
 	 */
@@ -260,7 +264,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 
 	/**
 	 * um auf auswahl zu reagieren.
-	 * 
+	 *
 	 * @param action
 	 */
 	public void setOnBarSelected(BarAction action) {
@@ -276,7 +280,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 	/**
 	 * Internal class that maintains information about individual Outlook bars;
 	 * specifically it maintains the following information:
-	 * 
+	 *
 	 * name The name of the bar button The associated JButton for the bar
 	 * component The component maintained in the Outlook bar
 	 */
@@ -298,7 +302,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 
 		/**
 		 * Creates a new BarInfo
-		 * 
+		 *
 		 * @param name
 		 *            The name of the bar
 		 * @param component
@@ -312,7 +316,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 
 		/**
 		 * Creates a new BarInfo
-		 * 
+		 *
 		 * @param name
 		 *            The name of the bar
 		 * @param icon
@@ -328,7 +332,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 
 		/**
 		 * Returns the name of the bar
-		 * 
+		 *
 		 * @return The name of the bar
 		 */
 		public String getName() {
@@ -337,7 +341,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 
 		/**
 		 * Sets the name of the bar
-		 * 
+		 *
 		 * @param The
 		 *            name of the bar
 		 */
@@ -347,7 +351,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 
 		/**
 		 * Returns the outlook bar JButton implementation
-		 * 
+		 *
 		 * @return The Outlook Bar JButton implementation
 		 */
 		public JButton getButton() {
@@ -356,7 +360,7 @@ public class JOutlookBar extends JPanel implements ActionListener {
 
 		/**
 		 * Returns the component that implements the body of this Outlook Bar
-		 * 
+		 *
 		 * @return The component that implements the body of this Outlook Bar
 		 */
 		public JComponent getComponent() {

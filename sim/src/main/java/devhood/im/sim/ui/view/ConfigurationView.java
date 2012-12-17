@@ -45,19 +45,34 @@ public class ConfigurationView extends JFrame {
 		setIconImage(simConfiguration.getConfigurationFrameImage());
 		JTabbedPane pane = new JTabbedPane();
 
-		JPanel notificationsPanel = createNotificationsPanel();
 		JPanel colorPanel = createColorPanel();
 
-		JPanel autojoinPanel = new JPanel(new MigLayout());
+		JPanel autojoinPanel = new JPanel(new MigLayout("wrap 2"));
 		JLabel autojoinLabel = new JLabel(
 				"Automatisch Raum öffnen (Komma getrennt):");
 		autojoinPanel.add(autojoinLabel);
 
 		autojoinPanel.add(autojoinRooms);
-
 		autojoinPanel.add(autojoinroomsbutton);
 
-		pane.addTab("Räume", autojoinPanel);
+		JPanel notificationsPanel = new JPanel(new MigLayout());
+
+		JCheckBox systrayMsgs = new JCheckBox(
+				"keine Meldungen im Systray anzeigen");
+		JCheckBox streamSystrayMsgs = new JCheckBox(
+				"keine Stream Messages im Systray anzeigen");
+		JCheckBox statusSystrayMsgs = new JCheckBox(
+				"keine Statusmeldungen im Systray anzeigen");
+
+		notificationsPanel.add(systrayMsgs);
+		notificationsPanel.add(streamSystrayMsgs);
+		notificationsPanel.add(statusSystrayMsgs);
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+		panel.add(autojoinPanel);
+//		panel.add(notificationsPanel);
+
+		pane.addTab("Räume", panel);
 
 		JPanel lafPanel = new JPanel();
 		JPanel aboutPanel = new JPanel();
@@ -187,7 +202,7 @@ public class ConfigurationView extends JFrame {
 		return autojoinRooms.getText();
 	}
 
-	public void setAutojoinroomsbutton(List<String> autojoinRooms) {
+	public void setAutojoinrooms(List<String> autojoinRooms) {
 		Iterator<String> it = autojoinRooms.iterator();
 		String rooms = "";
 		while (it.hasNext()) {

@@ -3,6 +3,7 @@ package devhood.im.sim.ui.view;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -14,8 +15,10 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -27,6 +30,7 @@ import javax.swing.JScrollPane;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.Room;
 import devhood.im.sim.model.User;
@@ -57,6 +61,16 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 
 	private MouseListener quitChatMouseListener;
 
+	/**
+	 * Raum, der nicht verlassen werde kann.
+	 */
+	private String noQuitPossibleRoom;
+
+	@Inject
+	private SimConfiguration simConfiguration;
+
+	private String systemUsername;
+
 	@PostConstruct
 	public void init() {
 		BoxLayout layout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
@@ -67,20 +81,26 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 		add(scrollPane);
 	}
 
-	/**
-	 * Raum, der nicht verlassen werde kann.
-	 */
-	private String noQuitPossibleRoom;
-
 	public void addRoom(Room room) {
 		JPanel users = updateUsers(room, room.getUsers());
 		boolean quitPossible = !room.getName().equals(noQuitPossibleRoom);
 
 		final JMenuItem quitChatItem = new JMenuItem("Quit Room");
 
+		JCheckBoxMenuItem autojoinItem = new JCheckBoxMenuItem("Autojoin");
+
+		boolean roomIsAutojoined = simConfiguration.getAutojoinRooms()
+				.contains(room.getName());
+		if (roomIsAutojoined) {
+			autojoinItem.setSelected(true);
+		}
+
+		autojoinItem.addItemListener(addToAutojoinListener);
+
 		quitChatItem.addMouseListener(quitChatMouseListener);
 
 		final JPopupMenu quitChatPopup = new JPopupMenu();
+		quitChatPopup.add(autojoinItem);
 		quitChatPopup.add(quitChatItem);
 
 		if (quitPossible) {
@@ -121,6 +141,8 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 
 	private String firstBarLabel;
 
+	private ItemListener addToAutojoinListener;
+
 	/**
 	 * Aktualisiert das UserPanel.
 	 */
@@ -153,6 +175,7 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 				toRemove.add(bar);
 			}
 		}
+
 		outlookBar.removeBar(toRemove.toArray(new String[] {}));
 
 		validate();
@@ -162,12 +185,19 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	/**
 	 * Erzeugt das Label zur Anzeige des Benutzers im UserPanel.
 	 *
-	 * @param user
-	 *            User.
+	 *
+	 * param user User.
+	 *
 	 * @return Label
 	 */
 	public JLabel createUserLabel(final User user) {
 		final JLabel userLabel = new JLabel(user.getName());
+		if (!user.getName().equals(systemUsername)) {
+			userLabel.setToolTipText(systemUsername);
+		} else {
+			userLabel.setToolTipText(user.getStatusType().getText());
+		}
+
 		final JMenuItem sendFileItem = new JMenuItem("Send File");
 		sendFileItem.addMouseListener(new MouseAdapter() {
 
@@ -181,7 +211,7 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 
 		userLabel.addMouseListener(new SelectUserLabelMouseListener(user
 				.getName(), popupMenu));
-		userLabel.setToolTipText(user.getStatusType().getText());
+
 		userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		if (UserStatus.AVAILABLE.equals(user.getStatusType())) {
 			userLabel.setIcon(UiUtil.createImageIcon(
@@ -328,4 +358,18 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	public void setNoQuitPossibleRoom(String noQuitPossibleRoom) {
 		this.noQuitPossibleRoom = noQuitPossibleRoom;
 	}
+
+	public void setAddToAutojoinListener(ItemListener itemListener) {
+		this.addToAutojoinListener = itemListener;
+
+	}
+
+	public String getSystemUsername() {
+		return systemUsername;
+	}
+
+	public void setSystemUsername(String systemUsername) {
+		this.systemUsername = systemUsername;
+	}
+
 }

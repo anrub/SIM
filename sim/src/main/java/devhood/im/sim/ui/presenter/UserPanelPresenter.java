@@ -1,5 +1,7 @@
 package devhood.im.sim.ui.presenter;
 
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.TimerTask;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.SwingUtilities;
 
 import org.springframework.context.ApplicationContext;
@@ -104,11 +107,42 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 			}
 		});
 
+		view.setAddToAutojoinListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					((JCheckBoxMenuItem) e.getSource()).setSelected(true);
+
+					SwingUtilities.invokeLater(new Runnable() {
+
+						@Override
+						public void run() {
+							simConfiguration.addAutojoinRooms(currentReceiver
+									.getName());
+						}
+					});
+				} else if (e.getStateChange() == ItemEvent.DESELECTED) {
+
+					SwingUtilities.invokeLater(new Runnable() {
+
+						@Override
+						public void run() {
+							simConfiguration.removeAutojoinroom(currentReceiver
+									.getName());
+						}
+					});
+				}
+			}
+		});
+
 		view.getOutlookBar().setFirstBarLabel(
 				simConfiguration.getStreamTabName());
 
 		view.setFirstBarLabel(simConfiguration.getStreamTabName());
 		view.setNoQuitPossibleRoom(simConfiguration.getStreamTabName());
+
+		view.setSystemUsername(simConfiguration.getSystemUsername());
 	}
 
 	public Receiver getCurrentReceiver() {

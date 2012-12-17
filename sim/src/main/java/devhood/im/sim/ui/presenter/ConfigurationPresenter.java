@@ -49,7 +49,7 @@ public class ConfigurationPresenter {
 	}
 
 	public void show() {
-		configurationView.setAutojoinroomsbutton(simConfiguration
+		configurationView.setAutojoinrooms(simConfiguration
 				.getAutojoinRooms());
 
 		configurationView.pack();

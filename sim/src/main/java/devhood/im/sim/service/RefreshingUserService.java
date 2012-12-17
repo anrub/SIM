@@ -86,8 +86,8 @@ public class RefreshingUserService implements UserService {
 
 	private User currentUser;
 
-	@Override
-	public User getCurrentUser() {
+	public void updateCurrentUserScheduled() {
+
 		currentUser = getUser(simConfiguration.getUsername());
 
 		if (currentUser == null) {
@@ -102,6 +102,8 @@ public class RefreshingUserService implements UserService {
 			currentUser.setPublicKey(simConfiguration.getKeyPair().getPublic());
 			currentUser.setName(simConfiguration.getUsername());
 		}
+		currentUser.setLastaccess(new Date().getTime());
+
 		userDao.save(currentUser);
 
 		if (currentUser.getRooms().size() == 0) {
@@ -117,7 +119,13 @@ public class RefreshingUserService implements UserService {
 			currentUser.getRooms().add(stream);
 			roomDao.save(stream);
 		}
+	}
 
+	@Override
+	public User getCurrentUser() {
+		if (currentUser == null) {
+			updateCurrentUserScheduled();
+		}
 		return currentUser;
 	}
 
@@ -164,15 +172,8 @@ public class RefreshingUserService implements UserService {
 				@Override
 				public void run() {
 					try {
-						User u = getUser(simConfiguration.getUsername());
-						if (u == null) {
-							u = getCurrentUser();
-						}
-
-						u.setLastaccess(new Date().getTime());
-						userDao.save(u);
+						updateCurrentUserScheduled();
 					} catch (Exception e) {
-						// Wenn Exception fliegt, soll der Timer weiterlaufen.
 						e.printStackTrace();
 					}
 				};

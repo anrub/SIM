@@ -69,8 +69,6 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	@Inject
 	private SimConfiguration simConfiguration;
 
-	private String systemUsername;
-
 	@PostConstruct
 	public void init() {
 		BoxLayout layout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
@@ -207,11 +205,7 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	 */
 	public JLabel createUserLabel(final User user) {
 		final JLabel userLabel = new JLabel(user.getName());
-		if (!user.getName().equals(systemUsername)) {
-			userLabel.setToolTipText(systemUsername);
-		} else {
-			userLabel.setToolTipText(user.getStatusType().getText());
-		}
+		userLabel.setToolTipText(user.getStatusType().getText());
 
 		final JMenuItem sendFileItem = new JMenuItem("Send File");
 		sendFileItem.addMouseListener(new MouseAdapter() {
@@ -378,13 +372,4 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 		this.addToAutojoinListener = itemListener;
 
 	}
-
-	public String getSystemUsername() {
-		return systemUsername;
-	}
-
-	public void setSystemUsername(String systemUsername) {
-		this.systemUsername = systemUsername;
-	}
-
 }

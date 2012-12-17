@@ -142,8 +142,6 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 
 		view.setFirstBarLabel(simConfiguration.getStreamTabName());
 		view.setNoQuitPossibleRoom(simConfiguration.getStreamTabName());
-
-		view.setSystemUsername(simConfiguration.getSystemUsername());
 	}
 
 	public Receiver getCurrentReceiver() {

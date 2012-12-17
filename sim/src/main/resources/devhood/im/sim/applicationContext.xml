@@ -19,6 +19,7 @@
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
 				<property name="generateDdl" value="true" />
+				<!-- <property name="database" value="SQL_SERVER" /> -->
 				<property name="database" value="MYSQL" />
 				<property name="showSql" value="true" />
 
@@ -26,21 +27,24 @@
 		</property>
 		<property name="persistenceUnitName" value="sim" />
 	</bean>
-	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
 		<property name="url" value="jdbc:mysql://localhost:3306/sim" />
+
+		<!-- <property name="driverClassName" value="net.sourceforge.jtds.jdbc.Driver" 
+			/> -->
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="username" value="root" />
 		<property name="password" value="" />
 	</bean>
 
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
 	<tx:annotation-driven />
 
 	<jpa:repositories base-package="devhood.im.sim.repository" />
-
 
 	<context:annotation-config />
 	<context:component-scan base-package="devhood.im.sim" />

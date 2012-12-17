@@ -222,6 +222,17 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 		JPopupMenu popupMenu = new JPopupMenu();
 		popupMenu.add(sendFileItem);
 
+		final JMenuItem infoItem = new JMenuItem("Info");
+		infoItem.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				EventDispatcher.fireEvent(Events.SHOW_INFO_FRAME, user);
+			}
+		});
+
+		popupMenu.add(infoItem);
+
 		userLabel.addMouseListener(new SelectUserLabelMouseListener(user
 				.getName(), popupMenu));
 
@@ -322,7 +333,7 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 		File file = fc.getSelectedFile();
 		if (file.length() == 0) {
 			JOptionPane.showMessageDialog(null,
-					"Die Datei hat eine Gr��e von 0!");
+					"Die Datei hat eine Größe von 0!");
 			return;
 		}
 

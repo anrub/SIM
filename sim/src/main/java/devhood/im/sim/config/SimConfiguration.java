@@ -268,7 +268,7 @@ public class SimConfiguration {
 
 	public List<String> getAutojoinRooms() {
 		Preferences p = getPreferences();
-		String s = p.get(AUTOJOIN_KEY, null);
+		String s = p.get(AUTOJOIN_KEY, "");
 		List<String> autojoinRooms = getAutojoinRooms(s);
 		return autojoinRooms;
 	}

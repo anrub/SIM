@@ -2,7 +2,6 @@ package devhood.im.sim.ui.view;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.MouseListener;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -16,8 +15,6 @@ import devhood.im.sim.ui.util.UiUtil;
 
 @Named
 public class SmileyView extends JFrame {
-
-	private MouseListener smileyIconMouseListener;
 
 	private JPanel smileyPanel = new JPanel();
 
@@ -57,6 +54,9 @@ public class SmileyView extends JFrame {
 	public void revalidate() {
 		smileyPanel.revalidate();
 		super.revalidate();
+
+		repaint();
+		pack();
 	}
 
 }

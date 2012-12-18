@@ -14,7 +14,6 @@ import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.model.Receiver;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.SystemTrayManager;
-import devhood.im.sim.ui.action.ExitAction;
 import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.EventObserver;
 import devhood.im.sim.ui.event.Events;
@@ -40,9 +39,6 @@ public class MainPresenter implements EventObserver {
 
 	@Inject
 	private JoinRoomPresenter joinRoomPresenter;
-
-	@Inject
-	private ExitAction exitAction;
 
 	public MainPresenter() {
 		EventDispatcher.add(this);
@@ -77,9 +73,6 @@ public class MainPresenter implements EventObserver {
 				}
 			}
 		});
-
-		mainView.addExitMenuActionListener(exitAction);
-
 		userService.joinOrCreateRoom(simConfiguration.getUsername(),
 				simConfiguration.getStreamTabName());
 

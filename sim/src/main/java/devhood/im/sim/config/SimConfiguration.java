@@ -163,13 +163,6 @@ public class SimConfiguration {
 	private boolean showStatusInTray = true;
 
 	/**
-	 * Welches UserDao soll genutzt werden? "jtds","single","sqlite" Default:
-	 * jtds
-	 */
-	@Value("#{systemProperties['sim.userDao']}")
-	private String userDaoToUse;
-
-	/**
 	 * Key der Userfarbe im lokalen Preferences Speicher.
 	 */
 	public static String USER_COLOR_KEY = "userColor";
@@ -605,14 +598,6 @@ public class SimConfiguration {
 
 	public void setMaxLinkLength(int maxLinkLength) {
 		this.maxLinkLength = maxLinkLength;
-	}
-
-	public String getUserDaoToUse() {
-		return userDaoToUse;
-	}
-
-	public void setUserDaoToUse(String userDaoToUse) {
-		this.userDaoToUse = userDaoToUse;
 	}
 
 	public int getMinColorDiff() {

@@ -22,6 +22,7 @@ public class JoinRoomPresenter {
 
 	public void show(JFrame parent) {
 		view = new JoinRoomView(parent);
+		view.setLocationRelativeTo(parent);
 
 		view.addButtonMouseListener(new MouseAdapter() {
 			@Override

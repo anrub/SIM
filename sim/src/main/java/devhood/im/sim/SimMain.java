@@ -40,30 +40,6 @@ public class SimMain {
 				if ("-n".equals(args[i]) && i + 1 < args.length) {
 					username = args[i + 1];
 				}
-
-				if ("-jdbcDriver".equals(args[i]) && i + 1 < args.length) {
-					System.setProperty("sim.db.driver", args[i + 1]);
-				}
-
-				if ("-jdbcUrl".equals(args[i]) && i + 1 < args.length) {
-					System.setProperty("sim.db.url", args[i + 1]);
-				}
-
-				if ("-user".equals(args[i]) && i + 1 < args.length) {
-					System.setProperty("sim.db.username", args[i + 1]);
-				}
-
-				if ("-password".equals(args[i]) && i + 1 < args.length) {
-					System.setProperty("sim.db.password", args[i + 1]);
-				}
-
-				if ("-userDao".equals(args[i]) && i + 1 < args.length) {
-					System.setProperty("sim.userDao", args[i + 1]);
-				}
-
-				if ("-f".equals(args[i]) && i + 1 < args.length) {
-					System.setProperty("sim.dbPath", args[i + 1]);
-				}
 			}
 
 		}
@@ -89,8 +65,7 @@ public class SimMain {
 	}
 
 	/**
-	 * Startet den {@link ApplicationContext} und zeigt das {@link MainView}
-	 * an.
+	 * Startet den {@link ApplicationContext} und zeigt das {@link MainView} an.
 	 */
 	public void startup() {
 		GenericXmlApplicationContext context = new GenericXmlApplicationContext();

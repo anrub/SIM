@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>devhood.im</groupId>
 	<artifactId>sim</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>SIM - S Instant Messenger</name>
 	<properties>
 		<spring.version>3.1.3.RELEASE</spring.version>

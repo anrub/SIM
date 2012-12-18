@@ -38,6 +38,7 @@ import devhood.im.sim.model.UserStatus;
 import devhood.im.sim.ui.SendFileFrame;
 import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.Events;
+import devhood.im.sim.ui.event.UiEvent;
 import devhood.im.sim.ui.util.JOutlookBar;
 import devhood.im.sim.ui.util.UiUtil;
 
@@ -236,7 +237,8 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				EventDispatcher.fireEvent(Events.SHOW_INFO_FRAME, user);
+				EventDispatcher.fireEvent(Events.SHOW_INFO_FRAME,
+						new UiEvent<User>(userLabel, user));
 			}
 		});
 

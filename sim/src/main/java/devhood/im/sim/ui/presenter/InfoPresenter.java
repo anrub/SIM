@@ -9,6 +9,7 @@ import devhood.im.sim.model.User;
 import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.EventObserver;
 import devhood.im.sim.ui.event.Events;
+import devhood.im.sim.ui.event.UiEvent;
 import devhood.im.sim.ui.view.InfoView;
 
 @Named
@@ -28,7 +29,10 @@ public class InfoPresenter implements EventObserver {
 	@Override
 	public void eventReceived(Events event, Object o) {
 		if (Events.SHOW_INFO_FRAME.equals(event)) {
-			User u = (User) o;
+			UiEvent<User> e = (UiEvent<User>) o;
+			User u = e.getPayload();
+
+			view.setLocationRelativeTo(e.getParent());
 			view.setHostname(u.getAddress());
 			view.setLastonline(u.getLastaccess());
 			view.pack();

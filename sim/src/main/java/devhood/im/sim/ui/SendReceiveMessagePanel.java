@@ -312,7 +312,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	 *            tab
 	 */
 	protected void closeTab(int index) {
-		if (index != 0) {
+		if (index >= 0) {
 			String title = tabbedPane.getTitleAt(index);
 			// Vor dem schliessen wird der Inhalt in den Cache geschrieben.
 			try {

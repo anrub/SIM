@@ -2,8 +2,6 @@ package devhood.im.sim.ui.presenter;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -55,7 +53,10 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 
 	@Override
 	public void eventReceived(Events event, Object o) {
-
+		if (Events.QUIT_CHAT_ITEM_CLICKED.equals(event)) {
+			Room r = (Room) o;
+			quitRoom(r.getName());
+		}
 	}
 
 	private Receiver currentReceiver;
@@ -85,26 +86,6 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 			@Override
 			public void execute() {
 
-			}
-		});
-
-		view.setQuitChatMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				SwingUtilities.invokeLater(new Runnable() {
-
-					@Override
-					public void run() {
-
-						userService.quitRoom(currentReceiver.getName());
-						EventDispatcher.fireEvent(Events.CLOSE_TAB,
-								currentReceiver.getName());
-						refreshUi();
-						view.getOutlookBar().showTabSelection(
-								simConfiguration.getStreamTabName(), true);
-					}
-				});
 			}
 		});
 
@@ -142,6 +123,14 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 
 		view.setFirstBarLabel(simConfiguration.getStreamTabName());
 		view.setNoQuitPossibleRoom(simConfiguration.getStreamTabName());
+	}
+
+	private void quitRoom(String name) {
+		userService.quitRoom(name);
+		EventDispatcher.fireEvent(Events.CLOSE_TAB, name);
+		refreshUi();
+		view.getOutlookBar().showTabSelection(
+				simConfiguration.getStreamTabName(), true);
 	}
 
 	public Receiver getCurrentReceiver() {

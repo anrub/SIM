@@ -63,5 +63,5 @@ public enum Events {
 	/**
 	 * Schliesst ein offenes Tab, Parameter: String name
 	 */
-	CLOSE_TAB, SHOW_INFO_FRAME;
+	CLOSE_TAB, SHOW_INFO_FRAME, QUIT_CHAT_ITEM_CLICKED;
 }

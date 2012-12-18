@@ -81,7 +81,7 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 		add(scrollPane);
 	}
 
-	public void addRoom(Room room) {
+	public void addRoom(final Room room) {
 		JPanel users = updateUsers(room, room.getUsers());
 		boolean quitPossible = !room.getName().equals(noQuitPossibleRoom);
 
@@ -97,21 +97,28 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 
 		autojoinItem.addItemListener(addToAutojoinListener);
 
-		quitChatItem.addMouseListener(quitChatMouseListener);
+		quitChatItem.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				EventDispatcher.fireEvent(Events.QUIT_CHAT_ITEM_CLICKED, room);
+			}
+		});
 
 		final JPopupMenu quitChatPopup = new JPopupMenu();
 		quitChatPopup.add(autojoinItem);
 		quitChatPopup.add(quitChatItem);
 
-		if (quitPossible) {
-			users.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseReleased(MouseEvent e) {
-					if (e.isPopupTrigger()) {
-						quitChatPopup.show(e.getComponent(), e.getX(), e.getY());
-					}
+		MouseListener showQuitChatMenuMouseListener = new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					quitChatPopup.show(e.getComponent(), e.getX(), e.getY());
 				}
-			});
+			}
+		};
+
+		if (!quitPossible) {
+			showQuitChatMenuMouseListener = null;
 		}
 
 		boolean userIsInRoom = false;
@@ -125,9 +132,11 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 
 		if (userIsInRoom) {
 			outlookBar.addBar(room.getName(), users, UiUtil.createImageIcon(
-					"/images/icn_member_ambassador.gif", ""));
+					"/images/icn_member_ambassador.gif", ""),
+					showQuitChatMenuMouseListener);
 		} else {
-			outlookBar.addBar(room.getName(), users, null);
+			outlookBar.addBar(room.getName(), users, null,
+					showQuitChatMenuMouseListener);
 		}
 
 	}

@@ -1,5 +1,7 @@
 package devhood.im.sim.ui.presenter;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -24,20 +26,16 @@ public class JoinRoomPresenter {
 		view.addButtonMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				roomName = view.getRoomName();
+				joinRoomSubmitAction();
+			}
 
-				if (!StringUtils.isEmpty(roomName)) {
-					if (roomName.length() > 15) {
-						JOptionPane
-								.showMessageDialog(
-										view,
-										"Raumnamen dürfen maximal 15 Zeichen lang sein!",
-										"Raumname zu lang!",
-										JOptionPane.WARNING_MESSAGE);
-					} else {
-						view.dispose();
-					}
-				}
+		});
+
+		view.getRoomNameField().addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				joinRoomSubmitAction();
 			}
 		});
 
@@ -47,5 +45,19 @@ public class JoinRoomPresenter {
 
 	public String getRoomName() {
 		return roomName;
+	}
+
+	private void joinRoomSubmitAction() {
+		roomName = view.getRoomName();
+
+		if (!StringUtils.isEmpty(roomName)) {
+			if (roomName.length() > 15) {
+				JOptionPane.showMessageDialog(view,
+						"Raumnamen dürfen maximal 15 Zeichen lang sein!",
+						"Raumname zu lang!", JOptionPane.WARNING_MESSAGE);
+			} else {
+				view.dispose();
+			}
+		}
 	}
 }

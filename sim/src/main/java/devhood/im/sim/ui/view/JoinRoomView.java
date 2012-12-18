@@ -38,4 +38,12 @@ public class JoinRoomView extends JDialog {
 	public String getRoomName() {
 		return roomName.getText();
 	}
+
+	public void setRoomName(JTextField roomName) {
+		this.roomName = roomName;
+	}
+
+	public JTextField getRoomNameField() {
+		return this.roomName;
+	}
 }

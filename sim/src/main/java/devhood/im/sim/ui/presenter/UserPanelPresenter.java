@@ -55,8 +55,22 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 	public void eventReceived(Events event, Object o) {
 		if (Events.QUIT_CHAT_ITEM_CLICKED.equals(event)) {
 			Room r = (Room) o;
-			quitRoom(r.getName());
+			if (isUserInRoom(r)) {
+				quitRoom(r.getName());
+			}
 		}
+	}
+
+	public boolean isUserInRoom(Room r) {
+		boolean userisinroom = false;
+		for (User u : r.getUsers()) {
+			if (simConfiguration.getUsername().equals(u.getName())) {
+				userisinroom = true;
+				break;
+
+			}
+		}
+		return userisinroom;
 	}
 
 	private Receiver currentReceiver;

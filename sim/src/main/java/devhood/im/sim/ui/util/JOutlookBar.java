@@ -148,8 +148,6 @@ public class JOutlookBar extends JPanel implements ActionListener {
 		}
 		render();
 
-		String title = getTitleOfButton(getVisibleBar());
-		showTabSelection(title, false);
 	}
 
 	/**

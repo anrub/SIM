@@ -41,6 +41,8 @@ public class SmileyPanelPresenter {
 
 		view.setVisible(true);
 		view.setLocationRelativeTo(relativeTo);
+
+		view.revalidate();
 	}
 
 	public void initPanel() {

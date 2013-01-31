@@ -15,6 +15,8 @@ public interface UserService {
 
 	public User getCurrentUser();
 
+	
+	
 	/**
 	 * Gibt zurueck ob der User aktuell online ist.
 	 *
@@ -81,9 +83,13 @@ public interface UserService {
 	 */
 	public void logout(String username);
 
-	public void joinOrCreateRoom(String username, String name);
+	public void joinOrCreateRoom(String username, Room room);
 
 	List<Room> getRooms();
 
 	public void quitRoom(String name);
+
+
+
+	void joinOrCreateRoom(String username, String roomName);
 }

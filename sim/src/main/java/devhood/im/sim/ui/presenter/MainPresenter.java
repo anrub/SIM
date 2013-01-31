@@ -8,10 +8,9 @@ import java.awt.event.MouseEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.lang3.StringUtils;
-
 import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.model.Receiver;
+import devhood.im.sim.model.Room;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.SystemTrayManager;
 import devhood.im.sim.ui.event.EventDispatcher;
@@ -65,20 +64,16 @@ public class MainPresenter implements EventObserver {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				joinRoomPresenter.show(mainView.getFrame());
-				if (!StringUtils.isEmpty(joinRoomPresenter.getRoomName())) {
-					Receiver r = new Receiver();
-					r.setName(joinRoomPresenter.getRoomName());
-					r.setRoom(true);
-					EventDispatcher.fireEvent(Events.RECEIVER_SELECTED, r);
-				}
+
 			}
 		});
 		userService.joinOrCreateRoom(simConfiguration.getUsername(),
-				simConfiguration.getStreamTabName());
-
+				streamRoom());
+		
 		Receiver streamTabreceiver = new Receiver();
 		streamTabreceiver.setRoom(true);
 		streamTabreceiver.setName(simConfiguration.getStreamTabName());
+		
 		EventDispatcher.fireEvent(Events.RECEIVER_SELECTED, streamTabreceiver);
 
 		for (String room : simConfiguration.getAutojoinRooms()) {
@@ -90,6 +85,12 @@ public class MainPresenter implements EventObserver {
 		}
 
 		EventDispatcher.fireEvent(Events.RECEIVER_SELECTED, streamTabreceiver);
+	}
+
+	private Room streamRoom() {
+		Room room = new Room();
+		room.setName(simConfiguration.getStreamTabName());
+		return room;
 	}
 
 	/**

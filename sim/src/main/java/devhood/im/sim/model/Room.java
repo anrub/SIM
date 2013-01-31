@@ -15,6 +15,8 @@ public class Room extends AbstractPersistable<Long> {
 	@Column(unique = true)
 	private String name;
 
+	private Boolean hidden = Boolean.FALSE;
+
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "rooms")
 	@Column(nullable = true)
 	private Set<User> users = new HashSet<User>();
@@ -33,5 +35,13 @@ public class Room extends AbstractPersistable<Long> {
 
 	public void setUsers(Set<User> users) {
 		this.users = users;
+	}
+
+	public Boolean getHidden() {
+		return hidden;
+	}
+
+	public void setHidden(Boolean hidden) {
+		this.hidden = hidden;
 	}
 }

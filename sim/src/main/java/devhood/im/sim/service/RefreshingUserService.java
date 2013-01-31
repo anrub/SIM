@@ -26,9 +26,9 @@ import devhood.im.sim.service.interfaces.UserService;
 /**
  * Dieser {@link UserService} aktualisiert sich selbst und den uebergebenen User
  * regelmaessg.
- *
+ * 
  * @author flo
- *
+ * 
  */
 @Named
 @Transactional
@@ -190,7 +190,7 @@ public class RefreshingUserService implements UserService {
 	 * Verarbeitet die USer und prüft ob sie bereits vorhanden, oder neu, oder
 	 * nicht mehr vorhanden sind. Benachrichtigt den userChangeListener in
 	 * beiden fällen.
-	 *
+	 * 
 	 * @param users
 	 *            aktuelle USer aus der dB.
 	 */
@@ -252,7 +252,7 @@ public class RefreshingUserService implements UserService {
 
 	/**
 	 * Fuegt einen {@link UserChangeObserver} ein.
-	 *
+	 * 
 	 * @param listener
 	 *            Listener.
 	 */
@@ -296,7 +296,7 @@ public class RefreshingUserService implements UserService {
 	 * wurden, wird eine Liste zurueckgegeben, die bei contains immer true
 	 * zurueck gibt. (Da noch nicht klar ist, ob der User vorhanden ist oder
 	 * nicht, hacky).
-	 *
+	 * 
 	 * @return list von usern.
 	 */
 	@Override
@@ -339,6 +339,22 @@ public class RefreshingUserService implements UserService {
 			r = new Room();
 		}
 		r.setName(roomName);
+		saveUser(username, r);
+	}
+
+	@Override
+	@Transactional
+	public void joinOrCreateRoom(String username, Room room) {
+		Room r = roomDao.findByName(room.getName());
+		if (r == null) {
+			r = room;
+		}
+
+		saveUser(username, r);
+	}
+
+	@Transactional
+	private void saveUser(String username, Room r) {
 		User user = getUser(username);
 
 		if (!r.getUsers().contains(user)) {
@@ -349,15 +365,28 @@ public class RefreshingUserService implements UserService {
 			user.getRooms().add(r);
 			userDao.save(user);
 		}
-
 	}
 
 	@Override
 	public List<Room> getRooms() {
 		Iterable<Room> roomsIt = roomDao.findAll();
 		List<Room> rooms = getList(roomsIt);
+		rooms = filterRooms(rooms);
 
 		return rooms;
+	}
+
+	private List<Room> filterRooms(List<Room> rooms) {
+		List<Room> filtered = new ArrayList<Room>();
+		User current = getCurrentUser();
+
+		for (Room room : rooms) {
+			if (!room.getHidden() || room.getUsers().contains(current)) {
+				filtered.add(room);
+			}
+		}
+
+		return filtered;
 	}
 
 	@Override

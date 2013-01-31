@@ -4,6 +4,7 @@ import java.awt.FlowLayout;
 import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -13,6 +14,7 @@ import javax.swing.JTextField;
 public class JoinRoomView extends JDialog {
 	private JButton button;
 	private JTextField roomName;
+	private JCheckBox hiddenCheckbox = new JCheckBox("Hidden");
 
 	public JoinRoomView(JFrame parent) {
 		super(parent, "Raumname", true);
@@ -26,6 +28,7 @@ public class JoinRoomView extends JDialog {
 
 		p.add(label);
 		p.add(roomName);
+		p.add(hiddenCheckbox);
 		p.add(button);
 
 		add(p);
@@ -45,5 +48,21 @@ public class JoinRoomView extends JDialog {
 
 	public JTextField getRoomNameField() {
 		return this.roomName;
+	}
+
+	public JButton getButton() {
+		return button;
+	}
+
+	public void setButton(JButton button) {
+		this.button = button;
+	}
+
+	public JCheckBox getHiddenCheckbox() {
+		return hiddenCheckbox;
+	}
+
+	public void setHiddenCheckbox(JCheckBox hiddenCheckbox) {
+		this.hiddenCheckbox = hiddenCheckbox;
 	}
 }

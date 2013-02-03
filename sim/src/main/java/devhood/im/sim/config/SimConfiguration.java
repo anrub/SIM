@@ -637,7 +637,7 @@ public class SimConfiguration {
 	}
 
 	public boolean isShowOnlyJoinedRooms() {
-		boolean showOnlyJoinedRooms = Boolean.parseBoolean(getPreferences().get(SHOW_ONLY_JOINED_ROOMS_KEY, "true"));
+		boolean showOnlyJoinedRooms = Boolean.parseBoolean(getPreferences().get(SHOW_ONLY_JOINED_ROOMS_KEY, "false"));
 		return showOnlyJoinedRooms;
 	}
 

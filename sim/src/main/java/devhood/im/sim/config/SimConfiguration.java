@@ -176,14 +176,18 @@ public class SimConfiguration {
 	 * Key der Konfig ob die Tabs gecached werde sollen.
 	 */
 	public static String TAB_CACHE_KEY = "userColor";
-
+	
+	/**
+	 * Config Key, zeigt nur Raeume an, in denen sich der User befindet.
+	 */
+	public static String SHOW_ONLY_JOINED_ROOMS_KEY = "showOnlyJoinedRoons";
+	
 	public List<String> autojoinRooms = new LinkedList<String>();
 
 	@PostConstruct
 	public void init() {
 		autojoinRooms.add(getStreamTabName());
-	}
-
+	}	
 	public static String AUTOJOIN_KEY = "autojoinRooms";
 
 	public void saveAutojoinRooms(String rooms) {
@@ -630,6 +634,15 @@ public class SimConfiguration {
 
 	public void setSystemUsername(String systemUsername) {
 		this.systemUsername = systemUsername;
+	}
+
+	public boolean isShowOnlyJoinedRooms() {
+		boolean showOnlyJoinedRooms = Boolean.parseBoolean(getPreferences().get(SHOW_ONLY_JOINED_ROOMS_KEY, "true"));
+		return showOnlyJoinedRooms;
+	}
+
+	public void setShowOnlyJoinedRooms(boolean showOnlyJoinedRooms) {
+		getPreferences().put(SHOW_ONLY_JOINED_ROOMS_KEY, Boolean.toString(showOnlyJoinedRooms));
 	}
 
 }

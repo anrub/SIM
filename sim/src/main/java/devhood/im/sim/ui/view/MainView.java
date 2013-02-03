@@ -21,6 +21,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.model.UserStatus;
@@ -195,7 +197,24 @@ public class MainView {
 		JMenu configMenu = new JMenu("Optionen");
 		configMenuItem = new JMenuItem("Einstellungen",
 				simConfiguration.getConfigurationFrameIcon());
+		
+		JCheckBoxMenuItem showOnlyJoinedRooms = new JCheckBoxMenuItem("Zeige nur eigene Räume");
+		showOnlyJoinedRooms.setSelected(simConfiguration.isShowOnlyJoinedRooms());
+		showOnlyJoinedRooms.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					simConfiguration.setShowOnlyJoinedRooms(true);
+				} else if (e.getStateChange() == ItemEvent.DESELECTED) {
+					simConfiguration.setShowOnlyJoinedRooms(false);
+				}
+			}
+		});
+		
+		
 		configMenu.add(configMenuItem);
+		configMenu.add(showOnlyJoinedRooms);
 
 		JMenu lafMenu = createLayoutChangingMenu();
 		menuBar.add(lafMenu);

@@ -44,9 +44,9 @@ import devhood.im.sim.ui.util.UiUtil;
 
 /**
  * Panel zur Auswahl der User.
- *
+ * 
  * @author flo
- *
+ * 
  */
 @Named("userPanel")
 public class UserPanelView extends JPanel implements ApplicationContextAware {
@@ -122,14 +122,7 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 			showQuitChatMenuMouseListener = null;
 		}
 
-		boolean userIsInRoom = false;
-		for (User user : room.getUsers()) {
-			String name = user.getName();
-			String ownUsername = simConfiguration.getUsername();
-			if (name.equals(ownUsername)) {
-				userIsInRoom = true;
-			}
-		}
+		boolean userIsInRoom = isUserInRoom(room);
 
 		if (userIsInRoom) {
 			outlookBar.addBar(room.getName(), users, UiUtil.createImageIcon(
@@ -140,6 +133,18 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 					showQuitChatMenuMouseListener);
 		}
 
+	}
+
+	private boolean isUserInRoom(final Room room) {
+		boolean userIsInRoom = false;
+		for (User user : room.getUsers()) {
+			String name = user.getName();
+			String ownUsername = simConfiguration.getUsername();
+			if (name.equals(ownUsername)) {
+				userIsInRoom = true;
+			}
+		}
+		return userIsInRoom;
 	}
 
 	private JPanel updateUsers(Room room, Collection<User> userList) {
@@ -184,12 +189,15 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 		List<String> currentRooms = new ArrayList<String>();
 
 		for (Room r : orderedRoomList) {
-			if (!hasRoom(r)) {
-				addRoom(r);
-			} else {
-				addRoom(r);
+
+			if (isAddRoom(r)) {
+				if (!hasRoom(r)) {
+					addRoom(r);
+				} else {
+					addRoom(r);
+				}
+				currentRooms.add(r.getName());
 			}
-			currentRooms.add(r.getName());
 		}
 
 		Set<String> bars = outlookBar.getBars();
@@ -208,11 +216,27 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	}
 
 	/**
+	 * Gibt zurueck, ob der Raum hinzugefuegt werden soll, oder nicht.
+	 * 
+	 * @param room
+	 * @return true/false.
+	 */
+	private boolean isAddRoom(Room room) {
+		boolean add = true;
+
+		if (simConfiguration.isShowOnlyJoinedRooms() && !isUserInRoom(room)) {
+			add = false;
+		}
+
+		return add;
+	}
+
+	/**
 	 * Erzeugt das Label zur Anzeige des Benutzers im UserPanel.
-	 *
-	 *
+	 * 
+	 * 
 	 * param user User.
-	 *
+	 * 
 	 * @return Label
 	 */
 	public JLabel createUserLabel(final User user) {

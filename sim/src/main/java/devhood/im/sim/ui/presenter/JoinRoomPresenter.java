@@ -66,19 +66,16 @@ public class JoinRoomPresenter {
 						"Raumnamen dürfen maximal 15 Zeichen lang sein!",
 						"Raumname zu lang!", JOptionPane.WARNING_MESSAGE);
 			} else {
-				joinOrCreateRoomAndFireEvents(roomName, view
-						.getHiddenCheckbox().isSelected(), userService
+				joinOrCreateRoomAndFireEvents(roomName, userService
 						.getCurrentUser().getName());
 				view.dispose();
 			}
 		}
 	}
 
-	private void joinOrCreateRoomAndFireEvents(String roomName, boolean hidden,
-			String username) {
+	private void joinOrCreateRoomAndFireEvents(String roomName, String username) {
 		Room room = new Room();
 		room.setName(roomName);
-		room.setHidden(hidden);
 
 		userService.joinOrCreateRoom(username, room);
 

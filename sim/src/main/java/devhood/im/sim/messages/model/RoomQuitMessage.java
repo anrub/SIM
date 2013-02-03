@@ -1,7 +1,7 @@
 package devhood.im.sim.messages.model;
 
 /**
- * Nachricht wird versendet, wenn ein User den Raum verlässt
+ * Nachricht wird versendet, wenn ein User den Raum verlaesst
  *
  * @author flo
  *

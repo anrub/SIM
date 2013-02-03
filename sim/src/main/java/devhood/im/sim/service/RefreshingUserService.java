@@ -371,22 +371,7 @@ public class RefreshingUserService implements UserService {
 	public List<Room> getRooms() {
 		Iterable<Room> roomsIt = roomDao.findAll();
 		List<Room> rooms = getList(roomsIt);
-		rooms = filterRooms(rooms);
-
 		return rooms;
-	}
-
-	private List<Room> filterRooms(List<Room> rooms) {
-		List<Room> filtered = new ArrayList<Room>();
-		User current = getCurrentUser();
-
-		for (Room room : rooms) {
-			if (!room.getHidden() || room.getUsers().contains(current)) {
-				filtered.add(room);
-			}
-		}
-
-		return filtered;
 	}
 
 	@Override

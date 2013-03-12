@@ -71,6 +71,7 @@ public class SimMain {
 		GenericXmlApplicationContext context = new GenericXmlApplicationContext();
 
 		context.setValidating(false);
+		context.getEnvironment().setActiveProfiles("production");
 		context.load("classpath:/devhood/im/sim/applicationContext.xml");
 		context.refresh();
 		MainPresenter presenter = context.getBean(MainPresenter.class);

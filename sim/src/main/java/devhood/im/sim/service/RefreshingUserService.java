@@ -26,9 +26,9 @@ import devhood.im.sim.service.interfaces.UserService;
 /**
  * Dieser {@link UserService} aktualisiert sich selbst und den uebergebenen User
  * regelmaessg.
- * 
+ *
  * @author flo
- * 
+ *
  */
 @Named
 @Transactional
@@ -85,6 +85,11 @@ public class RefreshingUserService implements UserService {
 	}
 
 	private User currentUser;
+
+
+	@Inject
+	private UserValidator userValidator;
+
 
 	public void updateCurrentUserScheduled() {
 
@@ -149,7 +154,11 @@ public class RefreshingUserService implements UserService {
 	 */
 	@Override
 	public Iterable<User> getUsers() {
-		return userDao.findAll();
+		Iterable<User> users =  userDao.findAll();
+		for ( User u : users) {
+			validateUser(u);
+		}
+		return users;
 	}
 
 	/**
@@ -157,7 +166,7 @@ public class RefreshingUserService implements UserService {
 	 */
 	@Override
 	public void refreshUsers() {
-		Iterable<User> users = userDao.findAll();
+		Iterable<User> users = getUsers();
 		processNewOrRemovedUsers(users);
 	}
 
@@ -190,7 +199,7 @@ public class RefreshingUserService implements UserService {
 	 * Verarbeitet die USer und prüft ob sie bereits vorhanden, oder neu, oder
 	 * nicht mehr vorhanden sind. Benachrichtigt den userChangeListener in
 	 * beiden fällen.
-	 * 
+	 *
 	 * @param users
 	 *            aktuelle USer aus der dB.
 	 */
@@ -252,7 +261,7 @@ public class RefreshingUserService implements UserService {
 
 	/**
 	 * Fuegt einen {@link UserChangeObserver} ein.
-	 * 
+	 *
 	 * @param listener
 	 *            Listener.
 	 */
@@ -273,9 +282,7 @@ public class RefreshingUserService implements UserService {
 				@Override
 				public void run() {
 					try {
-						UserService s = applicationContext
-								.getBean(UserService.class);
-						s.purgeOfflineUsers();
+						purgeOfflineUsers();
 						refreshUsers();
 					} catch (Exception e) {
 						// Sollte eine Exception fliegen, soll der Timer
@@ -296,7 +303,7 @@ public class RefreshingUserService implements UserService {
 	 * wurden, wird eine Liste zurueckgegeben, die bei contains immer true
 	 * zurueck gibt. (Da noch nicht klar ist, ob der User vorhanden ist oder
 	 * nicht, hacky).
-	 * 
+	 *
 	 * @return list von usern.
 	 */
 	@Override
@@ -328,7 +335,16 @@ public class RefreshingUserService implements UserService {
 
 	@Override
 	public User getUser(String name) {
-		return userDao.findByTheUsersName(name);
+		User u = userDao.findByTheUsersName(name);
+		validateUser(u);
+		return u;
+	}
+
+	private void validateUser(User u) {
+		if (u != null) {
+			boolean valid = userValidator.isValid(u);
+			u.setValid(valid);
+		}
 	}
 
 	@Override
@@ -371,6 +387,13 @@ public class RefreshingUserService implements UserService {
 	public List<Room> getRooms() {
 		Iterable<Room> roomsIt = roomDao.findAll();
 		List<Room> rooms = getList(roomsIt);
+
+		for ( Room r : rooms ) {
+			for ( User u : r.getUsers() ) {
+				validateUser(u);
+			}
+		}
+
 		return rooms;
 	}
 

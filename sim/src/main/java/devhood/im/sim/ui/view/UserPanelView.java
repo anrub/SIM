@@ -18,6 +18,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -44,9 +45,9 @@ import devhood.im.sim.ui.util.UiUtil;
 
 /**
  * Panel zur Auswahl der User.
- * 
+ *
  * @author flo
- * 
+ *
  */
 @Named("userPanel")
 public class UserPanelView extends JPanel implements ApplicationContextAware {
@@ -67,7 +68,6 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	 */
 	private String noQuitPossibleRoom;
 
-	private String tooltip;
 
 	@Inject
 	private SimConfiguration simConfiguration;
@@ -217,7 +217,7 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 
 	/**
 	 * Gibt zurueck, ob der Raum hinzugefuegt werden soll, oder nicht.
-	 * 
+	 *
 	 * @param room
 	 * @return true/false.
 	 */
@@ -233,16 +233,22 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 
 	/**
 	 * Erzeugt das Label zur Anzeige des Benutzers im UserPanel.
-	 * 
-	 * 
+	 *
+	 *
 	 * param user User.
-	 * 
+	 *
 	 * @return Label
 	 */
 	public JLabel createUserLabel(final User user) {
-		final JLabel userLabel = new JLabel(user.getName());
-		if (tooltip != null) {
-			userLabel.setToolTipText(tooltip);
+		String label = user.getName();
+		if ( !user.isValid() ) {
+			label = label + " (unsicher)";
+		}
+
+		final JLabel userLabel = new JLabel(label);
+
+		if ( !user.isValid()) {
+			userLabel.setToolTipText("Die Identität des Benutzers konnte nicht sichergestellt werden!");
 		}
 
 		final JMenuItem sendFileItem = new JMenuItem("Send File");
@@ -272,6 +278,13 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 				.getName(), popupMenu));
 
 		userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		setUserLabelIcon(user, userLabel);
+		userLabel.setMinimumSize(new Dimension(100, 20));
+
+		return userLabel;
+	}
+
+	private void setUserLabelIcon(final User user, final JLabel userLabel) {
 		if (UserStatus.AVAILABLE.equals(user.getStatusType())) {
 			userLabel.setIcon(UiUtil.createImageIcon(
 					"/images/bullet_ball_glass_green.png", ""));
@@ -283,9 +296,13 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 					"/images/bullet_ball_glass_red.png", ""));
 		}
 
-		userLabel.setMinimumSize(new Dimension(100, 20));
+		if (!user.isValid()) {
+			ImageIcon icon = UiUtil
+					.createImageIcon("/images/exclamation.png",
+							"Die Identität dieses Benutzers konnte nicht sichergestellt werden!");
 
-		return userLabel;
+			userLabel.setIcon(icon);
+		}
 	}
 
 	public JOutlookBar getOutlookBar() {
@@ -421,13 +438,5 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	public void setAddToAutojoinListener(ItemListener itemListener) {
 		this.addToAutojoinListener = itemListener;
 
-	}
-
-	public String getTooltip() {
-		return tooltip;
-	}
-
-	public void setTooltip(String tooltip) {
-		this.tooltip = tooltip;
 	}
 }

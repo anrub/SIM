@@ -16,6 +16,15 @@ public class UserValidatorTest {
 	public void setup() {
 		underTest = new UserValidator();
 	}
+	@Test
+	public void testIsValid_invalid() {
+		User user = new User();
+		user.setAddress("localhost");
+		user.setName("Fakeuser");
+
+		boolean isvalid = underTest.isValid(user);
+		Assert.assertFalse(isvalid);
+	}
 
 	@Test
 	public void testIsValid() {

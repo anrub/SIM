@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.inject.Named;
+
+import org.apache.log4j.Logger;
 
 import devhood.im.sim.model.User;
 
@@ -23,7 +25,9 @@ public class UserValidator {
 
 	private String validationCommand = "WMIC /Node:{0} ComputerSystem Get UserName";
 
-	private List<User> users = new ArrayList<User>();
+	private List<User> users = new CopyOnWriteArrayList<User>();
+
+	private static Logger log = Logger.getLogger(UserValidator.class);
 
 	/**
 	 * Gibt zurueck ob der Benutzer valide ist. Prueft ob die validationCommand
@@ -37,38 +41,20 @@ public class UserValidator {
 	 * @return true/false
 	 */
 	public boolean isValid(User user) {
+		boolean valid = false;
+
 		if (user == null) {
-			return false;
-		}
-		if (inCache(user)) {
+			return valid;
+		} else if (inCache(user)) {
 			User u = fromCache(user);
 			return u.isValid();
 		} else {
 			addToCache(user);
 		}
 
-		boolean valid = false;
 		try {
-			String ip = user.getAddress();
-			try {
-				InetAddress address = InetAddress.getByName(user.getAddress());
-				ip = address.getHostAddress();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			String cmd = MessageFormat.format(validationCommand, ip);
-			Process p = Runtime.getRuntime().exec("cmd /c " + cmd);
-			p.waitFor();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					p.getInputStream()));
-			String line = reader.readLine();
-			StringBuilder builder = new StringBuilder();
-			while (line != null) {
-				builder.append(line);
-				line = reader.readLine();
-			}
-
-			valid = validate(user, builder.toString());
+			String output = resolveRemoteUser(user);
+			valid = validate(user, output);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException ie) {
@@ -78,10 +64,53 @@ public class UserValidator {
 		return valid;
 	}
 
-	private boolean validate(User user, String string) {
+	/**
+	 * Ruft "cmd /c " + validationCommand auf und gibt die Ausgabe zurueck.
+	 *
+	 * @param user
+	 *            User
+	 * @return ausgabe
+	 * @throws IOException
+	 *             excep
+	 * @throws InterruptedException
+	 *             excep
+	 */
+	public String resolveRemoteUser(User user) throws IOException,
+			InterruptedException {
+		String ip = getIp(user);
+		String cmd = MessageFormat.format(validationCommand, ip);
+		Process p = Runtime.getRuntime().exec("cmd /c " + cmd);
+		p.waitFor();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				p.getInputStream()));
+		String line = reader.readLine();
+		StringBuilder builder = new StringBuilder();
+		while (line != null) {
+			builder.append(line);
+			line = reader.readLine();
+		}
+
+		log.info("Identify User: " + user.getName() + " IP: " + ip
+				+ " Wmic run..output:" + builder.toString());
+		return builder.toString();
+	}
+
+	private String getIp(User user) {
+		String ip = user.getAddress();
+		try {
+			InetAddress address = InetAddress.getByName(user.getAddress());
+			ip = address.getHostAddress();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ip;
+	}
+
+	private boolean validate(User toValidate, String resolvedRemoteUsername) {
 		boolean valid = false;
 
-		if (user.getName() != null && string.contains(user.getName())) {
+		if (toValidate.getName() != null
+				&& resolvedRemoteUsername.contains(toValidate.getName())) {
 			valid = true;
 		}
 
@@ -89,6 +118,11 @@ public class UserValidator {
 	}
 
 	private void addToCache(User user) {
+		for (User u : users) {
+			if (user.getName().equals(u.getName())) {
+				users.remove(u);
+			}
+		}
 		users.add(user);
 	}
 

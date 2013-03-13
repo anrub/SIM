@@ -22,7 +22,7 @@
 				<!-- <property name="database" value="SQL_SERVER" /> -->
 				<property name="database" value="MYSQL" />
 				<!--<property name="database" value="HSQL" />-->
-				<property name="showSql" value="true" />
+<!-- 				<property name="showSql" value="true" /> -->
 
 			</bean>
 		</property>

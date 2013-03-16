@@ -7,10 +7,9 @@ import java.net.InetAddress;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 
 import javax.inject.Named;
-
-import org.apache.log4j.Logger;
 
 import devhood.im.sim.model.User;
 
@@ -27,7 +26,8 @@ public class UserValidator {
 
 	private List<User> users = new CopyOnWriteArrayList<User>();
 
-	private static Logger log = Logger.getLogger(UserValidator.class);
+	private static Logger log = Logger
+			.getLogger(UserValidator.class.toString());
 
 	/**
 	 * Gibt zurueck ob der Benutzer valide ist. Prueft ob die validationCommand

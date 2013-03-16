@@ -241,9 +241,6 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	 */
 	public JLabel createUserLabel(final User user) {
 		String label = user.getName();
-		if ( !user.isValid() ) {
-			label = label + " (unsicher)";
-		}
 
 		final JLabel userLabel = new JLabel(label);
 

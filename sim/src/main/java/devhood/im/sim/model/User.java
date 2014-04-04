@@ -25,13 +25,6 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @Entity
 @Table(name = "UserWithRooms")
 public class User extends AbstractPersistable<Long> {
-
-	/**
-	 * Gibt an ob dieser User valid ist. Wenn invalid, kann der Identitaet des Users nicht vertraut werden.
-	 */
-	@Transient
-	public boolean valid;
-
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "RoomUser", joinColumns = { @JoinColumn(nullable = true, name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(nullable = true, name = "room_id", referencedColumnName = "id") })
 	@Column(nullable = true)
@@ -168,14 +161,6 @@ public class User extends AbstractPersistable<Long> {
 
 	public void setRooms(List<Room> rooms) {
 		this.rooms = rooms;
-	}
-
-	public boolean isValid() {
-		return valid;
-	}
-
-	public void setValid(boolean valid) {
-		this.valid = valid;
 	}
 
 }

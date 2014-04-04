@@ -14,7 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
-import devhood.im.sim.ui.util.SmileyFactory;
+import devhood.im.sim.ui.smiley.SmileyFactory;
 import devhood.im.sim.ui.util.UiUtil;
 import devhood.im.sim.ui.view.SmileyView;
 
@@ -25,6 +25,7 @@ public class SmileyPanelPresenter {
 	private SmileyView view;
 
 	@Inject
+	@Named("bundleSmileyFactory")
 	private SmileyFactory smileyFactory;
 
 	private MouseListener smileyIconMouseListener;
@@ -54,9 +55,7 @@ public class SmileyPanelPresenter {
 			String smileyCode = key.replace("&gt;", ">").replace("&lt;", "<")
 					.replace("&amp;", "&").replace("&quot;", "\"");
 			ImageIcon img = UiUtil
-					.createImageIcon(
-							"/images/yahoo_smileys/"
-									+ smileyFactory.getSmileys().get(
+					.createImageIcon(smileyFactory.getSmileys().get(
 											smileyShortcutPathMap.get(key)),
 							smileyCode);
 			JLabel smileyLabel = new JLabel(img);

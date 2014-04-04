@@ -260,11 +260,7 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 		String label = user.getName();
 
 		final JLabel userLabel = new JLabel(label);
-
-		if ( !user.isValid()) {
-			userLabel.setToolTipText("Die Identität des Benutzers konnte nicht sichergestellt werden!");
-		}
-
+		
 		final JMenuItem sendFileItem = new JMenuItem("Send File");
 		sendFileItem.addMouseListener(new MouseAdapter() {
 
@@ -308,14 +304,6 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 		} else if (UserStatus.NOT_AVAILABLE.equals(user.getStatusType())) {
 			userLabel.setIcon(UiUtil.createImageIcon(
 					"/images/bullet_ball_glass_red.png", ""));
-		}
-
-		if (!user.isValid()) {
-			ImageIcon icon = UiUtil
-					.createImageIcon("/images/exclamation.png",
-							"Die Identität dieses Benutzers konnte nicht sichergestellt werden!");
-
-			userLabel.setIcon(icon);
 		}
 	}
 

@@ -4,13 +4,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import devhood.im.sim.ui.util.SmileyFactory;
 import devhood.im.sim.ui.util.UiUtil;
 
 @Named
@@ -22,9 +20,6 @@ public class SmileyView extends JFrame {
 
 	private int x = 0;
 	private int y = 0;
-
-	@Inject
-	public SmileyFactory smileyFactory;
 
 	@PostConstruct
 	public void init() {

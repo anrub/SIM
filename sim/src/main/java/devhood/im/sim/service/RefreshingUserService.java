@@ -86,11 +86,6 @@ public class RefreshingUserService implements UserService {
 
 	private User currentUser;
 
-
-	@Inject
-	private UserValidator userValidator;
-
-
 	public void updateCurrentUserScheduled() {
 
 		currentUser = getUser(simConfiguration.getUsername());
@@ -155,9 +150,6 @@ public class RefreshingUserService implements UserService {
 	@Override
 	public Iterable<User> getUsers() {
 		Iterable<User> users =  userDao.findAll();
-		for ( User u : users) {
-			validateUser(u);
-		}
 		return users;
 	}
 
@@ -336,15 +328,7 @@ public class RefreshingUserService implements UserService {
 	@Override
 	public User getUser(String name) {
 		User u = userDao.findByTheUsersName(name);
-		validateUser(u);
 		return u;
-	}
-
-	private void validateUser(User u) {
-		if (u != null) {
-			boolean valid = userValidator.isValid(u);
-			u.setValid(valid);
-		}
 	}
 
 	@Override
@@ -387,12 +371,6 @@ public class RefreshingUserService implements UserService {
 	public List<Room> getRooms() {
 		Iterable<Room> roomsIt = roomDao.findAll();
 		List<Room> rooms = getList(roomsIt);
-
-		for ( Room r : rooms ) {
-			for ( User u : r.getUsers() ) {
-				validateUser(u);
-			}
-		}
 
 		return rooms;
 	}

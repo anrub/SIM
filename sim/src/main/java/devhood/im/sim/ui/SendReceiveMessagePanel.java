@@ -64,8 +64,8 @@ import devhood.im.sim.ui.event.EventObserver;
 import devhood.im.sim.ui.event.Events;
 import devhood.im.sim.ui.presenter.SmileyPanelPresenter;
 import devhood.im.sim.ui.presenter.UserPanelPresenter;
+import devhood.im.sim.ui.smiley.SmileyFactory;
 import devhood.im.sim.ui.util.SimpleTabCache;
-import devhood.im.sim.ui.util.SmileyFactory;
 import devhood.im.sim.ui.util.Splitter;
 import devhood.im.sim.ui.util.UiUtil;
 import devhood.im.sim.ui.util.UserColorFactory;
@@ -114,6 +114,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 	private UserColorFactory userColorFactory;
 
 	@Inject
+	@Named("bundleSmileyFactory")
 	private SmileyFactory smileyFactory;
 
 	@Inject

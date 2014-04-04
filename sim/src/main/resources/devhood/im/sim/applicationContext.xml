@@ -30,17 +30,17 @@
 	</bean>
 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
-		<property name="url" value="jdbc:mysql://localhost:3306/sim" />
+<!-- 		<property name="url" value="jdbc:mysql://localhost:3306/sim" /> -->
 		
-<!-- 				<property name="url" value="jdbc:hsqldb:hsql://localhost/simdb" /> -->
+				<property name="url" value="jdbc:hsqldb:hsql://localhost/simdb" />
 
 		<!-- <property name="driverClassName" value="net.sourceforge.jtds.jdbc.Driver" 
 			/> -->
-<!-- 		<property name="driverClassName" value="org.hsqldb.jdbcDriver" /> -->
+		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
 		
-		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="username" value="root" />
-<!-- 				<PROPERTY NAME="USERNAME" VALUE="SA" /> -->
+<!-- 		<property name="driverClassName" value="com.mysql.jdbc.Driver" /> -->
+<!-- 		<property name="username" value="root" /> -->
+				<property name="username" value="sa" />
 		<property name="password" value="" />
 	</bean>
 

@@ -1,4 +1,4 @@
-package devhood.im.sim.ui.util;
+package devhood.im.sim.ui.smiley;
 
 import java.util.Map;
 

@@ -4,7 +4,7 @@ public class Receiver {
 	private String name;
 
 	/**
-	 * Ist der Empfänger ein Raum.
+	 * Ist der Empfaenger ein Raum.
 	 */
 	private boolean room;
 

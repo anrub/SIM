@@ -10,6 +10,7 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -159,14 +160,30 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 
 		BoxLayout usersLayout = new BoxLayout(users, BoxLayout.PAGE_AXIS);
 		users.setLayout(usersLayout);
-
+		
+		List<JLabel> labels = new ArrayList<JLabel>();
+		
 		for (User u : userList) {
 			if (u != null && u.getName() != null) {
 				JLabel userLabel = createUserLabel(u);
-				users.add(userLabel);
+				labels.add(userLabel);
 			}
+			sortLabels(labels);
 		}
+		for ( JLabel userLabel : labels ) {
+			users.add(userLabel);
+		}
+
 		return users;
+	}
+
+	private void sortLabels(List<JLabel> labels) {
+		labels.sort(new Comparator<JLabel>() {
+			@Override
+			public int compare(JLabel o1, JLabel o2) {
+				return o1.getText().compareTo(o2.getText());
+			}
+		});
 	}
 
 	private String firstBarLabel;

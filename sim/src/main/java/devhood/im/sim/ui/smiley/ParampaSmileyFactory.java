@@ -24,7 +24,7 @@ public class ParampaSmileyFactory implements SmileyFactory {
 	/* Hier sind zu jedem Smiley-Kürzel die Grafik-Pfade hinterlegt. */
 	private Map<String[], String> smileys = new HashMap<String[], String>();
 
-	private String imagePath = "/images/parampaa_smileys/";
+	private String imagePath = "/images/parampaa_smileys/images/";
 
 	private ApplySmiley applySmileyCmd = new ApplySmiley();
 
@@ -47,7 +47,7 @@ public class ParampaSmileyFactory implements SmileyFactory {
 			File f = new File(getClass().getResource(imagePath).toURI());
 
 			for (String smileyName : f.list()) {
-				smileys.put(new String[] { ":" + smileyName + ":" }, imagePath
+				smileys.put(new String[] { "#p" + smileyName + "#" }, imagePath
 						+ smileyName);
 			}
 		} catch (URISyntaxException e) {

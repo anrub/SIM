@@ -49,7 +49,8 @@ public class SmileyPanelPresenter {
 	public void initPanel() {
 		initialized = true;
 		List<String> sortedKeyList = initSmileys();
-
+		List<JLabel> smileyLabels = new ArrayList<JLabel>();
+		
 		for (String key : sortedKeyList) {
 
 			String smileyCode = key.replace("&gt;", ">").replace("&lt;", "<")
@@ -62,9 +63,10 @@ public class SmileyPanelPresenter {
 			smileyLabel.setToolTipText(smileyCode);
 			smileyLabel.addMouseListener(smileyIconMouseListener);
 
-			view.addSmiley(smileyLabel);
+			smileyLabels.add(smileyLabel);
 		}
-
+		view.addSmileys(smileyLabels);
+		
 		view.revalidate();
 
 	}

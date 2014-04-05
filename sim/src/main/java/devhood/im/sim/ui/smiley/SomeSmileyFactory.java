@@ -47,7 +47,7 @@ public class SomeSmileyFactory implements SmileyFactory {
 			File f = new File(getClass().getResource(imagePath).toURI());
 
 			for (String smileyName : f.list()) {
-				smileys.put(new String[] { ":s_" + smileyName + ":" }, imagePath
+				smileys.put(new String[] { "#s" + smileyName + "#" }, imagePath
 						+ smileyName);
 
 			}

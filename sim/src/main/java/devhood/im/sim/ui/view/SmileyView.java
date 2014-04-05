@@ -2,6 +2,9 @@ package devhood.im.sim.ui.view;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
@@ -52,6 +55,18 @@ public class SmileyView extends JFrame {
 
 		repaint();
 		pack();
+	}
+
+	public void addSmileys(List<JLabel> smileyLabels) {
+		Collections.sort(smileyLabels, new Comparator<JLabel>() {
+			@Override
+			public int compare(JLabel o1, JLabel o2) {
+				return o1.getToolTipText().compareTo(o2.getToolTipText());
+			}
+		});
+		for (JLabel l : smileyLabels) {
+			addSmiley(l);
+		}
 	}
 
 }

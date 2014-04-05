@@ -54,13 +54,13 @@ public class ArtDesignerSmileyFactory implements SmileyFactory {
 			File f = new File(getClass().getResource(imagePath + "32/").toURI());
 
 			for (String smileyName : f.list()) {
-				smileys.put(new String[] { ":" + smileyName + ":" }, imagePath
+				smileys.put(new String[] { "#" + smileyName + "#" }, imagePath
 						+ "32/" + smileyName);
 
-				privateSmileys.put(new String[] { ":" + smileyName + ":!" },
+				privateSmileys.put(new String[] { "#" + smileyName + "#!" },
 						imagePath + "64/" + smileyName);
 
-				privateSmileys.put(new String[] { ":" + smileyName + ":!!" },
+				privateSmileys.put(new String[] { "#" + smileyName + "#!!" },
 						imagePath + "128/" + smileyName);
 
 			}

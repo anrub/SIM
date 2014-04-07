@@ -18,7 +18,9 @@ public class ArtDesignerSmileyFactory implements SmileyFactory {
 	private static Logger log = Logger.getLogger(ArtDesignerSmileyFactory.class
 			.toString());
 
-	/* Hier sind zu jedem Smiley-Kürzel die Grafik-Pfade hinterlegt. */
+	/**
+	 * Smilies.
+	 */
 	private SmileyPack smileys = new SmileyPack();
 
 	/**
@@ -26,6 +28,7 @@ public class ArtDesignerSmileyFactory implements SmileyFactory {
 	 */
 	private SmileyPack privateSmileys = new SmileyPack();
 
+	
 	private String imagePath = "/smilies/artdesigner/images/";
 
 	private ApplySmiley applySmileyCmd = new ApplySmiley();
@@ -59,6 +62,8 @@ public class ArtDesignerSmileyFactory implements SmileyFactory {
 					+ e.getMessage());
 			e.printStackTrace();
 		}
+		
+		smileys.setName("Artdesign Pack");
 	}
 
 	@Override

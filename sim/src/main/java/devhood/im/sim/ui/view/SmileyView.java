@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import devhood.im.sim.ui.smiley.module.SmileyPack;
 import devhood.im.sim.ui.util.UiUtil;
 
 @Named
@@ -28,9 +29,11 @@ public class SmileyView extends JFrame {
 	public void init() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setIconImage(UiUtil.createImage("/images/smile.gif"));
+		
 		GridBagLayout layout = new GridBagLayout();
 		add(smileyPanel);
 		smileyPanel.setLayout(layout);
+
 	}
 
 	public void addSmiley(JLabel smileyLabel) {
@@ -38,7 +41,7 @@ public class SmileyView extends JFrame {
 		c.gridy = y;
 		smileyPanel.add(smileyLabel, c);
 
-		if (y < 10) {
+		if (y < 6) {
 			y++;
 		} else {
 			y = 0;

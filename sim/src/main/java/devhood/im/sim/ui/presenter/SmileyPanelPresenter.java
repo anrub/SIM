@@ -1,29 +1,21 @@
 package devhood.im.sim.ui.presenter;
 
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 
 import devhood.im.sim.ui.smiley.SmileyFactory;
-import devhood.im.sim.ui.smiley.module.Mapping;
-import devhood.im.sim.ui.util.UiUtil;
-import devhood.im.sim.ui.view.SmileyView;
+import devhood.im.sim.ui.smiley.module.BundleSmileyPack;
+import devhood.im.sim.ui.smiley.module.SmileyPack;
+import devhood.im.sim.ui.view.BundleSmileyView;
 
 @Named
 public class SmileyPanelPresenter {
 
 	@Inject
-	private SmileyView view;
+	private BundleSmileyView view;
 
 	@Inject
 	@Named("bundleSmileyFactory")
@@ -47,28 +39,10 @@ public class SmileyPanelPresenter {
 
 	public void initPanel() {
 		initialized = true;
-		List<JLabel> smileyLabels = new ArrayList<JLabel>();
-
-		List<String> addedPaths = new ArrayList<String>();
-		for (Mapping m : smileyFactory.getSmileys().getMappings().getMapping()) {
-			String imagePath = m.getIcon();
-			String key = m.getShortcut()[0];
-
-			addedPaths.add(imagePath);
-
-			String smileyCode = key.replace("&gt;", ">").replace("&lt;", "<")
-					.replace("&amp;", "&").replace("&quot;", "\"");
-			ImageIcon img = UiUtil.createImageIcon(imagePath, smileyCode);
-			
-			JLabel smileyLabel = new JLabel(img);
-			smileyLabel.setToolTipText(smileyCode);
-			smileyLabel.addMouseListener(smileyIconMouseListener);
-
-			smileyLabels.add(smileyLabel);
+		BundleSmileyPack bundle = (BundleSmileyPack) smileyFactory.getSmileys();
+		for (SmileyPack pack : bundle) {
+			view.addSmileyPack(pack, smileyIconMouseListener);
 		}
-		view.addSmileys(smileyLabels);
-
-		view.revalidate();
 
 	}
 

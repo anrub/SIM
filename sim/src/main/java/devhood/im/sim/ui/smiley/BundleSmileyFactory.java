@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.xml.bind.JAXBContext;
 
+import devhood.im.sim.ui.smiley.module.BundleSmileyPack;
 import devhood.im.sim.ui.smiley.module.Mapping;
 import devhood.im.sim.ui.smiley.module.SmileyPack;
 
@@ -32,11 +33,6 @@ public class BundleSmileyFactory extends BundleFactory implements SmileyFactory 
 	private static final String SIM_XML = ".*.sim.xml";
 
 	/**
-	 * Smileys, Shortcut->Pfad zum Icon
-	 */
-	private SmileyPack smileys = new SmileyPack();
-
-	/**
 	 * Command wendet Smilies auf Tokens an.
 	 */
 	private ApplySmiley applySmileyCmd = new ApplySmiley();
@@ -45,6 +41,8 @@ public class BundleSmileyFactory extends BundleFactory implements SmileyFactory 
 	 * Factories aus dem Factory-Element der Configfiles.
 	 */
 	private List<SmileyFactory> factories = new ArrayList<SmileyFactory>();
+
+	private BundleSmileyPack bundleSmileyPack = new BundleSmileyPack();
 
 	private static Logger LOG = Logger.getLogger(BundleSmileyFactory.class
 			.toString());
@@ -79,15 +77,15 @@ public class BundleSmileyFactory extends BundleFactory implements SmileyFactory 
 			}
 		}
 		if (applied == false) {
-			c2 = applySmileyCmd.applySmiles(c, smileys);
+			c2 = applySmileyCmd.applySmiles(c, bundleSmileyPack);
 		}
 
 		return c2;
 	}
 
 	@Override
-	public SmileyPack getSmileys() {
-		return smileys;
+	public BundleSmileyPack getSmileys() {
+		return bundleSmileyPack;
 	}
 
 	public void evaluateFile(Path file) throws Exception {
@@ -96,20 +94,14 @@ public class BundleSmileyFactory extends BundleFactory implements SmileyFactory 
 				.newInstance("devhood.im.sim.ui.smiley.module");
 		Object o = jaxbContext.createUnmarshaller().unmarshal(file.toFile());
 		final SmileyPack pack = (SmileyPack) o;
-		insertPack(pack);
-		
+
 		if (pack.getAutoScan() != null && pack.getAutoScan().length() > 0) {
 			autoScan(pack);
-			insertPack(pack);
 		}
 		if (pack.getFactory() != null && pack.getFactory().length() > 0) {
 			addFactories(pack);
-			insertPack(pack);
 		}
-	}
-
-	private void insertPack(final SmileyPack pack) {
-		smileys.getMappings().getMapping().addAll(pack.getMappings().getMapping());
+		bundleSmileyPack.add(pack);
 	}
 
 	/**
@@ -131,7 +123,7 @@ public class BundleSmileyFactory extends BundleFactory implements SmileyFactory 
 
 		for (SmileyFactory fac : factories) {
 			for (Mapping m : fac.getSmileys().getMappings().getMapping()) {
-				smileys.addMapping(m);
+				pack.addMapping(m);
 			}
 		}
 	}

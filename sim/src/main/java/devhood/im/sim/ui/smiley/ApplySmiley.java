@@ -12,7 +12,11 @@ public class ApplySmiley {
 	 *            text Der Text in dem die Smiley's ausgetausch werden sollen.
 	 */
 	public String applySmiles(String text, SmileyPack smileys) {
-		Mapping mapping = smileys.getMappings().getMapping(text);
+		
+		String smileyCode = text.replace("&gt;", ">").replace("&lt;", "<")
+				.replace("&amp;", "&").replace("&quot;", "\"");
+		
+		Mapping mapping = smileys.getMappings().getMapping(smileyCode);
 
 		if (mapping != null) {
 			return "<img src=\"" + getClass().getResource(mapping.getIcon())

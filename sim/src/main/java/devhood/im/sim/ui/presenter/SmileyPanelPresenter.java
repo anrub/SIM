@@ -15,6 +15,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 import devhood.im.sim.ui.smiley.SmileyFactory;
+import devhood.im.sim.ui.smiley.module.Mapping;
 import devhood.im.sim.ui.util.UiUtil;
 import devhood.im.sim.ui.view.SmileyView;
 
@@ -29,8 +30,6 @@ public class SmileyPanelPresenter {
 	private SmileyFactory smileyFactory;
 
 	private MouseListener smileyIconMouseListener;
-
-	private Map<String, String[]> smileyShortcutPathMap = new HashMap<String, String[]>();
 
 	private boolean initialized;
 
@@ -48,17 +47,19 @@ public class SmileyPanelPresenter {
 
 	public void initPanel() {
 		initialized = true;
-		List<String> sortedKeyList = initSmileys();
 		List<JLabel> smileyLabels = new ArrayList<JLabel>();
-		
-		for (String key : sortedKeyList) {
+
+		List<String> addedPaths = new ArrayList<String>();
+		for (Mapping m : smileyFactory.getSmileys().getMappings().getMapping()) {
+			String imagePath = m.getIcon();
+			String key = m.getShortcut()[0];
+
+			addedPaths.add(imagePath);
 
 			String smileyCode = key.replace("&gt;", ">").replace("&lt;", "<")
 					.replace("&amp;", "&").replace("&quot;", "\"");
-			ImageIcon img = UiUtil
-					.createImageIcon(smileyFactory.getSmileys().get(
-											smileyShortcutPathMap.get(key)),
-							smileyCode);
+			ImageIcon img = UiUtil.createImageIcon(imagePath, smileyCode);
+			
 			JLabel smileyLabel = new JLabel(img);
 			smileyLabel.setToolTipText(smileyCode);
 			smileyLabel.addMouseListener(smileyIconMouseListener);
@@ -66,22 +67,9 @@ public class SmileyPanelPresenter {
 			smileyLabels.add(smileyLabel);
 		}
 		view.addSmileys(smileyLabels);
-		
+
 		view.revalidate();
 
-	}
-
-	public List<String> initSmileys() {
-		Set<String[]> keySet = smileyFactory.getSmileys().keySet();
-		List<String> keyListForSorting = new ArrayList<String>();
-		for (String[] keys : keySet) {
-			smileyShortcutPathMap.put(keys[0], keys);
-			keyListForSorting.add(keys[0]);
-		}
-
-		Collections.sort(keyListForSorting);
-
-		return keyListForSorting;
 	}
 
 	public MouseListener getSmileyIconMouseListener() {

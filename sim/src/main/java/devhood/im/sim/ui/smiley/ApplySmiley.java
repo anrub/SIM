@@ -1,26 +1,22 @@
 package devhood.im.sim.ui.smiley;
 
-import java.util.Map;
+import devhood.im.sim.ui.smiley.module.Mapping;
+import devhood.im.sim.ui.smiley.module.SmileyPack;
 
 public class ApplySmiley {
-	
+
 	/**
 	 * Tauscht die Smiley-Kürzel gegen die Smiley-Grafiken aus.
 	 * 
 	 * @param String
 	 *            text Der Text in dem die Smiley's ausgetausch werden sollen.
 	 */
-	public String applySmiles(String text, Map<String[], String> smileys) {
+	public String applySmiles(String text, SmileyPack smileys) {
+		Mapping mapping = smileys.getMappings().getMapping(text);
 
-		for (String[] keys : smileys.keySet()) {
-			for (String key : keys) {
-				if (text.equals(key)) {
-					return "<img src=\""
-							+ getClass().getResource(
-									smileys.get(keys)).toString()
-							+ " \" />";
-				}
-			}
+		if (mapping != null) {
+			return "<img src=\"" + getClass().getResource(mapping.getIcon())
+					+ " \" />";
 		}
 
 		return text;

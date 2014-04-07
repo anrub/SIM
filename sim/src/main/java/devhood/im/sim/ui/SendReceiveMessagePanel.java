@@ -201,7 +201,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 		});
 
 		final JButton smileyButton = new JButton(UiUtil.createImageIcon(
-				"/images/yahoo_smileys/01.gif", ":)"));
+				"/images/smile.gif", ":)"));
 
 		smileyPanelPresenter.setSmileyIconMouseListener(new MouseAdapter() {
 

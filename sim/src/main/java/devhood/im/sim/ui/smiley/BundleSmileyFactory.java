@@ -1,44 +1,180 @@
 package devhood.im.sim.ui.smiley;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.logging.Logger;
 
-import javax.inject.Inject;
 import javax.inject.Named;
+import javax.xml.bind.JAXBContext;
+
+import devhood.im.sim.ui.smiley.module.Mapping;
+import devhood.im.sim.ui.smiley.module.SmileyPack;
 
 @Named("bundleSmileyFactory")
-public class BundleSmileyFactory implements SmileyFactory {
+public class BundleSmileyFactory extends BundleFactory implements SmileyFactory {
+	/**
+	 * Root der internen smilies.
+	 */
+	private static final String SMILIES = "/smilies";
 
-	@Inject
-	private List<SmileyFactory> factories;
+	/**
+	 * Pattern der Config-Files.
+	 */
+	private static final String SIM_XML = ".*.sim.xml";
+
+	/**
+	 * Smileys, Shortcut->Pfad zum Icon
+	 */
+	private SmileyPack smileys = new SmileyPack();
+
+	/**
+	 * Command wendet Smilies auf Tokens an.
+	 */
+	private ApplySmiley applySmileyCmd = new ApplySmiley();
+
+	/**
+	 * Factories aus dem Factory-Element der Configfiles.
+	 */
+	private List<SmileyFactory> factories = new ArrayList<SmileyFactory>();
+
+	private static Logger LOG = Logger.getLogger(BundleSmileyFactory.class
+			.toString());
+
+	public BundleSmileyFactory() throws URISyntaxException, IOException {
+		this(SMILIES);
+	}
+
+	/**
+	 * Konstruktur.
+	 * 
+	 * @param smilieSource
+	 *            Root, in dem nach Configfiles gesucht wird.
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
+	public BundleSmileyFactory(String smilieSource) throws URISyntaxException,
+			IOException {
+		URI uri = getClass().getResource(smilieSource).toURI();
+		scanTree(uri, SIM_XML);
+	}
 
 	@Override
 	public String applySmiles(String c) {
-		String c1 = c;
-
-		for (SmileyFactory fac : factories) {
-			c1 = applySmiley(c, fac);
-			if (!c.equals(c1)) {
+		boolean applied = false;
+		String c2 = c;
+		for (SmileyFactory f : factories) {
+			c2 = f.applySmiles(c);
+			if (!c.equals(c2)) {
+				applied = true;
 				break;
 			}
 		}
-		return c1;
-	}
+		if (applied == false) {
+			c2 = applySmileyCmd.applySmiles(c, smileys);
+		}
 
-	private String applySmiley(String c, SmileyFactory fac) {
-		String c1 = fac.applySmiles(c);
-		return c1;
+		return c2;
 	}
 
 	@Override
-	public Map<String[], String> getSmileys() {
-		Map<String[], String> smileys = new HashMap<String[], String>();
-		for (SmileyFactory fac : factories) {
-			smileys.putAll(fac.getSmileys());
-		}
-
+	public SmileyPack getSmileys() {
 		return smileys;
 	}
 
+	public void evaluateFile(Path file) throws Exception {
+		LOG.info("Lade File: " + file.toString());
+		JAXBContext jaxbContext = JAXBContext
+				.newInstance("devhood.im.sim.ui.smiley.module");
+		Object o = jaxbContext.createUnmarshaller().unmarshal(file.toFile());
+		final SmileyPack pack = (SmileyPack) o;
+		insertPack(pack);
+		
+		if (pack.getAutoScan() != null && pack.getAutoScan().length() > 0) {
+			autoScan(pack);
+			insertPack(pack);
+		}
+		if (pack.getFactory() != null && pack.getFactory().length() > 0) {
+			addFactories(pack);
+			insertPack(pack);
+		}
+	}
+
+	private void insertPack(final SmileyPack pack) {
+		smileys.getMappings().getMapping().addAll(pack.getMappings().getMapping());
+	}
+
+	/**
+	 * Fuegt Smilies der Klasse {@link SmileyPack#getFactory()} hinzu. Dafuer
+	 * wird eine Neue Instanz der Klasse erzeugt.
+	 * 
+	 * @param pack
+	 *            SmileyPack.
+	 * @throws ClassNotFoundException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	protected void addFactories(final SmileyPack pack)
+			throws ClassNotFoundException, InstantiationException,
+			IllegalAccessException {
+		Class c = Class.forName(pack.getFactory());
+		SmileyFactory factory = (SmileyFactory) c.newInstance();
+		factories.add(factory);
+
+		for (SmileyFactory fac : factories) {
+			for (Mapping m : fac.getSmileys().getMappings().getMapping()) {
+				smileys.addMapping(m);
+			}
+		}
+	}
+
+	/**
+	 * Scannt {@link SmileyPack#getAutoScan()} nach allen Dateien und fuegt sie
+	 * ein, nach dem Muster :Dateiname: z.B 01.gif -> :01.gif: erzeugt diesen
+	 * Smilie.
+	 * 
+	 * @param pack
+	 *            Pack
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
+	protected void autoScan(final SmileyPack pack) throws URISyntaxException,
+			IOException {
+		URI uri = getClass().getResource(pack.getAutoScan()).toURI();
+		Path p = Paths.get(uri);
+
+		Files.walkFileTree(p, new SimpleFileVisitor<Path>() {
+			@Override
+			public FileVisitResult visitFile(Path file,
+					BasicFileAttributes attrs) throws IOException {
+				createAndAddMapping(pack, file);
+				return FileVisitResult.CONTINUE;
+			}
+		});
+	}
+
+	/**
+	 * Erzeugt ein Mapping Smiley-Shortcut -> Pfad zum Icon und fuegt iehn ein.
+	 * 
+	 * @param pack
+	 *            SmileyPack
+	 * @param file
+	 *            Path zum Icon
+	 * @return Mapping.
+	 */
+	protected void createAndAddMapping(final SmileyPack pack, Path file) {
+		Mapping m = new Mapping();
+		m.setShortcut(new String[] { ":" + file.getFileName() + ":" });
+		m.setIcon(pack.getAutoScan() + file.getFileName().toString());
+
+		pack.getMappings().getMapping().add(m);
+	}
 }

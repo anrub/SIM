@@ -27,7 +27,7 @@ public class SmileyView extends JFrame {
 	@PostConstruct
 	public void init() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setIconImage(UiUtil.createImage("/images/yahoo_smileys/01.gif"));
+		setIconImage(UiUtil.createImage("/images/smile.gif"));
 		GridBagLayout layout = new GridBagLayout();
 		add(smileyPanel);
 		smileyPanel.setLayout(layout);

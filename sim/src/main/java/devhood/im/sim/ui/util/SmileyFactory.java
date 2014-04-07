@@ -1,6 +1,6 @@
-package devhood.im.sim.ui.smiley;
+package devhood.im.sim.ui.util;
 
-import devhood.im.sim.ui.smiley.module.SmileyPack;
+import java.util.Map;
 
 /**
  * Die SmileyFactory sorg dafuer, dass die Smiley eingabe zu eine img tag wird.
@@ -24,5 +24,5 @@ public interface SmileyFactory {
 	 * 
 	 * @return smileys.
 	 */
-	public SmileyPack getSmileys();
+	public Map<String[], String> getSmileys();
 }

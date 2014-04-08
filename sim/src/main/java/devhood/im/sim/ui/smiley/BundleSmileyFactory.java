@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.xml.bind.JAXBContext;
 
+import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.ui.smiley.module.BundleSmileyPack;
 import devhood.im.sim.ui.smiley.module.Mapping;
 import devhood.im.sim.ui.smiley.module.SmileyPack;
@@ -63,6 +64,18 @@ public class BundleSmileyFactory extends BundleFactory implements SmileyFactory 
 			IOException {
 		URI uri = getClass().getResource(smilieSource).toURI();
 		scanTree(uri, SIM_XML);
+
+		try {
+			if (System.getProperty(SimConfiguration.SMILIE_DIR_KEY) != null) {
+				URI startDirectory = getClass().getResource(
+						System.getProperty(SimConfiguration.SMILIE_DIR_KEY))
+						.toURI();
+				scanTree(startDirectory, SIM_XML);
+			}
+		} catch (Exception e) {
+			LOG.warning("Konnte Smilies aus Ordner " + smilieSource
+					+ " nicht hinzufuegen.");
+		}
 	}
 
 	@Override

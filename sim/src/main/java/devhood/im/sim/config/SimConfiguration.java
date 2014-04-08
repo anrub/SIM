@@ -33,12 +33,17 @@ import devhood.im.sim.ui.util.UiUtil;
 
 /**
  * Konfigurationsklasse von SIM.
- *
+ * 
  * @author flo
- *
+ * 
  */
 @Named("simConfiguration")
 public class SimConfiguration {
+
+	/**
+	 * Verzeichnis in dem nach Smilie-Addons gesucht wird.
+	 */
+	public static final String SMILIE_DIR_KEY = "smilie";
 
 	private Logger log = Logger.getLogger(SimConfiguration.class.toString());
 
@@ -176,18 +181,19 @@ public class SimConfiguration {
 	 * Key der Konfig ob die Tabs gecached werde sollen.
 	 */
 	public static String TAB_CACHE_KEY = "userColor";
-	
+
 	/**
 	 * Config Key, zeigt nur Raeume an, in denen sich der User befindet.
 	 */
 	public static String SHOW_ONLY_JOINED_ROOMS_KEY = "showOnlyJoinedRoons";
-	
+
 	public List<String> autojoinRooms = new LinkedList<String>();
 
 	@PostConstruct
 	public void init() {
 		autojoinRooms.add(getStreamTabName());
-	}	
+	}
+
 	public static String AUTOJOIN_KEY = "autojoinRooms";
 
 	public void saveAutojoinRooms(String rooms) {
@@ -272,7 +278,7 @@ public class SimConfiguration {
 
 	/**
 	 * Ermittelt die aktuelle IP..
-	 *
+	 * 
 	 * @return ip
 	 */
 	public String getCurrentHostname() {
@@ -290,7 +296,7 @@ public class SimConfiguration {
 
 	/**
 	 * Gibt das KeyPair fuer die Verschluesselung der Messages zurueck.
-	 *
+	 * 
 	 * @return KeyPair
 	 */
 	public KeyPair getKeyPair() {
@@ -312,7 +318,7 @@ public class SimConfiguration {
 	/**
 	 * Versucht die Versionsnummer aus der Datei /SIM_VERSION.txt aus dem
 	 * classpath zu lesen.
-	 *
+	 * 
 	 * @return Versionsnummer oder ""
 	 */
 	public String getVersion() {
@@ -337,7 +343,7 @@ public class SimConfiguration {
 
 	/**
 	 * Gibt das attribut USER_COLOR_KEY aus den preferences zurueck.
-	 *
+	 * 
 	 * @return usercolor
 	 */
 	public String getUserColor() {
@@ -350,7 +356,7 @@ public class SimConfiguration {
 
 	/**
 	 * Gibt die User color als int[] R,G,B zurueck.
-	 *
+	 * 
 	 * @return color
 	 */
 	public int[] getUserColorRgb(String color) {
@@ -375,7 +381,7 @@ public class SimConfiguration {
 
 	/**
 	 * Gibt die User color zurueck.
-	 *
+	 * 
 	 * @return color
 	 */
 	public int[] getUserColorRgb() {
@@ -386,7 +392,7 @@ public class SimConfiguration {
 
 	/**
 	 * Gibt den RGB Wert zurueck.
-	 *
+	 * 
 	 * @return RGB int Wert.
 	 */
 	public int getUserColorRgbValue() {
@@ -396,7 +402,7 @@ public class SimConfiguration {
 
 	/**
 	 * Gibt den hexwert von c 2 stellig zurueck.
-	 *
+	 * 
 	 * @param c
 	 *            c
 	 * @return hexwert
@@ -412,7 +418,7 @@ public class SimConfiguration {
 
 	/**
 	 * Speichert die usercolor in den Preferences.
-	 *
+	 * 
 	 * @param c
 	 *            Color.
 	 */
@@ -436,7 +442,7 @@ public class SimConfiguration {
 
 	/**
 	 * Gibt zurueck ob der TabCache aktiviert ist oder nicht.
-	 *
+	 * 
 	 * @return true/false;
 	 */
 	public boolean isTabCacheEnabled() {
@@ -637,12 +643,14 @@ public class SimConfiguration {
 	}
 
 	public boolean isShowOnlyJoinedRooms() {
-		boolean showOnlyJoinedRooms = Boolean.parseBoolean(getPreferences().get(SHOW_ONLY_JOINED_ROOMS_KEY, "false"));
+		boolean showOnlyJoinedRooms = Boolean.parseBoolean(getPreferences()
+				.get(SHOW_ONLY_JOINED_ROOMS_KEY, "false"));
 		return showOnlyJoinedRooms;
 	}
 
 	public void setShowOnlyJoinedRooms(boolean showOnlyJoinedRooms) {
-		getPreferences().put(SHOW_ONLY_JOINED_ROOMS_KEY, Boolean.toString(showOnlyJoinedRooms));
+		getPreferences().put(SHOW_ONLY_JOINED_ROOMS_KEY,
+				Boolean.toString(showOnlyJoinedRooms));
 	}
 
 }

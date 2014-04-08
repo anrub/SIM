@@ -9,19 +9,21 @@ import javax.swing.UIManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
+import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.ui.presenter.MainPresenter;
+import devhood.im.sim.ui.view.ErrorView;
 import devhood.im.sim.ui.view.MainView;
 
 /**
  * Main Class.
- *
+ * 
  * Possible commandline arguments:
- *
+ * 
  * -n nickname -f databasefile
- *
- *
+ * 
+ * 
  * @author flo
- *
+ * 
  */
 public class SimMain {
 
@@ -29,7 +31,7 @@ public class SimMain {
 
 	/**
 	 * Main method, starts the program. <br />
-	 *
+	 * 
 	 * @param args
 	 *            arguments
 	 */
@@ -54,12 +56,21 @@ public class SimMain {
 		} catch (Exception e) {
 			log.log(Level.WARNING, "Applikation konnte nicht gestartet werden",
 					e);
-			JOptionPane.showMessageDialog(
-					null,
-					"SIM konnte nicht gestartet werden! Exception: "
-							+ e.getMessage(), "SIM S Instant Messenger",
-					JOptionPane.ERROR_MESSAGE);
-			System.exit(0);
+
+			ErrorView error = new ErrorView(
+					"SIM konnte nicht gestartet werden! Exception: ", e);
+			error.setTitle("SIM S Instant Messenger");
+			error.setAlwaysOnTop(true);
+			error.pack();
+			error.setVisible(true);
+
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			System.exit(1);
 		}
 
 	}

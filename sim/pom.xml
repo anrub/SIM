@@ -152,9 +152,6 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
-				<includes>
-					<include>SIM_VERSION.txt</include>
-				</includes>
 			</resource>
 		</resources>
 

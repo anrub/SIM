@@ -3,13 +3,11 @@ package devhood.im.sim;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
-import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.ui.presenter.MainPresenter;
 import devhood.im.sim.ui.view.ErrorView;
 import devhood.im.sim.ui.view.MainView;
@@ -64,12 +62,6 @@ public class SimMain {
 			error.pack();
 			error.setVisible(true);
 
-			try {
-				Thread.sleep(10000);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 			System.exit(1);
 		}
 

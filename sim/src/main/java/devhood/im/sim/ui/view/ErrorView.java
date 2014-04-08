@@ -17,13 +17,13 @@ import javax.swing.JTextArea;
 
 public class ErrorView extends JDialog {
 	private JLabel msgLabel = new JLabel();
-	
+
 	private JTextArea errorDetail = new JTextArea();
 
 	private JButton exit = new JButton("Exit");
 
 	public ErrorView() {
-		super();
+		super((JFrame) null, true);
 
 		this.exit.addMouseListener(new MouseAdapter() {
 			@Override
@@ -32,20 +32,19 @@ public class ErrorView extends JDialog {
 			}
 		});
 
-		
 		JPanel pane = new JPanel();
 		BorderLayout l = new BorderLayout();
 		pane.setLayout(l);
 
 		pane.add(msgLabel, BorderLayout.NORTH);
-		
+
 		errorDetail.setColumns(50);
 		errorDetail.setRows(20);
-		
+
 		JScrollPane scrollPane = new JScrollPane(errorDetail);
 		Dimension preferredSize = new Dimension(1000, 300);
 		scrollPane.setPreferredSize(preferredSize);
-		
+
 		pane.add(scrollPane, BorderLayout.CENTER);
 		pane.add(exit, BorderLayout.SOUTH);
 
@@ -56,17 +55,17 @@ public class ErrorView extends JDialog {
 
 	public ErrorView(String error, String detail) {
 		this();
-		
+
 		msgLabel.setText(error);
-		
+
 		errorDetail.setText(detail);
 	}
 
 	public ErrorView(String string, Exception e) {
-		this();
-		
+		this(string, "");
+
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		
+
 		e.printStackTrace(new PrintStream(bos));
 		errorDetail.setText(bos.toString());
 	}

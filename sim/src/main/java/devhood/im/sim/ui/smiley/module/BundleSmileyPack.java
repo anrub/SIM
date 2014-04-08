@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 public class BundleSmileyPack extends SmileyPack implements
 		Iterable<SmileyPack> {
 
@@ -35,13 +37,18 @@ public class BundleSmileyPack extends SmileyPack implements
 				if (!hasNext()) {
 					throw new NoSuchElementException();
 				}
-				
+
 				return smileyPacks.get(i++);
 			}
 
 			@Override
 			public boolean hasNext() {
 				return i < smileyPacks.size();
+			}
+
+			@Override
+			public void remove() {
+				throw new NotImplementedException();
 			}
 		};
 	}

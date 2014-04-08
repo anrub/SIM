@@ -2,6 +2,7 @@ package devhood.im.sim.ui.presenter;
 
 import java.awt.event.MouseListener;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.swing.JComponent;
@@ -25,6 +26,8 @@ public class SmileyPanelPresenter {
 
 	private boolean initialized;
 
+	private BundleSmileyPack bundle;
+	
 	public void show(JComponent relativeTo) {
 		if (!initialized) {
 			initPanel();
@@ -37,13 +40,10 @@ public class SmileyPanelPresenter {
 		view.revalidate();
 	}
 
+	@PostConstruct
 	public void initPanel() {
 		initialized = true;
-		BundleSmileyPack bundle = (BundleSmileyPack) smileyFactory.getSmileys();
-		for (SmileyPack pack : bundle) {
-			view.addSmileyPack(pack, smileyIconMouseListener);
-		}
-
+		bundle = (BundleSmileyPack) smileyFactory.getSmileys();
 	}
 
 	public MouseListener getSmileyIconMouseListener() {
@@ -52,6 +52,10 @@ public class SmileyPanelPresenter {
 
 	public void setSmileyIconMouseListener(MouseListener smileyIconMouseListener) {
 		this.smileyIconMouseListener = smileyIconMouseListener;
+		
+		for (SmileyPack pack : this.bundle) {
+			view.addSmileyPack(pack, smileyIconMouseListener);
+		}
 	}
 
 	public void hide() {

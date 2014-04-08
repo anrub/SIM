@@ -67,7 +67,7 @@ public class BundleSmileyView extends JFrame {
 				return o1.getToolTipText().compareTo(o2.getToolTipText());
 			}
 		});
-		System.out.println("height:" + avgHeight + ", width:" + avgWidth);
+
 		int cols = 5;
 		if (avgHeight <= 20) {
 			cols = 6;

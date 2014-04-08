@@ -10,6 +10,7 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,7 +20,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -178,7 +178,8 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	}
 
 	private void sortLabels(List<JLabel> labels) {
-		labels.sort(new Comparator<JLabel>() {
+		
+		Collections.sort(labels,new Comparator<JLabel>() {
 			@Override
 			public int compare(JLabel o1, JLabel o2) {
 				return o1.getText().compareTo(o2.getText());

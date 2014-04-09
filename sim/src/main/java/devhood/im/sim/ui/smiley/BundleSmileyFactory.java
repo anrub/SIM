@@ -105,6 +105,7 @@ public class BundleSmileyFactory extends BundleFactory implements SmileyFactory 
 		LOG.info("Lade File: " + file.toString());
 		JAXBContext jaxbContext = JAXBContext
 				.newInstance("devhood.im.sim.ui.smiley.module");
+		file = createPath(file.toUri());
 		Object o = jaxbContext.createUnmarshaller().unmarshal(file.toFile());
 		final SmileyPack pack = (SmileyPack) o;
 

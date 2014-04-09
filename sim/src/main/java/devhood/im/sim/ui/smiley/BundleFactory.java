@@ -58,6 +58,7 @@ abstract public class BundleFactory {
 			final FileSystem fs = FileSystems.newFileSystem(
 					URI.create(array[0]), env);
 			path = fs.getPath(array[1]);
+			fs.close();
 		} else {
 			path = Paths.get(startDirectory);
 		}

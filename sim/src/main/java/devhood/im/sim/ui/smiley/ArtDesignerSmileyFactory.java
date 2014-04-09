@@ -1,7 +1,13 @@
 package devhood.im.sim.ui.smiley;
 
-import java.io.File;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import devhood.im.sim.ui.smiley.module.Mapping;
@@ -28,7 +34,6 @@ public class ArtDesignerSmileyFactory implements SmileyFactory {
 	 */
 	private SmileyPack privateSmileys = new SmileyPack();
 
-	
 	private String imagePath = "/smilies/artdesigner/images/";
 
 	private ApplySmiley applySmileyCmd = new ApplySmiley();
@@ -37,11 +42,24 @@ public class ArtDesignerSmileyFactory implements SmileyFactory {
 	 * Die Initialisierung führt das Pairing der Kurzschreibweisen zu den
 	 * Bildnamen durch.
 	 */
-	public ArtDesignerSmileyFactory() {
+	public ArtDesignerSmileyFactory() throws Exception {
 		try {
-			File f = new File(getClass().getResource(imagePath + "32/").toURI());
+			URL url = getClass().getResource(imagePath + "32/");
 
-			for (String smileyName : f.list()) {
+			final List<String> names = new ArrayList<String>();
+
+			Files.walkFileTree(BundleUtil.createPath(url.toURI()),
+					new SimpleFileVisitor<Path>() {
+						public java.nio.file.FileVisitResult visitFile(
+								Path file,
+								java.nio.file.attribute.BasicFileAttributes attrs)
+								throws java.io.IOException {
+								names.add(file.getFileName().toString());
+							return FileVisitResult.CONTINUE;
+						};
+					});
+
+			for (String smileyName : names) {
 
 				Mapping m = new Mapping(
 						new String[] { "#" + smileyName + "#" }, imagePath
@@ -62,7 +80,7 @@ public class ArtDesignerSmileyFactory implements SmileyFactory {
 					+ e.getMessage());
 			e.printStackTrace();
 		}
-		
+
 		smileys.setName("Artdesign Pack");
 	}
 

@@ -1,13 +1,12 @@
 package devhood.im.sim.ui.smiley;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -65,17 +64,33 @@ public class BundleSmileyFactory extends BundleFactory implements SmileyFactory 
 			IOException {
 		URI uri = getClass().getResource(smilieSource).toURI();
 		scanTree(uri, SIM_XML);
-
+		String src = System.getProperty(SimConfiguration.SMILIE_DIR_KEY);
 		try {
-			if (System.getProperty(SimConfiguration.SMILIE_DIR_KEY) != null) {
-				URI startDirectory = getClass().getResource(
-						System.getProperty(SimConfiguration.SMILIE_DIR_KEY))
-						.toURI();
-				scanTree(startDirectory, SIM_XML);
+			if (src != null) {
+				add(src);
 			}
 		} catch (Exception e) {
-			LOG.warning("Konnte Smilies aus Ordner " + smilieSource
+			e.printStackTrace();
+			LOG.warning("Konnte Smilies aus Ordner " + src
 					+ " nicht hinzufuegen.");
+		}
+	}
+
+	/**
+	 * Fuegt die komma-separierte src Liste von Verzeichnissen ein. Scannt diese
+	 * Verzeichnisse.
+	 * 
+	 * @param src
+	 *            Komma separierte Liste von zu durchsuchenden Verzeichnissen
+	 * @throws IOException
+	 */
+	private void add(String src) throws IOException {
+		String[] srcArr = src.split(",");
+		for (String s : srcArr) {
+			File dir = new File(s);
+			URI startDirectory = dir.toURI();
+
+			scanTree(startDirectory, SIM_XML);
 		}
 	}
 
@@ -107,7 +122,8 @@ public class BundleSmileyFactory extends BundleFactory implements SmileyFactory 
 		JAXBContext jaxbContext = JAXBContext
 				.newInstance("devhood.im.sim.ui.smiley.module");
 		file = createPath(file.toUri());
-		Object o = jaxbContext.createUnmarshaller().unmarshal(Files.newInputStream(file));
+		Object o = jaxbContext.createUnmarshaller().unmarshal(
+				Files.newInputStream(file));
 		final SmileyPack pack = (SmileyPack) o;
 
 		if (pack.getAutoScan() != null && pack.getAutoScan().length() > 0) {

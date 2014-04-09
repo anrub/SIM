@@ -64,7 +64,6 @@ abstract public class BundleFactory {
 			}
 
 			path = fs.getPath(array[1]);
-			fs.close();
 		} else {
 			path = Paths.get(startDirectory);
 		}

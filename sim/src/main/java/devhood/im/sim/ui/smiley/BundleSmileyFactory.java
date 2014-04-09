@@ -1,5 +1,6 @@
 package devhood.im.sim.ui.smiley;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -106,7 +107,7 @@ public class BundleSmileyFactory extends BundleFactory implements SmileyFactory 
 		JAXBContext jaxbContext = JAXBContext
 				.newInstance("devhood.im.sim.ui.smiley.module");
 		file = createPath(file.toUri());
-		Object o = jaxbContext.createUnmarshaller().unmarshal(file.toFile());
+		Object o = jaxbContext.createUnmarshaller().unmarshal(Files.newInputStream(file));
 		final SmileyPack pack = (SmileyPack) o;
 
 		if (pack.getAutoScan() != null && pack.getAutoScan().length() > 0) {

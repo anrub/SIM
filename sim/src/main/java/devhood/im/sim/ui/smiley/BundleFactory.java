@@ -3,6 +3,7 @@ package devhood.im.sim.ui.smiley;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -53,16 +54,21 @@ abstract public class BundleFactory {
 	public Path createPath(URI startDirectory) throws IOException {
 		Path path = null;
 		if (startDirectory.toString().contains("jar:")) {
-			final Map<String, String> env = new HashMap<>();
 			final String[] array = startDirectory.toString().split("!");
-			final FileSystem fs = FileSystems.newFileSystem(
-					URI.create(array[0]), env);
+			FileSystem fs = null;
+			try {
+				fs = FileSystems.getFileSystem(URI.create(array[0]));
+			} catch (FileSystemNotFoundException fse) {
+				final Map<String, String> env = new HashMap<>();
+				fs = FileSystems.newFileSystem(URI.create(array[0]), env);
+			}
+
 			path = fs.getPath(array[1]);
 			fs.close();
 		} else {
 			path = Paths.get(startDirectory);
 		}
-		
+
 		return path;
 	}
 

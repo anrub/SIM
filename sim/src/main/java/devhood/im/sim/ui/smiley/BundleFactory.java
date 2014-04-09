@@ -29,14 +29,7 @@ abstract public class BundleFactory {
 	 */
 	public void scanTree(URI startDirectory, final String filePattern)
 			throws IOException {
-		Path path = Paths.get(startDirectory);
-		if (startDirectory.toString().contains("jar:")) {
-			final Map<String, String> env = new HashMap<>();
-			final String[] array = startDirectory.toString().split("!");
-			final FileSystem fs = FileSystems.newFileSystem(
-					URI.create(array[0]), env);
-			path = fs.getPath(array[1]);
-		}
+		Path path = createPath(startDirectory);
 		Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
 			private Pattern pattern = Pattern.compile(filePattern);
 
@@ -55,6 +48,18 @@ abstract public class BundleFactory {
 			}
 
 		});
+	}
+
+	public Path createPath(URI startDirectory) throws IOException {
+		Path path = Paths.get(startDirectory);
+		if (startDirectory.toString().contains("jar:")) {
+			final Map<String, String> env = new HashMap<>();
+			final String[] array = startDirectory.toString().split("!");
+			final FileSystem fs = FileSystems.newFileSystem(
+					URI.create(array[0]), env);
+			path = fs.getPath(array[1]);
+		}
+		return path;
 	}
 
 	abstract public void evaluateFile(Path file) throws Exception;

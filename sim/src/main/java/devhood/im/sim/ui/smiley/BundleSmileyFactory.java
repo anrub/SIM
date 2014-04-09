@@ -154,7 +154,7 @@ public class BundleSmileyFactory extends BundleFactory implements SmileyFactory 
 	protected void autoScan(final SmileyPack pack) throws URISyntaxException,
 			IOException {
 		URI uri = getClass().getResource(pack.getAutoScan()).toURI();
-		Path p = Paths.get(uri);
+		Path p = this.createPath(uri);
 
 		Files.walkFileTree(p, new SimpleFileVisitor<Path>() {
 			@Override

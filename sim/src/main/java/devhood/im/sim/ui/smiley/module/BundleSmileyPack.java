@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 public class BundleSmileyPack extends SmileyPack implements
 		Iterable<SmileyPack> {
 
@@ -48,7 +46,7 @@ public class BundleSmileyPack extends SmileyPack implements
 
 			@Override
 			public void remove() {
-				throw new NotImplementedException();
+				throw new IllegalArgumentException();
 			}
 		};
 	}

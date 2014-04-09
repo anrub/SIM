@@ -51,14 +51,17 @@ abstract public class BundleFactory {
 	}
 
 	public Path createPath(URI startDirectory) throws IOException {
-		Path path = Paths.get(startDirectory);
+		Path path = null;
 		if (startDirectory.toString().contains("jar:")) {
 			final Map<String, String> env = new HashMap<>();
 			final String[] array = startDirectory.toString().split("!");
 			final FileSystem fs = FileSystems.newFileSystem(
 					URI.create(array[0]), env);
 			path = fs.getPath(array[1]);
+		} else {
+			path = Paths.get(startDirectory);
 		}
+		
 		return path;
 	}
 

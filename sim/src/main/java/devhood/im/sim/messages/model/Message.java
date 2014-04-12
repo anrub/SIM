@@ -4,24 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonSubTypes;
-import org.codehaus.jackson.annotate.JsonSubTypes.Type;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
-
-
 /**
  * Eine Message.
  * 
  * @author flo
  * 
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(value = BroadcastMessage.class),
-		@Type(value = SingleMessage.class),
-		@Type(value = UserStatusMessage.class),
-		@Type(value = FileSendAcceptMessage.class),
-		@Type(value = FileSendRejectMessage.class),
-		@Type(value = FileSendRequestMessage.class) })
 abstract public class Message implements Serializable {
 	/**
 	 * Sender Name.

@@ -37,14 +37,7 @@ public class SimMain {
 	 */
 	public static void main(String[] args) {
 		String username = System.getProperty("user.name");
-		if (args.length > 0) {
-			for (int i = 0; i < args.length; i++) {
-				if ("-n".equals(args[i]) && i + 1 < args.length) {
-					username = args[i + 1];
-				}
-			}
-
-		}
+		username = getParam(args, "-n");
 
 		System.setProperty("sim.username", username);
 
@@ -67,6 +60,19 @@ public class SimMain {
 			System.exit(1);
 		}
 
+	}
+
+	public static String getParam(String[] args, String param) {
+		String returnValue = null;
+		if (args.length > 0) {
+			for (int i = 0; i < args.length; i++) {
+				if (param.equals(args[i]) && i + 1 < args.length) {
+					returnValue = args[i + 1];
+				}
+			}
+
+		}
+		return returnValue;
 	}
 
 	/**

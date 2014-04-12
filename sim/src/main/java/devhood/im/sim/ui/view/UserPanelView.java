@@ -46,9 +46,9 @@ import devhood.im.sim.ui.util.UiUtil;
 
 /**
  * Panel zur Auswahl der User.
- *
+ * 
  * @author flo
- *
+ * 
  */
 @Named("userPanel")
 public class UserPanelView extends JPanel implements ApplicationContextAware {
@@ -68,7 +68,6 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	 * Raum, der nicht verlassen werde kann.
 	 */
 	private String noQuitPossibleRoom;
-
 
 	@Inject
 	private SimConfiguration simConfiguration;
@@ -111,6 +110,13 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 		quitChatPopup.add(quitChatItem);
 
 		MouseListener showQuitChatMenuMouseListener = new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					quitChatPopup.show(e.getComponent(), e.getX(), e.getY());
+				}
+			}
+
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				if (e.isPopupTrigger()) {
@@ -160,9 +166,9 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 
 		BoxLayout usersLayout = new BoxLayout(users, BoxLayout.PAGE_AXIS);
 		users.setLayout(usersLayout);
-		
+
 		List<JLabel> labels = new ArrayList<JLabel>();
-		
+
 		for (User u : userList) {
 			if (u != null && u.getName() != null) {
 				JLabel userLabel = createUserLabel(u);
@@ -170,7 +176,7 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 			}
 			sortLabels(labels);
 		}
-		for ( JLabel userLabel : labels ) {
+		for (JLabel userLabel : labels) {
 			users.add(userLabel);
 		}
 
@@ -178,8 +184,8 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 	}
 
 	private void sortLabels(List<JLabel> labels) {
-		
-		Collections.sort(labels,new Comparator<JLabel>() {
+
+		Collections.sort(labels, new Comparator<JLabel>() {
 			@Override
 			public int compare(JLabel o1, JLabel o2) {
 				return o1.getText().compareTo(o2.getText());
@@ -235,7 +241,7 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 
 	/**
 	 * Gibt zurueck, ob der Raum hinzugefuegt werden soll, oder nicht.
-	 *
+	 * 
 	 * @param room
 	 * @return true/false.
 	 */
@@ -251,17 +257,17 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 
 	/**
 	 * Erzeugt das Label zur Anzeige des Benutzers im UserPanel.
-	 *
-	 *
+	 * 
+	 * 
 	 * param user User.
-	 *
+	 * 
 	 * @return Label
 	 */
 	public JLabel createUserLabel(final User user) {
 		String label = user.getName();
 
 		final JLabel userLabel = new JLabel(label);
-		
+
 		final JMenuItem sendFileItem = new JMenuItem("Send File");
 		sendFileItem.addMouseListener(new MouseAdapter() {
 
@@ -359,6 +365,13 @@ public class UserPanelView extends JPanel implements ApplicationContextAware {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				popupMenu.show(e.getComponent(), e.getX(), e.getY());
+			}
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
 			if (e.isPopupTrigger()) {
 				popupMenu.show(e.getComponent(), e.getX(), e.getY());
 			}

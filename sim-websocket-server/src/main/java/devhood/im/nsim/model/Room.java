@@ -1,14 +1,14 @@
-package devhood.im.sim.model;
+package devhood.im.nsim.model;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class Receiver {
+public class Room {
 	private String name;
 
-	/**
-	 * Ist der Empfaenger ein Raum.
-	 */
-	private boolean room;
+	private Set<User> users = new HashSet<User>();
 
 	public String getName() {
 		return name;
@@ -18,16 +18,17 @@ public class Receiver {
 		this.name = name;
 	}
 
-	public boolean isRoom() {
-		return room;
+	public Set<User> getUsers() {
+		return users;
 	}
 
-	public void setRoom(boolean room) {
-		this.room = room;
+	public void setUsers(Set<User> users) {
+		this.users = users;
 	}
 
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}
+
 }

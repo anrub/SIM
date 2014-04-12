@@ -216,11 +216,13 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 		refreshed = true;
 	}
 
+	// TODO FF Event wird von der UI erzeugt.
 	@Override
 	public void onUserRemoved(List<User> user) {
 		EventDispatcher.fireEvent(Events.USER_OFFLINE_NOTICE, user);
 	}
 
+	// TODO FF Event wird von der UI erzeugt.
 	@Override
 	public void onUserAdded(List<User> user) {
 		EventDispatcher.fireEvent(Events.USER_ONLINE_NOTICE, user);

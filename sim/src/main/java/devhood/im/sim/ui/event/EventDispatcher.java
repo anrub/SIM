@@ -1,6 +1,5 @@
 package devhood.im.sim.ui.event;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -39,6 +38,10 @@ public class EventDispatcher {
 	 *            Observer.
 	 */
 	public static void add(EventObserver eventObserver) {
+		if (observer.contains(eventObserver)) {
+			return;
+		}
+
 		observer.add(eventObserver);
 	}
 }

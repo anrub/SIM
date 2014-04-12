@@ -286,6 +286,7 @@ public class SendReceiveMessagePanel extends JPanel implements EventObserver {
 			public void run() {
 
 				if (unreadTabsList.size() > 0) {
+					// TODO FF Event wird von der UI erzeugt.
 					EventDispatcher.fireEvent(Events.UNREAD_MESSAGES,
 							unreadTabsList);
 				}

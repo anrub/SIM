@@ -26,9 +26,9 @@ import devhood.im.sim.service.interfaces.UserService;
 /**
  * Dieser {@link UserService} aktualisiert sich selbst und den uebergebenen User
  * regelmaessg.
- *
+ * 
  * @author flo
- *
+ * 
  */
 @Named
 @Transactional
@@ -149,7 +149,7 @@ public class RefreshingUserService implements UserService {
 	 */
 	@Override
 	public Iterable<User> getUsers() {
-		Iterable<User> users =  userDao.findAll();
+		Iterable<User> users = userDao.findAll();
 		return users;
 	}
 
@@ -191,7 +191,7 @@ public class RefreshingUserService implements UserService {
 	 * Verarbeitet die USer und prüft ob sie bereits vorhanden, oder neu, oder
 	 * nicht mehr vorhanden sind. Benachrichtigt den userChangeListener in
 	 * beiden fällen.
-	 *
+	 * 
 	 * @param users
 	 *            aktuelle USer aus der dB.
 	 */
@@ -200,9 +200,19 @@ public class RefreshingUserService implements UserService {
 		List<User> offlineUsers = new ArrayList<User>();
 		List<User> usersList = getList(users);
 
-		for (User u : users) {
+		Iterator<User> uIt = users.iterator();
+		while (uIt.hasNext()) {
+			User u = uIt.next();
+			if (u == null || u.getName() == null) {
+				continue;
+			}
 			if (currentUsers.size() == 0) {
-				currentUsers.addAll(usersList);
+				for (User user : usersList) {
+					if (user != null && user.getName() != null) {
+						currentUsers.add(user);
+					}
+				}
+
 				continue;
 			}
 
@@ -253,7 +263,7 @@ public class RefreshingUserService implements UserService {
 
 	/**
 	 * Fuegt einen {@link UserChangeObserver} ein.
-	 *
+	 * 
 	 * @param listener
 	 *            Listener.
 	 */
@@ -295,7 +305,7 @@ public class RefreshingUserService implements UserService {
 	 * wurden, wird eine Liste zurueckgegeben, die bei contains immer true
 	 * zurueck gibt. (Da noch nicht klar ist, ob der User vorhanden ist oder
 	 * nicht, hacky).
-	 *
+	 * 
 	 * @return list von usern.
 	 */
 	@Override

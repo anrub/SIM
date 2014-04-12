@@ -18,6 +18,11 @@ public enum Events {
 	 * Eine neue Nachricht wurde empfangen. Parameter: Message message
 	 */
 	MESSAGE_RECEIVED,
+	
+	/**
+	 * Versendet eine neue Nachricht, Parameter: Message message
+	 */
+	SEND_MESSAGE,
 
 	/**
 	 * Zeigt das Fenster an. Keine Parameter

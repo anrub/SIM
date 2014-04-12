@@ -19,15 +19,18 @@ import devhood.im.sim.messages.model.SingleMessage;
 import devhood.im.sim.messages.observer.MessageObserver;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.UserService;
+import devhood.im.sim.ui.event.EventDispatcher;
+import devhood.im.sim.ui.event.EventObserver;
+import devhood.im.sim.ui.event.Events;
 
 /**
  * MessageContext, zentraler Punkt der Messages.
- *
+ * 
  * @author flo
- *
+ * 
  */
 @Named
-public class MessageContext {
+public class MessageContext implements EventObserver {
 	/**
 	 * Konfiguration von SIM.
 	 */
@@ -50,6 +53,8 @@ public class MessageContext {
 
 	public void registerMessageObserver(MessageObserver messageObserver) {
 		messageObservers.add(messageObserver);
+
+		EventDispatcher.add(this);
 	}
 
 	/**
@@ -88,7 +93,7 @@ public class MessageContext {
 
 	/**
 	 * Versendet eine Message.
-	 *
+	 * 
 	 * @param m
 	 *            Message zum versandt.
 	 */
@@ -97,10 +102,12 @@ public class MessageContext {
 		if (m instanceof RoomMessage) {
 			textMmessageSender.sendMessageToRoom((RoomMessage) m);
 		} else if (m instanceof SingleMessage) {
+			m.setSender(simConfiguration.getUsername());
 			String singleReceiver = receiver.get(0);
 			User user = userService.getUser(singleReceiver);
 			textMmessageSender.sendMessage(user, m);
 		} else if (m instanceof BroadcastMessage) {
+			m.setSender(simConfiguration.getUsername());
 			textMmessageSender.sendMessageToAllUsers(m);
 		}
 
@@ -125,6 +132,19 @@ public class MessageContext {
 		@Override
 		public void onFileSendAcceptMessage(FileSendAcceptMessage m) {
 			notifyOnFileSendAcceptMessage(m);
+		}
+	}
+
+	@Override
+	public void eventReceived(Events event, Object o) {
+		if (Events.SEND_MESSAGE.equals(event)) {
+			Message m = (Message) o;
+			try {
+				sendMessage(m);
+			} catch (MessagingException e) {
+				// TODO FF
+				throw new RuntimeException(e);
+			}
 		}
 	}
 

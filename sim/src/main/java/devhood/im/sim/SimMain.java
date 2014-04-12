@@ -27,6 +27,8 @@ public class SimMain {
 
 	private static Logger log = Logger.getLogger(SimMain.class.toString());
 
+	private static ApplicationContext applicationContext;
+
 	/**
 	 * Main method, starts the program. <br />
 	 * 
@@ -50,7 +52,7 @@ public class SimMain {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 			SimMain main = new SimMain();
-			main.startup();
+			SimMain.applicationContext = main.startup();
 		} catch (Exception e) {
 			log.log(Level.WARNING, "Applikation konnte nicht gestartet werden",
 					e);
@@ -70,7 +72,7 @@ public class SimMain {
 	/**
 	 * Startet den {@link ApplicationContext} und zeigt das {@link MainView} an.
 	 */
-	public void startup() {
+	public ApplicationContext startup() {
 		GenericXmlApplicationContext context = new GenericXmlApplicationContext();
 
 		context.setValidating(false);
@@ -79,5 +81,12 @@ public class SimMain {
 		context.refresh();
 		MainPresenter presenter = context.getBean(MainPresenter.class);
 		presenter.initMain();
+
+		return context;
 	}
+
+	public static ApplicationContext getApplicationContext() {
+		return applicationContext;
+	}
+
 }

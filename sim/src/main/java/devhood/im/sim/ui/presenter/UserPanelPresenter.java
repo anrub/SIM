@@ -19,7 +19,6 @@ import devhood.im.sim.config.SimConfiguration;
 import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.Room;
 import devhood.im.sim.model.User;
-import devhood.im.sim.service.interfaces.UserChangeObserver;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.action.BarAction;
 import devhood.im.sim.ui.event.EventDispatcher;
@@ -28,7 +27,7 @@ import devhood.im.sim.ui.event.Events;
 import devhood.im.sim.ui.view.UserPanelView;
 
 @Named
-public class UserPanelPresenter implements EventObserver, UserChangeObserver {
+public class UserPanelPresenter implements EventObserver {
 
 	/**
 	 * RegistryService zum Zugriff auf Stammdaten, zb User.
@@ -78,8 +77,6 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 	@PostConstruct
 	public void init() {
 		startRefreshUsers();
-
-		userService.registerUserChangeObserver(this);
 
 		view.getOutlookBar().setOnBarSelected(new BarAction() {
 			@Override
@@ -214,18 +211,6 @@ public class UserPanelPresenter implements EventObserver, UserChangeObserver {
 		view.refreshUi(rooms);
 
 		refreshed = true;
-	}
-
-	// TODO FF Event wird von der UI erzeugt.
-	@Override
-	public void onUserRemoved(List<User> user) {
-		EventDispatcher.fireEvent(Events.USER_OFFLINE_NOTICE, user);
-	}
-
-	// TODO FF Event wird von der UI erzeugt.
-	@Override
-	public void onUserAdded(List<User> user) {
-		EventDispatcher.fireEvent(Events.USER_ONLINE_NOTICE, user);
 	}
 
 	public UserPanelView getView() {

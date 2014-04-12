@@ -7,10 +7,12 @@ import org.apache.log4j.Logger;
 import org.atmosphere.cpr.Broadcaster;
 import org.springframework.context.ApplicationContext;
 
+import devhood.im.nsim.model.GetContent;
 import devhood.im.nsim.model.GetUserlist;
 import devhood.im.nsim.model.Message;
 import devhood.im.nsim.model.SendMessage;
 import devhood.im.nsim.model.UserUpdateNotice;
+import devhood.im.sim.messages.MessageContext;
 import devhood.im.sim.service.interfaces.UserService;
 
 /**
@@ -33,6 +35,8 @@ public class UiEventHandler implements IEventHandler {
 		map.put(SendMessage.class, new SendMessageHandler());
 		map.put(UserUpdateNotice.class,
 				new UserUpdateNoticeHandler(userService));
+		map.put(GetContent.class, new GetContentHandler(broadcaster,
+				applicationContext.getBean(MessageContext.class)));
 	}
 
 	public void handle(Message m) {

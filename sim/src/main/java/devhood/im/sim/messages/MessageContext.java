@@ -1,7 +1,9 @@
 package devhood.im.sim.messages;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -48,6 +50,11 @@ public class MessageContext implements EventObserver {
 	 */
 	@Inject
 	private UserService userService;
+
+	/**
+	 * History der Messages.
+	 */
+	private Map<String, List<Message>> history = new HashMap<String, List<Message>>();
 
 	private List<MessageObserver> messageObservers = new ArrayList<MessageObserver>();
 
@@ -99,6 +106,7 @@ public class MessageContext implements EventObserver {
 	 */
 	public void sendMessage(Message m) throws MessagingException {
 		List<String> receiver = m.getReceiver();
+		addMessageHistory(m);
 		if (m instanceof RoomMessage) {
 			textMmessageSender.sendMessageToRoom((RoomMessage) m);
 		} else if (m instanceof SingleMessage) {
@@ -117,6 +125,7 @@ public class MessageContext implements EventObserver {
 		@Override
 		public void onMessage(Message m) {
 			notifyOnMessage(m);
+			addMessageHistory(m);
 		}
 
 		@Override
@@ -145,6 +154,27 @@ public class MessageContext implements EventObserver {
 				// TODO FF
 				throw new RuntimeException(e);
 			}
+		}
+	}
+
+	public List<Message> getHistory(String id) {
+		List<Message> list = history.get(id);
+		if (list == null) {
+			list = new ArrayList<Message>();
+			history.put(id, list);
+		}
+
+		return list;
+	}
+
+	public void addMessageHistory(Message m) {
+		if (m instanceof SingleMessage) {
+			getHistory(m.getReceiver().get(0)).add(m);
+		} else if (m instanceof BroadcastMessage) {
+			getHistory(simConfiguration.getStreamTabName()).add(m);
+		} else if (m instanceof RoomMessage) {
+			RoomMessage rm = (RoomMessage) m;
+			getHistory(rm.getRoomName()).add(m);
 		}
 	}
 

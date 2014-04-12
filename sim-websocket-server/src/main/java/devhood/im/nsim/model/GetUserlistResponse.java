@@ -24,4 +24,9 @@ public class GetUserlistResponse extends Message {
 		return "SIM";
 	}
 
+	@Override
+	public String toString() {
+		return "GetUserlistResponse [users=" + users + "]";
+	}
+
 }

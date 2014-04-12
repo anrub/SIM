@@ -175,6 +175,9 @@ $(function() {
 		subSocket.push($(input).val());
 		$("#input").val('');
 	});
+	$("#getContentButton").click(function(e) {
+		getContent($(input).val());
+	});
 
 	$("#busyButton").click(function(e) {
 		var msg = atmosphere.util.stringifyJSON({
@@ -212,6 +215,11 @@ $(function() {
 		scrollDown('conversations');
 	}
 
+	function scrollDown(id) {
+		var elem = document.getElementById(id);
+		elem.scrollTop = elem.scrollHeight;
+	}
+
 	function addMessageDebug(message) {
 		$("#debug").append('<p>' + message + '</p>');
 		scrollDown('debug');
@@ -242,9 +250,12 @@ $(function() {
 		subSocket.push(msg);
 	}
 
-	function scrollDown(id) {
-		var elem = document.getElementById(id);
-		elem.scrollTop = elem.scrollHeight;
+	function getContent(id) {
+		var msg = atmosphere.util.stringifyJSON({
+			"type" : "GetContent",
+			"id" : id
+		});
+		subSocket.push(msg);
 	}
 
 	window.setInterval(function() {

@@ -15,12 +15,12 @@ import org.springframework.context.ApplicationContext;
 
 import devhood.im.nsim.handler.sim.ISimEventHandler;
 import devhood.im.nsim.handler.sim.SimEventHandler;
-import devhood.im.nsim.handler.sim.SimpleBroadcaster;
 import devhood.im.nsim.handler.ui.IUiEventHandler;
 import devhood.im.nsim.handler.ui.UiEventHandler;
 import devhood.im.nsim.model.ErrorMessage;
 import devhood.im.nsim.model.Message;
 import devhood.im.nsim.util.JacksonDecoder;
+import devhood.im.nsim.util.SimpleBroadcaster;
 import devhood.im.sim.SimMain;
 import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.EventObserver;

@@ -2,9 +2,9 @@ package devhood.im.nsim.handler.ui;
 
 import org.atmosphere.cpr.Broadcaster;
 
-import devhood.im.nsim.handler.sim.SimpleBroadcaster;
 import devhood.im.nsim.model.ErrorMessage;
 import devhood.im.nsim.model.Message;
+import devhood.im.nsim.util.SimpleBroadcaster;
 
 public class UmbrellaUiHandler implements IUiEventHandler {
 

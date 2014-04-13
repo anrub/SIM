@@ -3,6 +3,7 @@ package devhood.im.nsim.handler.sim;
 import org.atmosphere.cpr.Broadcaster;
 
 import devhood.im.nsim.model.SendMessage;
+import devhood.im.nsim.util.SimpleBroadcaster;
 import devhood.im.sim.messages.model.Message;
 import devhood.im.sim.ui.event.Events;
 

@@ -30,7 +30,6 @@ public class UserUpdateNoticeHandler implements IUiEventHandler {
 
 		devhood.im.sim.messages.model.Message msg = new UserStatusMessage(
 				UserStatus.valueOf(n.getUpdate()));
-		EventDispatcher.fireEvent(Events.SEND_MESSAGE, msg);
 	}
 
 }

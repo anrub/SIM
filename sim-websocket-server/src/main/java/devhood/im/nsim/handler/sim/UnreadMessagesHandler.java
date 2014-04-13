@@ -5,6 +5,7 @@ import java.util.List;
 import org.atmosphere.cpr.Broadcaster;
 
 import devhood.im.nsim.model.UnreadMessages;
+import devhood.im.nsim.util.SimpleBroadcaster;
 import devhood.im.sim.ui.event.Events;
 
 public class UnreadMessagesHandler implements ISimEventHandler {

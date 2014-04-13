@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.atmosphere.cpr.Broadcaster;
 
-import devhood.im.nsim.handler.sim.SimpleBroadcaster;
 import devhood.im.nsim.model.GetRoomlistResponse;
 import devhood.im.nsim.model.Message;
+import devhood.im.nsim.util.SimpleBroadcaster;
 import devhood.im.sim.model.Room;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.UserService;

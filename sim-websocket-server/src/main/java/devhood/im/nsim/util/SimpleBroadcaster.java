@@ -1,4 +1,4 @@
-package devhood.im.nsim.handler.sim;
+package devhood.im.nsim.util;
 
 import java.io.IOException;
 

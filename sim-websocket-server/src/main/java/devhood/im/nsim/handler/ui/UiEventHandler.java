@@ -7,12 +7,15 @@ import org.apache.log4j.Logger;
 import org.atmosphere.cpr.Broadcaster;
 import org.springframework.context.ApplicationContext;
 
+import devhood.im.nsim.model.FileSendAccept;
+import devhood.im.nsim.model.FileSendReject;
 import devhood.im.nsim.model.GetContent;
 import devhood.im.nsim.model.GetUserlist;
 import devhood.im.nsim.model.Message;
 import devhood.im.nsim.model.SendMessage;
 import devhood.im.nsim.model.UserUpdateNotice;
 import devhood.im.sim.messages.MessageContext;
+import devhood.im.sim.messages.interfaces.FileMessageHandler;
 import devhood.im.sim.service.interfaces.UserService;
 
 /**
@@ -37,6 +40,10 @@ public class UiEventHandler implements IEventHandler {
 				new UserUpdateNoticeHandler(userService));
 		map.put(GetContent.class, new GetContentHandler(broadcaster,
 				applicationContext.getBean(MessageContext.class)));
+		map.put(FileSendAccept.class, new FileSendAcceptHandler(broadcaster,
+				applicationContext.getBean(FileMessageHandler.class)));
+		map.put(FileSendReject.class, new FileSendRejectHandler(broadcaster,
+				applicationContext.getBean(FileMessageHandler.class)));
 	}
 
 	public void handle(Message m) {

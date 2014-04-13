@@ -25,7 +25,8 @@ public class SimEventHandler {
 		map.put(Events.USER_ONLINE_NOTICE, new UserOnlineHandler(broadcaster));
 		map.put(Events.USER_OFFLINE_NOTICE, new UserOfflineHandler(broadcaster));
 		map.put(Events.UNREAD_MESSAGES, new UnreadMessagesHandler(broadcaster));
-
+		map.put(Events.MESSAGE_FILE_REQUEST_RECEIVED,
+				new FileRequestMessageHandler(broadcaster));
 		// weitere Handler, je SIM core Event einfuegen.
 
 		this.broadcaster = broadcaster;

@@ -123,6 +123,16 @@ $(function() {
 		} else if (json.type == "NewMessage" || json.type == "SendMessage") {
 			input.removeAttr('disabled').focus();
 			addMessage(json, 'blue', new Date());
+		}else if ( json.type == "GetUserlist") {
+			
+		}else if (json.type =="FileSendRequest") {
+			var Check = confirm("Möchten Sie die Datei annehmen?");
+			if (Check == true) {
+				sendFileAccept(json);
+			}else {
+				sendFileReject(json);
+			}
+		
 		} else {
 			addMessageDebug(json.type + ": " + json.text);
 		}
@@ -257,8 +267,26 @@ $(function() {
 		});
 		subSocket.push(msg);
 	}
+	
+	function sendFileAccept(json) {
+		var msg = atmosphere.util.stringifyJSON({
+			"type" : "FileSendAccept",
+			"receiver" : json.sender,
+			"id" : json.id
+		});
+		subSocket.push(msg);
+	}
+	
+	function sendFileReject(json) {
+		var msg = atmosphere.util.stringifyJSON({
+			"type" : "FileSendReject",
+			"receiver" : json.sender,
+			"id" : json.id
+		});
+		subSocket.push(msg);
+	}
 
 	window.setInterval(function() {
 		getUserlist();
-	}, 5000);
+	}, 50000);
 });

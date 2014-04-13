@@ -27,11 +27,11 @@ public class GetContentHandler implements IUiEventHandler {
 		GetContent gc = (GetContent) _m;
 
 		GetContentResponse response = new GetContentResponse();
-		response.setId(gc.getId());
+		response.setConversation(gc.getConversation());
 		List<Message> messages = new ArrayList<Message>();
 
 		List<devhood.im.sim.messages.model.Message> dev = messageContext
-				.getHistory(gc.getId());
+				.getHistory(gc.getConversation());
 		for (devhood.im.sim.messages.model.Message m : dev) {
 			Message msg = new Message();
 			if (m.getReceiver() != null && m.getReceiver().size() > 0) {

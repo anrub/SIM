@@ -1,14 +1,14 @@
 package devhood.im.nsim.model;
 
 public class GetContent extends Message {
-	private String id;
+	private String conversation;
 
-	public String getId() {
-		return id;
+	public String getConversation() {
+		return conversation;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setConversation(String conversation) {
+		this.conversation = conversation;
 	}
 
 }

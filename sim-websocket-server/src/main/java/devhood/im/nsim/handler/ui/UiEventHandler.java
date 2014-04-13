@@ -30,9 +30,13 @@ public class UiEventHandler implements IUiEventHandler {
 
 	private Map<Class, IUiEventHandler> map = new HashMap<Class, IUiEventHandler>();
 
+	private Broadcaster broadcaster;
+
 	public UiEventHandler(Broadcaster broadcaster,
 			ApplicationContext applicationContext) {
 		UserService userService = applicationContext.getBean(UserService.class);
+		this.broadcaster = broadcaster;
+
 		map.put(GetUserlist.class, new GetUserlistHandler(broadcaster,
 				userService));
 		map.put(SendMessage.class, new SendMessageHandler());
@@ -52,6 +56,8 @@ public class UiEventHandler implements IUiEventHandler {
 		IUiEventHandler h = map.get(m.getClass());
 		if (h != null) {
 			h.handle(m);
+		} else {
+			new UmbrellaUiHandler(broadcaster).handle(m);
 		}
 	}
 

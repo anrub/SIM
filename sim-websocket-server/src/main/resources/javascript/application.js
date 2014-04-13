@@ -265,7 +265,7 @@ $(function() {
 	function getContent(id) {
 		var msg = atmosphere.util.stringifyJSON({
 			"type" : "GetContent",
-			"id" : id
+			"conversation" : id
 		});
 		subSocket.push(msg);
 	}

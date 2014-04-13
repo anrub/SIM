@@ -12,11 +12,11 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.lang3.StringUtils;
 
+import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.Room;
 import devhood.im.sim.service.interfaces.UserService;
-import devhood.im.sim.ui.event.EventDispatcher;
-import devhood.im.sim.ui.event.Events;
 import devhood.im.sim.ui.view.JoinRoomView;
 
 @Named

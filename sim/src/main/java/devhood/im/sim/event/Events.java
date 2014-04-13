@@ -1,4 +1,4 @@
-package devhood.im.sim.ui.event;
+package devhood.im.sim.event;
 
 import devhood.im.sim.messages.model.FileSendAcceptMessage;
 

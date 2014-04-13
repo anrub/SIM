@@ -4,8 +4,8 @@ import org.atmosphere.cpr.Broadcaster;
 
 import devhood.im.nsim.model.SendMessage;
 import devhood.im.nsim.util.SimpleBroadcaster;
+import devhood.im.sim.event.Events;
 import devhood.im.sim.messages.model.Message;
-import devhood.im.sim.ui.event.Events;
 
 public class SendMessageHandler implements ISimEventHandler {
 	private Broadcaster broadcaster;

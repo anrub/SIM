@@ -4,7 +4,7 @@ import org.atmosphere.cpr.Broadcaster;
 
 import devhood.im.nsim.model.UserOnlineNotice;
 import devhood.im.nsim.util.JacksonEncoder;
-import devhood.im.sim.ui.event.Events;
+import devhood.im.sim.event.Events;
 
 public class UserOnlineHandler implements ISimEventHandler {
 	private Broadcaster broadcaster;

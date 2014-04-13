@@ -10,6 +10,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import devhood.im.sim.config.SimConfiguration;
+import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.EventObserver;
+import devhood.im.sim.event.Events;
 import devhood.im.sim.messages.interfaces.TextMessageSender;
 import devhood.im.sim.messages.model.BroadcastMessage;
 import devhood.im.sim.messages.model.FileSendAcceptMessage;
@@ -21,9 +24,6 @@ import devhood.im.sim.messages.model.SingleMessage;
 import devhood.im.sim.messages.observer.MessageObserver;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.UserService;
-import devhood.im.sim.ui.event.EventDispatcher;
-import devhood.im.sim.ui.event.EventObserver;
-import devhood.im.sim.ui.event.Events;
 
 /**
  * MessageContext, zentraler Punkt der Messages.

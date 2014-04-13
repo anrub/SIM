@@ -4,8 +4,8 @@ import org.atmosphere.cpr.Broadcaster;
 
 import devhood.im.nsim.model.FileSendRequest;
 import devhood.im.nsim.util.SimpleBroadcaster;
+import devhood.im.sim.event.Events;
 import devhood.im.sim.messages.model.FileSendRequestMessage;
-import devhood.im.sim.ui.event.Events;
 
 /**
  * Verarbeitet {@link FileSendRequestMessage} aus dem core, transformiert Sie in

@@ -45,7 +45,12 @@ public class SimMain {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 			SimMain main = new SimMain();
-			SimMain.applicationContext = main.startup();
+			if (SimMain.getParam(args, "-nsim") != null) {
+				SimMain.applicationContext = main.startupWithoutGui();
+			} else {
+				SimMain.applicationContext = main.startupGui();
+			}
+
 		} catch (Exception e) {
 			log.log(Level.WARNING, "Applikation konnte nicht gestartet werden",
 					e);
@@ -78,7 +83,7 @@ public class SimMain {
 	/**
 	 * Startet den {@link ApplicationContext} und zeigt das {@link MainView} an.
 	 */
-	public ApplicationContext startup() {
+	public ApplicationContext startupGui() {
 		GenericXmlApplicationContext context = new GenericXmlApplicationContext();
 
 		context.setValidating(false);
@@ -87,6 +92,22 @@ public class SimMain {
 		context.refresh();
 		MainPresenter presenter = context.getBean(MainPresenter.class);
 		presenter.initMain();
+
+		return context;
+	}
+
+	/**
+	 * Startet ohne GUI Klassen zu laden.
+	 * 
+	 * @return
+	 */
+	public ApplicationContext startupWithoutGui() {
+		GenericXmlApplicationContext context = new GenericXmlApplicationContext();
+
+		context.setValidating(false);
+		context.getEnvironment().setActiveProfiles("production");
+		context.load("classpath:/devhood/im/sim/core.xml");
+		context.refresh();
 
 		return context;
 	}

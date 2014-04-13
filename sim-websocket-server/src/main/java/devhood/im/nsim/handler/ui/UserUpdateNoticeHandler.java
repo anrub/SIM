@@ -4,11 +4,11 @@ import org.apache.log4j.Logger;
 
 import devhood.im.nsim.model.Message;
 import devhood.im.nsim.model.UserUpdateNotice;
+import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.Events;
 import devhood.im.sim.messages.model.UserStatusMessage;
 import devhood.im.sim.model.UserStatus;
 import devhood.im.sim.service.interfaces.UserService;
-import devhood.im.sim.ui.event.EventDispatcher;
-import devhood.im.sim.ui.event.Events;
 
 public class UserUpdateNoticeHandler implements IUiEventHandler {
 	

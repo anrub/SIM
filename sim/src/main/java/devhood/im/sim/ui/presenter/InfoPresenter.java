@@ -5,10 +5,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.swing.JFrame;
 
+import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.EventObserver;
+import devhood.im.sim.event.Events;
 import devhood.im.sim.model.User;
-import devhood.im.sim.ui.event.EventDispatcher;
-import devhood.im.sim.ui.event.EventObserver;
-import devhood.im.sim.ui.event.Events;
 import devhood.im.sim.ui.event.UiEvent;
 import devhood.im.sim.ui.view.InfoView;
 

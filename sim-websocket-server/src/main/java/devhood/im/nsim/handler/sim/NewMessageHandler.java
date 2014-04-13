@@ -4,7 +4,7 @@ import org.atmosphere.cpr.Broadcaster;
 
 import devhood.im.nsim.model.NewMessage;
 import devhood.im.nsim.util.SimpleBroadcaster;
-import devhood.im.sim.ui.event.Events;
+import devhood.im.sim.event.Events;
 
 /**
  * Verarbeitet Eingang einer neuen Nachricht durch SIM core. Transformiert und

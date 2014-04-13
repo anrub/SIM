@@ -4,7 +4,7 @@ import org.atmosphere.cpr.Broadcaster;
 
 import devhood.im.nsim.model.Message;
 import devhood.im.nsim.util.JacksonEncoder;
-import devhood.im.sim.ui.event.Events;
+import devhood.im.sim.event.Events;
 
 /**
  * Verarbeitet nicht behandelte Events von SIM core. Transformiert und pusht zur

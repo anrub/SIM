@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.atmosphere.cpr.Broadcaster;
 
-import devhood.im.sim.ui.event.Events;
+import devhood.im.sim.event.Events;
 
 /**
  * Transformiert SIM {@link Events} zu Objects,und sendet sie ueber die API nach

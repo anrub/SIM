@@ -21,13 +21,13 @@ import javax.swing.JProgressBar;
 
 import org.springframework.context.annotation.Scope;
 
+import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.EventObserver;
+import devhood.im.sim.event.Events;
 import devhood.im.sim.messages.MessagingException;
 import devhood.im.sim.messages.interfaces.FileMessageHandler;
 import devhood.im.sim.messages.model.FileSendAcceptMessage;
 import devhood.im.sim.messages.model.FileSendRejectMessage;
-import devhood.im.sim.ui.event.EventDispatcher;
-import devhood.im.sim.ui.event.EventObserver;
-import devhood.im.sim.ui.event.Events;
 
 /**
  * Frame in dem der Versand von Dateien behandelt wird.

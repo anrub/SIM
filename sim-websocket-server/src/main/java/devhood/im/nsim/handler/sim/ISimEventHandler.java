@@ -1,6 +1,6 @@
 package devhood.im.nsim.handler.sim;
 
-import devhood.im.sim.ui.event.Events;
+import devhood.im.sim.event.Events;
 
 /**
  * EventHandler, der Events von SIM core empfaengt und verarbeitet.

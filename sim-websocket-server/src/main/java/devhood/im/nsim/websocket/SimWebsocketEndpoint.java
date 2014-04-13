@@ -22,9 +22,9 @@ import devhood.im.nsim.model.Message;
 import devhood.im.nsim.util.JacksonDecoder;
 import devhood.im.nsim.util.SimpleBroadcaster;
 import devhood.im.sim.SimMain;
-import devhood.im.sim.ui.event.EventDispatcher;
-import devhood.im.sim.ui.event.EventObserver;
-import devhood.im.sim.ui.event.Events;
+import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.EventObserver;
+import devhood.im.sim.event.Events;
 
 /**
  * Websocket Endpoint. <br />

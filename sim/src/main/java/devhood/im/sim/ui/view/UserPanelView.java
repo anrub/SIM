@@ -33,13 +33,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import devhood.im.sim.config.SimConfiguration;
+import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.Room;
 import devhood.im.sim.model.User;
 import devhood.im.sim.model.UserStatus;
 import devhood.im.sim.ui.SendFileFrame;
-import devhood.im.sim.ui.event.EventDispatcher;
-import devhood.im.sim.ui.event.Events;
 import devhood.im.sim.ui.event.UiEvent;
 import devhood.im.sim.ui.util.JOutlookBar;
 import devhood.im.sim.ui.util.UiUtil;

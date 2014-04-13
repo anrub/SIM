@@ -3,8 +3,8 @@ package devhood.im.nsim.handler.ui;
 import java.util.Arrays;
 
 import devhood.im.nsim.model.Message;
-import devhood.im.sim.ui.event.EventDispatcher;
-import devhood.im.sim.ui.event.Events;
+import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.Events;
 
 public class SendMessageHandler implements IUiEventHandler {
 

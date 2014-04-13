@@ -16,14 +16,14 @@ import javax.swing.SwingUtilities;
 import org.springframework.context.ApplicationContext;
 
 import devhood.im.sim.config.SimConfiguration;
+import devhood.im.sim.event.EventDispatcher;
+import devhood.im.sim.event.EventObserver;
+import devhood.im.sim.event.Events;
 import devhood.im.sim.model.Receiver;
 import devhood.im.sim.model.Room;
 import devhood.im.sim.model.User;
 import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.action.BarAction;
-import devhood.im.sim.ui.event.EventDispatcher;
-import devhood.im.sim.ui.event.EventObserver;
-import devhood.im.sim.ui.event.Events;
 import devhood.im.sim.ui.view.UserPanelView;
 
 @Named

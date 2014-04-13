@@ -135,6 +135,11 @@
 			<artifactId>commons-pool</artifactId>
 			<version>1.6</version>
 		</dependency>
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.0-api</artifactId>
+			<version>1.0.1.Final</version>
+		</dependency>
 	</dependencies>
 
 	<build>

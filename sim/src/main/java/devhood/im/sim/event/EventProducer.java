@@ -1,6 +1,7 @@
 package devhood.im.sim.event;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -25,14 +26,15 @@ import devhood.im.sim.service.interfaces.UserService;
  * 
  */
 @Named
-public class EventProducer implements MessageObserver,
-		UserChangeObserver {
+public class EventProducer implements MessageObserver, UserChangeObserver {
 
 	@Inject
 	private MessageContext messageContext;
 
 	@Inject
 	private UserService userService;
+
+	private Logger log = Logger.getLogger(EventProducer.class.toString());
 
 	@PostConstruct
 	public void init() {
@@ -42,7 +44,7 @@ public class EventProducer implements MessageObserver,
 
 	@Override
 	public void onMessage(Message m) {
-		System.out.println(m);
+		log.info("Pre Fire Event Message_received: " + m);
 		EventDispatcher.fireEvent(Events.MESSAGE_RECEIVED, m);
 	}
 

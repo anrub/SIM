@@ -1,6 +1,10 @@
 package devhood.im.nsim.javafx;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker.State;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
@@ -12,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class SimWebView extends Application {
 	private Scene scene;
@@ -22,6 +27,7 @@ public class SimWebView extends Application {
 		stage.setTitle("SIM in WebView.");
 		scene = new Scene(new Browser(), 1050, 700, Color.web("#666970"));
 		stage.setScene(scene);
+		stage.initStyle(StageStyle.UNDECORATED);
 		stage.show();
 	}
 
@@ -38,12 +44,32 @@ class Browser extends Region {
 	public Browser() {
 		// apply the styles
 		getStyleClass().add("browser");
+
+		webEngine.getLoadWorker().stateProperty()
+				.addListener(new ChangeListener<State>() {
+					@Override
+					public void changed(ObservableValue<? extends State> ov,
+							State oldState, State newState) {
+						if (newState == State.SUCCEEDED) {
+							netscape.javascript.JSObject js = (netscape.javascript.JSObject) webEngine
+									.executeScript("window");
+
+							js.setMember("app", new Handler());
+						}
+					}
+				});
+
 		// load the web page
 		load();
-		
+
 		// add the web view to the scene
 		getChildren().add(browser);
+	}
 
+	class Handler {
+		public void exit() {
+			Platform.exit();
+		}
 	}
 
 	private void load() {

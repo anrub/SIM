@@ -13,6 +13,7 @@ div {
 	border: 1px solid black;
 }
 
+
 #sim {
 	height: 500px;
 	width: 1024px;
@@ -42,24 +43,23 @@ div {
 #input {
 	width: 90%;
 }
+
 #debug {
-overflow:scroll;
-width:1024px;
-height:100px;
-
+	overflow: scroll;
+	width: 1024px;
+	height: 100px;
 }
-
 </style>
 </head>
 <body>
-	<div>
+	<div id="main">
 		<div id="header">
 			<h3>SIM Atmosphere Chat.</h3>
 		</div>
 		<div id="sim">
 			<div id="left">
 				<div id="userlist">Keine User</div>
-				
+
 				Räume:
 				<div id="rooms">Keine Räume</div>
 			</div>
@@ -84,6 +84,7 @@ height:100px;
 				<button type="button" id="busyButton">busy</button>
 				<button type="button" id="getContentButton">getContent</button>
 				<button type="button" id="clearButton">clear</button>
+				<button type="button" id="exit" onclick="app.exit();">Exit</button>
 			</div>
 		</div>
 		<div id="debug"></div>

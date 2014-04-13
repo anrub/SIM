@@ -3,8 +3,6 @@ package devhood.im.nsim.model;
 public class FileSendRequest extends Message {
 	private String filename;
 
-	private String id;
-
 	private String filetype;
 
 	private long size;
@@ -15,14 +13,6 @@ public class FileSendRequest extends Message {
 
 	public void setFilename(String filename) {
 		this.filename = filename;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public String getFiletype() {

@@ -129,8 +129,10 @@ $(function() {
 			var Check = confirm("Möchten Sie die Datei annehmen?");
 			if (Check == true) {
 				sendFileAccept(json);
+				addMessageDebug(json.type + ": ACCEPT : " + json.text);
 			}else {
 				sendFileReject(json);
+				addMessageDebug(json.type + ": REJECT : " + json.text);
 			}
 		
 		} else {

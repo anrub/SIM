@@ -14,7 +14,7 @@ import devhood.im.sim.ui.event.Events;
  * @author flo
  * 
  */
-public class SimEventHandler {
+public class SimEventHandler implements ISimEventHandler {
 
 	private Broadcaster broadcaster;
 
@@ -27,6 +27,8 @@ public class SimEventHandler {
 		map.put(Events.UNREAD_MESSAGES, new UnreadMessagesHandler(broadcaster));
 		map.put(Events.MESSAGE_FILE_REQUEST_RECEIVED,
 				new FileRequestMessageHandler(broadcaster));
+		map.put(Events.SEND_MESSAGE,
+				new SendMessageHandler(broadcaster));
 		// weitere Handler, je SIM core Event einfuegen.
 
 		this.broadcaster = broadcaster;

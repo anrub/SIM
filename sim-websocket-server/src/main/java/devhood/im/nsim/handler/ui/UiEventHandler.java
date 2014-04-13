@@ -24,11 +24,11 @@ import devhood.im.sim.service.interfaces.UserService;
  * @author flo
  * 
  */
-public class UiEventHandler implements IEventHandler {
+public class UiEventHandler implements IUiEventHandler {
 
 	private final Logger logger = Logger.getLogger(getClass());
 
-	private Map<Class, IEventHandler> map = new HashMap<Class, IEventHandler>();
+	private Map<Class, IUiEventHandler> map = new HashMap<Class, IUiEventHandler>();
 
 	public UiEventHandler(Broadcaster broadcaster,
 			ApplicationContext applicationContext) {
@@ -49,7 +49,7 @@ public class UiEventHandler implements IEventHandler {
 	public void handle(Message m) {
 		logger.info(String.format("Client Message empfangen: %s", m));
 
-		IEventHandler h = map.get(m.getClass());
+		IUiEventHandler h = map.get(m.getClass());
 		if (h != null) {
 			h.handle(m);
 		}

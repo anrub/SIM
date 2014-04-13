@@ -25,6 +25,13 @@ public class SimWebsocketMain {
 
 	}
 
+	/**
+	 * Startet Webserver zum Anbieten der WebSocket SST, sowie der Dummy-Chat
+	 * JS/HTML Impl.
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	private static void startWebSocketServer(String[] args) throws Exception {
 		String port = SimMain.getParam(args, "-p");
 		Server server = null;
@@ -66,6 +73,12 @@ public class SimWebsocketMain {
 
 	}
 
+	/**
+	 * Startet SIM core.
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	private static void startSimCore(String[] args) throws Exception {
 		SimMain.main(args);
 	}

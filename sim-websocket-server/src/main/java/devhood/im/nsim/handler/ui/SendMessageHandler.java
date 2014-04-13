@@ -6,7 +6,7 @@ import devhood.im.nsim.model.Message;
 import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.Events;
 
-public class SendMessageHandler implements IEventHandler {
+public class SendMessageHandler implements IUiEventHandler {
 
 	@Override
 	public void handle(Message m) {

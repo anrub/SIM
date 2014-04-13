@@ -10,7 +10,7 @@ import devhood.im.sim.service.interfaces.UserService;
 import devhood.im.sim.ui.event.EventDispatcher;
 import devhood.im.sim.ui.event.Events;
 
-public class UserUpdateNoticeHandler implements IEventHandler {
+public class UserUpdateNoticeHandler implements IUiEventHandler {
 	
 	private Logger log = Logger.getLogger(UserUpdateNoticeHandler.class);
 

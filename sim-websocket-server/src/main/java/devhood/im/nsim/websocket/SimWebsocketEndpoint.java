@@ -13,8 +13,12 @@ import org.atmosphere.cpr.AtmosphereResourceEvent;
 import org.atmosphere.cpr.Broadcaster;
 import org.springframework.context.ApplicationContext;
 
+import devhood.im.nsim.handler.sim.ISimEventHandler;
 import devhood.im.nsim.handler.sim.SimEventHandler;
+import devhood.im.nsim.handler.sim.SimpleBroadcaster;
+import devhood.im.nsim.handler.ui.IUiEventHandler;
 import devhood.im.nsim.handler.ui.UiEventHandler;
+import devhood.im.nsim.model.ErrorMessage;
 import devhood.im.nsim.model.Message;
 import devhood.im.nsim.util.JacksonDecoder;
 import devhood.im.sim.SimMain;
@@ -23,8 +27,17 @@ import devhood.im.sim.ui.event.EventObserver;
 import devhood.im.sim.ui.event.Events;
 
 /**
- * Websocket Endpoint.
+ * Websocket Endpoint. <br />
+ * <br />
+ * Empfaengt Messages der UI via {@link SimWebsocketEndpoint#onMessage(String)}
+ * sowie Events von SIM core durch
+ * {@link SimWebsocketEndpoint#eventReceived(Events, Object)}. <br />
+ * Delegiert die Verarbeitung der SIM core {@link Events} an
+ * {@link ISimEventHandler} bzw. {@link IUiEventHandler} zur Verarbeitung der
+ * {@link Message}s der UI.
  * 
+ * @see <a href="https://github.com/anrub/SIM/wiki/WebSocket-API">WebSocket-API
+ *      Doku im Wiki</a>
  * @author flo
  * 
  */
@@ -33,12 +46,24 @@ public class SimWebsocketEndpoint implements EventObserver {
 
 	private final Logger logger = Logger.getLogger(getClass());
 
+	/**
+	 * Broadcaster - Push Verbindung zum Client (UI).
+	 */
 	private Broadcaster broadcaster;
 
-	private SimEventHandler simEventHandler;
+	/**
+	 * Behandelt Events von SIM core
+	 */
+	private ISimEventHandler simEventHandler;
 
-	private UiEventHandler uiEventHandler;
+	/**
+	 * Behandelt Events der UI.
+	 */
+	private IUiEventHandler uiEventHandler;
 
+	/**
+	 * SIM core {@link ApplicationContext} zum Bezug von SIM-core-Services.
+	 */
 	private ApplicationContext applicationContext;
 
 	public SimWebsocketEndpoint() {
@@ -55,20 +80,25 @@ public class SimWebsocketEndpoint implements EventObserver {
 	 * @throws IOException
 	 */
 	@org.atmosphere.config.service.Message
-	public String onMessage(String message) throws IOException {
+	public void onMessage(String message) throws IOException {
 		JacksonDecoder dec = new JacksonDecoder();
-		Message m;
+		Message m = null;
 		try {
 			m = dec.decode(message);
 		} catch (Exception e) {
-			return "\"Error\"";
+			handleException(e);
 		}
 		if (uiEventHandler == null) {
 			uiEventHandler = new UiEventHandler(broadcaster, applicationContext);
 		}
 		uiEventHandler.handle(m);
+	}
 
-		return message;
+	private void handleException(Exception e) {
+		ErrorMessage msg = new ErrorMessage(e);
+		new SimpleBroadcaster(broadcaster).broadcast(msg);
+
+		e.printStackTrace();
 	}
 
 	/**

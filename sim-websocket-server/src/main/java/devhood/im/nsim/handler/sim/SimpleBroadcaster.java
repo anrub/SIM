@@ -7,6 +7,12 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+/**
+ * Utility Broadcaster.
+ * 
+ * @author flo
+ * 
+ */
 public class SimpleBroadcaster {
 	private Broadcaster broadcaster;
 
@@ -14,6 +20,12 @@ public class SimpleBroadcaster {
 		this.broadcaster = broadcaster;
 	}
 
+	/**
+	 * Sendet toSend als JSON String.
+	 * 
+	 * @param toSend
+	 *            Obj.
+	 */
 	public void broadcast(Object toSend) {
 		ObjectMapper om = new ObjectMapper();
 

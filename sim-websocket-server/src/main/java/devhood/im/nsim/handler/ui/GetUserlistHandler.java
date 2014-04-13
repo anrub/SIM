@@ -12,7 +12,7 @@ import devhood.im.nsim.model.User;
 import devhood.im.nsim.util.JacksonEncoder;
 import devhood.im.sim.service.interfaces.UserService;
 
-public class GetUserlistHandler implements IEventHandler {
+public class GetUserlistHandler implements IUiEventHandler {
 	private Broadcaster broadcaster;
 
 	private UserService userService;

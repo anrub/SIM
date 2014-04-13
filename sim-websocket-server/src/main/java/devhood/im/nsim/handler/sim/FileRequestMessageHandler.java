@@ -6,6 +6,13 @@ import devhood.im.nsim.model.FileSendRequest;
 import devhood.im.sim.messages.model.FileSendRequestMessage;
 import devhood.im.sim.ui.event.Events;
 
+/**
+ * Verarbeitet {@link FileSendRequestMessage} aus dem core, transformiert Sie in
+ * UI Message und pusht weiter an UI.
+ * 
+ * @author flo
+ * 
+ */
 public class FileRequestMessageHandler implements ISimEventHandler {
 
 	private Broadcaster broadcaster;

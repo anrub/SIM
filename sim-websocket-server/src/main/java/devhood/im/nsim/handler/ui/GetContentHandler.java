@@ -11,7 +11,7 @@ import devhood.im.nsim.model.Message;
 import devhood.im.nsim.util.JacksonEncoder;
 import devhood.im.sim.messages.MessageContext;
 
-public class GetContentHandler implements IEventHandler {
+public class GetContentHandler implements IUiEventHandler {
 	private Broadcaster broadcaster;
 
 	private MessageContext messageContext;
@@ -34,7 +34,6 @@ public class GetContentHandler implements IEventHandler {
 				.getHistory(gc.getId());
 		for (devhood.im.sim.messages.model.Message m : dev) {
 			Message msg = new Message();
-			msg.setDatetime(0);
 			if (m.getReceiver() != null && m.getReceiver().size() > 0) {
 				msg.setReceiver(m.getReceiver().get(0));
 			}

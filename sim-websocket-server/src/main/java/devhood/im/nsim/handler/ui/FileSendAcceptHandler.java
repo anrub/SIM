@@ -8,7 +8,7 @@ import devhood.im.nsim.model.Message;
 import devhood.im.sim.messages.MessagingException;
 import devhood.im.sim.messages.interfaces.FileMessageHandler;
 
-public class FileSendAcceptHandler implements IEventHandler {
+public class FileSendAcceptHandler implements IUiEventHandler {
 	private Broadcaster broadcaster;
 
 	private FileMessageHandler fileMessageHandler;

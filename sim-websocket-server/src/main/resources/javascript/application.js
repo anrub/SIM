@@ -24,7 +24,8 @@ $(function() {
 	};
 
 	request.onOpen = function(response) {
-		$("#debug").append('SIM connected using ' + response.transport);
+		$("#debug").append(
+				'SIM connected using ' + response.transport + "<br />");
 
 		input.removeAttr('disabled').focus();
 		status.html('&gt;');
@@ -125,10 +126,35 @@ $(function() {
 							});
 			$("#userlist").html(userlist);
 
+			$.each($(".userCheckbox"), function(index, val) {
+				var $this = $(this);
+				$this.click(function() {
+
+					var checked = false;
+					$.each($(".userCheckbox"), function(index, val) {
+						if (val.checked) {
+							$("#sendMessageButton")
+									.attr('disabled', 'disabled');
+							checked = true;
+						}
+
+					});
+
+					if (!checked) {
+						$("#sendMessageButton").removeAttr('disabled').focus();
+					}
+
+				});
+			});
+
 		} else if (json.type == "NewMessage" || json.type == "SendMessage") {
 			addMessageDebug(json.type + ":"
 					+ atmosphere.util.stringifyJSON(json));
 			input.removeAttr('disabled').focus();
+			
+			if ( json.receiver == null ) {
+				json.receiver = "Stream";
+			}
 			addMessage(json, 'blue', new Date());
 		} else if (json.type == "GetUserlist") {
 
@@ -224,34 +250,37 @@ $(function() {
 	});
 
 	function addMessage(message, color, datetime) {
-		content.append('<p>'
-				+ '['
-				+ (datetime.getHours() < 10 ? '0' + datetime.getHours()
-						: datetime.getHours())
-				+ ':'
-				+ (datetime.getMinutes() < 10 ? '0' + datetime.getMinutes()
-						: datetime.getMinutes())
-				+ ':'
-				+ (datetime.getSeconds() < 10 ? '0' + datetime.getSeconds()
-						: datetime.getSeconds()) + '] ' + '<span style="color:'
-				+ color + '">' + message.sender + " &gt; " + message.receiver
-				+ '&gt; </span>' + '' + message.text + '' + '</p>');
+		content.append('<p>' + '[' + getFormattedDate(new Date()) + '] '
+				+ '<span style="color:' + color + '">' + message.sender
+				+ " &gt; " + message.receiver + '&gt; </span>' + ''
+				+ message.text + '' + '</p>');
 		scrollDown('conversations');
 		changeTitle(message);
 	}
 
 	function changeTitle(message) {
-		if ( $("#input").is(":focus") ) {
+		if ($("#input").is(":focus")) {
 			return;
 		}
-		
+
 		if (message.receiver == null) {
 			return;
 		}
 		// setTimeout(changeTitle, 3000);
 		$(document).attr('title', '> ' + message.sender + ': Neue Nachricht!');
 	}
-	
+
+	function getFormattedDate(datetime) {
+		return (datetime.getHours() < 10 ? '0' + datetime.getHours() : datetime
+				.getHours())
+				+ ':'
+				+ (datetime.getMinutes() < 10 ? '0' + datetime.getMinutes()
+						: datetime.getMinutes())
+				+ ':'
+				+ (datetime.getSeconds() < 10 ? '0' + datetime.getSeconds()
+						: datetime.getSeconds());
+	}
+
 	function resetTitle(message) {
 		$(document).attr('title', 'SIM');
 	}
@@ -262,7 +291,8 @@ $(function() {
 	}
 
 	function addMessageDebug(message) {
-		$("#debug").append('<p>' + message + '</p>');
+		$("#debug").append(
+				'[' + getFormattedDate(new Date()) + '] ' + message + '<br />');
 		scrollDown('debug');
 	}
 
@@ -321,7 +351,7 @@ $(function() {
 		});
 		subSocket.push(msg);
 	}
-	
+
 	$("#input").focus(function() {
 		resetTitle();
 	});

@@ -24,8 +24,8 @@ $(function() {
 	};
 
 	request.onOpen = function(response) {
-		$("#debug").append('SIM connected using ' + response.transport); 
-		
+		$("#debug").append('SIM connected using ' + response.transport);
+
 		input.removeAttr('disabled').focus();
 		status.html('&gt;');
 		transport = response.transport;
@@ -45,9 +45,9 @@ $(function() {
 							text : 'Client closed the connection after a timeout. Reconnecting in '
 									+ request.reconnectInterval
 						}));
-		
+
 		status.html('.X.');
-		
+
 		// input.attr('disabled', 'disabled');
 		setTimeout(function() {
 			subSocket = socket.subscribe(request);
@@ -67,12 +67,13 @@ $(function() {
 		atmosphere.util.info(errorMsg);
 		request.fallbackTransport = "long-polling";
 		$("#debug")
-				.append($(
-						'<h3>',
-						{
-							text : 'SIM Chat. Default transport is WebSocket, fallback is '
-									+ request.fallbackTransport
-						}));
+				.append(
+						$(
+								'<h3>',
+								{
+									text : 'SIM Chat. Default transport is WebSocket, fallback is '
+											+ request.fallbackTransport
+								}));
 	};
 
 	request.onMessage = function(response) {
@@ -86,7 +87,8 @@ $(function() {
 		}
 
 		if (json.type == "GetUserlistResponse") {
-			addMessageDebug(json.type + ":" + atmosphere.util.stringifyJSON(json.users));
+			addMessageDebug(json.type + ":"
+					+ atmosphere.util.stringifyJSON(json.users));
 			var userlist = "";
 
 			$
@@ -124,14 +126,15 @@ $(function() {
 			$("#userlist").html(userlist);
 
 		} else if (json.type == "NewMessage" || json.type == "SendMessage") {
-			addMessageDebug(json.type + ":" + atmosphere.util.stringifyJSON(json));
+			addMessageDebug(json.type + ":"
+					+ atmosphere.util.stringifyJSON(json));
 			input.removeAttr('disabled').focus();
 			addMessage(json, 'blue', new Date());
 		} else if (json.type == "GetUserlist") {
 
-	
 		} else if (json.type == "FileSendRequest") {
-			addMessageDebug(json.type + ":" + atmosphere.util.stringifyJSON(json));
+			addMessageDebug(json.type + ":"
+					+ atmosphere.util.stringifyJSON(json));
 			var Check = confirm("Möchten Sie die Datei annehmen?");
 			if (Check == true) {
 				sendFileAccept(json);
@@ -146,8 +149,9 @@ $(function() {
 			$(json.rooms).each(function(index, val) {
 				$("#rooms").append(val.name + "<br />");
 			});
-			
-			addMessageDebug(json.type + ":" + atmosphere.util.stringifyJSON(json.rooms));
+
+			addMessageDebug(json.type + ":"
+					+ atmosphere.util.stringifyJSON(json.rooms));
 		} else {
 			addMessageDebug(json.type + ": " + json.text);
 		}
@@ -168,7 +172,7 @@ $(function() {
 		logged = false;
 
 		status.html('XX');
-		
+
 	};
 
 	request.onReconnect = function(request, response) {
@@ -177,7 +181,6 @@ $(function() {
 					+ request.reconnectInterval
 		}));
 		// input.attr('disabled', 'disabled');
-		
 
 		status.html('xx');
 	};
@@ -221,28 +224,36 @@ $(function() {
 	});
 
 	function addMessage(message, color, datetime) {
-		content
-				.append('<p>' 
-						+ '['
-						+ (datetime.getHours() < 10 ? '0'
-								+ datetime.getHours() : datetime.getHours())
-						+ ':'
-						+ (datetime.getMinutes() < 10 ? '0'
-								+ datetime.getMinutes() : datetime.getMinutes())
-						+ ':'
-						+ (datetime.getSeconds() < 10 ? '0'
-								+ datetime.getSeconds() : datetime.getSeconds())
-						+ '] ' 
-						+ '<span style="color:'
-						+ color
-						+ '">'
-						+ message.sender
-						+ " &gt; "
-						+ message.receiver
-						+ '&gt; </span>'
-						+ '' + message.text + ''		
-						+ '</p>');
+		content.append('<p>'
+				+ '['
+				+ (datetime.getHours() < 10 ? '0' + datetime.getHours()
+						: datetime.getHours())
+				+ ':'
+				+ (datetime.getMinutes() < 10 ? '0' + datetime.getMinutes()
+						: datetime.getMinutes())
+				+ ':'
+				+ (datetime.getSeconds() < 10 ? '0' + datetime.getSeconds()
+						: datetime.getSeconds()) + '] ' + '<span style="color:'
+				+ color + '">' + message.sender + " &gt; " + message.receiver
+				+ '&gt; </span>' + '' + message.text + '' + '</p>');
 		scrollDown('conversations');
+		changeTitle(message);
+	}
+
+	function changeTitle(message) {
+		if ( $("#input").is(":focus") ) {
+			return;
+		}
+		
+		if (message.receiver == null) {
+			return;
+		}
+		// setTimeout(changeTitle, 3000);
+		$(document).attr('title', '> ' + message.sender + ': Neue Nachricht!');
+	}
+	
+	function resetTitle(message) {
+		$(document).attr('title', 'SIM');
 	}
 
 	function scrollDown(id) {
@@ -260,7 +271,7 @@ $(function() {
 			"type" : "GetUserlist"
 		});
 		subSocket.push(msg);
-		
+
 		var msg = atmosphere.util.stringifyJSON({
 			"type" : "GetRoomlist"
 		});
@@ -310,6 +321,10 @@ $(function() {
 		});
 		subSocket.push(msg);
 	}
+	
+	$("#input").focus(function() {
+		resetTitle();
+	});
 
 	window.setInterval(function() {
 		getUserlist();

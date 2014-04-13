@@ -24,11 +24,10 @@ $(function() {
 	};
 
 	request.onOpen = function(response) {
-		content.html($('<p>', {
-			text : 'Atmosphere connected using ' + response.transport
-		}));
+		$("#debug").append('SIM connected using ' + response.transport); 
+		
 		input.removeAttr('disabled').focus();
-		status.text('Input');
+		status.html('&gt;');
 		transport = response.transport;
 
 		// Carry the UUID. This is required if you want to call
@@ -46,6 +45,9 @@ $(function() {
 							text : 'Client closed the connection after a timeout. Reconnecting in '
 									+ request.reconnectInterval
 						}));
+		
+		status.html('.X.');
+		
 		// input.attr('disabled', 'disabled');
 		setTimeout(function() {
 			subSocket = socket.subscribe(request);
@@ -55,7 +57,7 @@ $(function() {
 	request.onReopen = function(response) {
 		input.removeAttr('disabled').focus();
 		content.html($('<p>', {
-			text : 'Atmosphere re-connected using ' + response.transport
+			text : 'SIM re-connected using ' + response.transport
 		}));
 	};
 
@@ -64,11 +66,11 @@ $(function() {
 	request.onTransportFailure = function(errorMsg, request) {
 		atmosphere.util.info(errorMsg);
 		request.fallbackTransport = "long-polling";
-		header
-				.html($(
+		$("#debug")
+				.append($(
 						'<h3>',
 						{
-							text : 'Atmosphere Chat. Default transport is WebSocket, fallback is '
+							text : 'SIM Chat. Default transport is WebSocket, fallback is '
 									+ request.fallbackTransport
 						}));
 	};
@@ -164,6 +166,9 @@ $(function() {
 					+ 'socket or the server is down'
 		}));
 		logged = false;
+
+		status.html('XX');
+		
 	};
 
 	request.onReconnect = function(request, response) {
@@ -172,6 +177,9 @@ $(function() {
 					+ request.reconnectInterval
 		}));
 		// input.attr('disabled', 'disabled');
+		
+
+		status.html('xx');
 	};
 
 	subSocket = socket.subscribe(request);
@@ -214,19 +222,26 @@ $(function() {
 
 	function addMessage(message, color, datetime) {
 		content
-				.append('<p><span style="color:'
+				.append('<p>' 
+						+ '['
+						+ (datetime.getHours() < 10 ? '0'
+								+ datetime.getHours() : datetime.getHours())
+						+ ':'
+						+ (datetime.getMinutes() < 10 ? '0'
+								+ datetime.getMinutes() : datetime.getMinutes())
+						+ ':'
+						+ (datetime.getSeconds() < 10 ? '0'
+								+ datetime.getSeconds() : datetime.getSeconds())
+						+ '] ' 
+						+ '<span style="color:'
 						+ color
 						+ '">'
 						+ message.sender
 						+ " &gt; "
 						+ message.receiver
-						+ '</span> @ '
-						+ +(datetime.getHours() < 10 ? '0'
-								+ datetime.getHours() : datetime.getHours())
-						+ ':'
-						+ (datetime.getMinutes() < 10 ? '0'
-								+ datetime.getMinutes() : datetime.getMinutes())
-						+ ': ' + message.text + '</p>');
+						+ '&gt; </span>'
+						+ '' + message.text + ''		
+						+ '</p>');
 		scrollDown('conversations');
 	}
 

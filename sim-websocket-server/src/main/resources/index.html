@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=1024" />
 <meta charset="utf-8">
-<title>Atmosphere Chat</title>
+<title>SIM</title>
 <!-- Atmosphere -->
 <script type="text/javascript" src="javascript/atmosphere.js"></script>
 <!-- Application -->
 <script type="text/javascript" src="javascript/jquery-1.9.0.js"></script>
 <script type="text/javascript" src="javascript/application.js"></script>
 <style>
-div {
-	border: 1px solid black;
+body {
+	
 }
 
+div {
+	border: 1px solid grey;
+}
 
 #sim {
 	height: 500px;
-	width: 1024px;
 }
 
 #left {
@@ -28,12 +31,17 @@ div {
 #right {
 	float: left;
 	height: 90%;
-	width: 75%%;
+	width: 75%;
 }
 
 #conversations {
 	height: 90%;
 	overflow: scroll;
+	font-family: monospace;
+}
+
+#content {
+	border: none;
 }
 
 #buttons {
@@ -42,19 +50,23 @@ div {
 
 #input {
 	width: 90%;
+	font-family: monospace;
 }
 
 #debug {
 	overflow: scroll;
-	width: 1024px;
 	height: 100px;
+}
+
+#header {
+	font-family: courier;
 }
 </style>
 </head>
 <body>
 	<div id="main">
 		<div id="header">
-			<h3>SIM Atmosphere Chat.</h3>
+			<h3>&gt; SIM</h3>
 		</div>
 		<div id="sim">
 			<div id="left">
@@ -72,6 +84,7 @@ div {
 						id="input" disabled="disabled" />
 				</div>
 			</div>
+
 			<br style="clear: both" />
 			<div id="buttons">
 				<button type="button" id="getUserlistButton">getUserlist</button>

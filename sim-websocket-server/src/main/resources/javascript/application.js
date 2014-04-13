@@ -84,6 +84,7 @@ $(function() {
 		}
 
 		if (json.type == "GetUserlistResponse") {
+			addMessageDebug(json.type + ":" + atmosphere.util.stringifyJSON(json.users));
 			var userlist = "";
 
 			$
@@ -121,20 +122,30 @@ $(function() {
 			$("#userlist").html(userlist);
 
 		} else if (json.type == "NewMessage" || json.type == "SendMessage") {
+			addMessageDebug(json.type + ":" + atmosphere.util.stringifyJSON(json));
 			input.removeAttr('disabled').focus();
 			addMessage(json, 'blue', new Date());
-		}else if ( json.type == "GetUserlist") {
-			
-		}else if (json.type =="FileSendRequest") {
+		} else if (json.type == "GetUserlist") {
+
+	
+		} else if (json.type == "FileSendRequest") {
+			addMessageDebug(json.type + ":" + atmosphere.util.stringifyJSON(json));
 			var Check = confirm("Möchten Sie die Datei annehmen?");
 			if (Check == true) {
 				sendFileAccept(json);
 				addMessageDebug(json.type + ": ACCEPT : " + json.text);
-			}else {
+			} else {
 				sendFileReject(json);
 				addMessageDebug(json.type + ": REJECT : " + json.text);
 			}
-		
+
+		} else if (json.type == "GetRoomlistResponse") {
+			$("#rooms").html('');
+			$(json.rooms).each(function(index, val) {
+				$("#rooms").append(val.name + "<br />");
+			});
+			
+			addMessageDebug(json.type + ":" + atmosphere.util.stringifyJSON(json.rooms));
 		} else {
 			addMessageDebug(json.type + ": " + json.text);
 		}
@@ -165,14 +176,6 @@ $(function() {
 
 	subSocket = socket.subscribe(request);
 
-	input.keydown(function(e) {
-		if (e.keyCode === 13) {
-			var msg = $(this).val();
-
-			subSocket.push(msg);
-			$(this).val('');
-		}
-	});
 	$("#clearButton").click(function(e) {
 		content.html('');
 	});
@@ -242,6 +245,11 @@ $(function() {
 			"type" : "GetUserlist"
 		});
 		subSocket.push(msg);
+		
+		var msg = atmosphere.util.stringifyJSON({
+			"type" : "GetRoomlist"
+		});
+		subSocket.push(msg);
 	}
 
 	function sendMessageToStream() {
@@ -269,7 +277,7 @@ $(function() {
 		});
 		subSocket.push(msg);
 	}
-	
+
 	function sendFileAccept(json) {
 		var msg = atmosphere.util.stringifyJSON({
 			"type" : "FileSendAccept",
@@ -278,7 +286,7 @@ $(function() {
 		});
 		subSocket.push(msg);
 	}
-	
+
 	function sendFileReject(json) {
 		var msg = atmosphere.util.stringifyJSON({
 			"type" : "FileSendReject",

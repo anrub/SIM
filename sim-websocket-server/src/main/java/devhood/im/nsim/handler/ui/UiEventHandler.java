@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import devhood.im.nsim.model.FileSendAccept;
 import devhood.im.nsim.model.FileSendReject;
 import devhood.im.nsim.model.GetContent;
+import devhood.im.nsim.model.GetRoomlist;
 import devhood.im.nsim.model.GetUserlist;
 import devhood.im.nsim.model.Message;
 import devhood.im.nsim.model.SendMessage;
@@ -48,6 +49,8 @@ public class UiEventHandler implements IUiEventHandler {
 				applicationContext.getBean(FileMessageHandler.class)));
 		map.put(FileSendReject.class, new FileSendRejectHandler(broadcaster,
 				applicationContext.getBean(FileMessageHandler.class)));
+		map.put(GetRoomlist.class, new GetRoomlistHandler(broadcaster,
+				userService));
 	}
 
 	public void handle(Message m) {

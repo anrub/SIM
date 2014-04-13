@@ -30,7 +30,8 @@ public class SimpleBroadcaster {
 		ObjectMapper om = new ObjectMapper();
 
 		try {
-			broadcaster.broadcast(om.writeValueAsString(toSend));
+			String value = om.writeValueAsString(toSend);
+			broadcaster.broadcast(value);
 		} catch (JsonGenerationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

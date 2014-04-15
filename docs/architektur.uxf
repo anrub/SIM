@@ -476,15 +476,15 @@ Dependency</panel_attributes>
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>180</x>
+      <x>150</x>
       <y>420</y>
-      <w>212</w>
+      <w>272</w>
       <h>130</h>
     </coordinates>
     <panel_attributes>lt=&lt;
-Events
+Events (WebSocket Messages)
 Interface Dependency</panel_attributes>
-    <additional_attributes>110;110;110;30</additional_attributes>
+    <additional_attributes>140;110;140;30</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
@@ -566,6 +566,6 @@ sim-javafx.jar</panel_attributes>
       <h>100</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>30;80;30;30</additional_attributes>
+    <additional_attributes>30;30;30;80</additional_attributes>
   </element>
 </diagram>

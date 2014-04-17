@@ -262,6 +262,7 @@ body {
         }
     
     .rooms .rooms-name {
+        position:relative;
         -webkit-box-flex: 1;
         box-flex: 1;
         flex:1;
@@ -284,3 +285,21 @@ body {
         font-size:0.8em;
         font-weight:bold;
     }
+    
+    .rooms .rooms-leave {
+        position:absolute;
+        font-size:1.4em;
+        margin-left:10px;
+        color:#999;
+        display:none;
+    }
+    
+        .rooms .rooms-leave:hover {
+            color:#000;
+        }
+    
+    .rooms li:hover .rooms-leave {
+        display:inline-block;
+    }
+    
+    

@@ -1,0 +1,286 @@
+/* 
+
+main style file
+
+color scheme
+
+blue: #54728c
+red: #e45857
+red border: #14142
+button bg: #f7f7f7
+button frame: #dadada
+button foreground: #aaaaaa
+marked right: #8abfeb
+highlight: #f1f1f1
+button green bg: #68b54d
+button green border: #519339
+
+*/
+
+/*********/
+/* fonts */
+/*********/
+
+@font-face {
+    font-family: 'oswaldbold';
+    src: url('../fonts/oswald-bold-webfont.eot');
+    src: url('../fonts/oswald-bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/oswald-bold-webfont.woff') format('woff'),
+         url('../fonts/oswald-bold-webfont.ttf') format('truetype'),
+         url('../fonts/oswald-bold-webfont.svg#oswaldbold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'oswaldlight';
+    src: url('../fonts/oswald-light-webfont.eot');
+    src: url('../fonts/oswald-light-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/oswald-light-webfont.woff') format('woff'),
+         url('../fonts/oswald-light-webfont.ttf') format('truetype'),
+         url('../fonts/oswald-light-webfont.svg#oswaldlight') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'oswaldbook';
+    src: url('../fonts/oswald-regular-webfont.eot');
+    src: url('../fonts/oswald-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/oswald-regular-webfont.woff') format('woff'),
+         url('../fonts/oswald-regular-webfont.ttf') format('truetype'),
+         url('../fonts/oswald-regular-webfont.svg#oswaldbook') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'oswald_stencilregular';
+    src: url('../fonts/oswald-stencil-webfont.eot');
+    src: url('../fonts/oswald-stencil-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/oswald-stencil-webfont.woff') format('woff'),
+         url('../fonts/oswald-stencil-webfont.ttf') format('truetype'),
+         url('../fonts/oswald-stencil-webfont.svg#oswald_stencilregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+/**********/
+/* layout */
+/**********/
+
+body {
+    margin:0;
+    font-family: Verdana, 'Lucida Sans Unicode', sans-serif;
+}
+
+#nav {
+    width:250px;
+    position: fixed;
+    overflow: hidden;
+    height:100%;
+}
+
+#main {
+    margin-left:250px;
+    padding:10px;
+}
+
+
+/*****************/
+/* global styles */
+/*****************/
+
+.online,
+.offline,
+.notavailable {
+    border-radius:3px;
+    width:6px;
+    height:6px;
+    display:inline-block;
+}
+
+    .online {
+        background:#68b54d;
+    }
+    
+    .offline {
+        background:#e45857;
+    }
+    
+    .notavailable {
+        background:#FFBF3C;
+    }
+    
+
+.avatar {
+    border-radius: 3px;
+    width:32px;
+    height:32px;
+}
+
+
+
+
+/**************/
+/* left menue */
+/**************/
+
+/* header */
+
+#nav .heading {
+    color:#ffffff;
+    background:#54728c;
+    height:40px;
+    padding:5px;
+    font-size:1.3em;
+    font-family: 'oswaldbook';
+    padding-left:15px;
+    padding-top:12px;
+}
+
+#nav .heading span {
+    padding-right:10px;
+}
+
+
+/* contact list */
+
+.contacts,
+.contacts li {
+    margin:0;
+    padding:0;
+    list-style:none;
+}
+
+.contacts li {
+    position:relative;
+    height:50px;
+    border-bottom:1px solid #dadada;
+    cursor:pointer;
+    background:#f9f9f9;
+    margin:0;
+    padding:0;
+    border-right:5px solid #f9f9f9;
+    
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+}
+
+    .contacts li.contacts-active {
+        background:#f1f1f1;
+        border-right:5px solid #8abfeb;
+    }
+
+    .contacts-state {
+        margin:0 5px 0 5px;
+    }
+    
+    .contacts-avatar {
+        margin-right:5px;
+    }
+
+    .contacts-name {
+        -webkit-box-flex: 1;
+        box-flex: 1;
+        flex:1;
+        font-size:0.8em;
+        color:#5d5d5d;
+        overflow:hidden;
+        word-wrap:break-word;
+        text-overflow:ellipsis;
+        white-space: nowrap; 
+    }
+    
+    .contacts-unread {
+        background:#e45857;
+        color:#ffffff;
+        padding:7px;
+        padding-top:2px;
+        padding-bottom:2px;
+        border-radius: 3px;
+        font-size:0.8em;
+        font-weight:bold;
+        margin-right:10px;
+    }
+    
+
+/* room list */    
+    
+#nav h1 {
+    font-size:0.95em;
+    margin-top:20px;
+    margin-left:10px;
+    color:#aaaaaa;
+}
+
+
+.rooms,
+.rooms li {
+    margin:0;
+    padding:0;
+}
+
+.rooms li {
+    font-size:0.9em;
+    padding:10px;
+    position:relative;
+    background:#f9f9f9;
+    border-right:5px solid #f9f9f9;
+    cursor:pointer;
+    
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+}    
+
+    .rooms li.rooms-active {
+        background:#f1f1f1;
+        border-right:5px solid #8abfeb;
+    }
+
+    .rooms .rooms-outside,
+    .rooms .rooms-inside {
+        border-radius:5px;
+        width:10px;
+        height:10px;
+        display:block;
+        margin-right:5px;
+    }
+
+        .rooms .rooms-inside {
+            background:#68b54d;
+        }
+        
+        .rooms .rooms-outside {
+            background:#e45857;
+        }
+    
+    .rooms .rooms-name {
+        -webkit-box-flex: 1;
+        box-flex: 1;
+        flex:1;
+        font-size:0.8em;
+        color:#5d5d5d;
+        overflow:hidden;
+        word-wrap:break-word;
+        text-overflow:ellipsis;
+        white-space: nowrap; 
+    }
+    
+    .rooms .rooms-unread {
+        display:block;
+        background:#e45857;
+        color:#ffffff;
+        padding:7px;
+        padding-top:2px;
+        padding-bottom:2px;
+        border-radius: 3px;
+        font-size:0.8em;
+        font-weight:bold;
+    }

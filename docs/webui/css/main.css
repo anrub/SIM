@@ -79,17 +79,37 @@ body {
 }
 
 #nav {
-    width:250px;
+    width:25%;
     position: fixed;
     overflow: hidden;
     height:100%;
 }
 
 #main {
-    margin-left:250px;
+    margin-left:25%;
     padding:10px;
 }
 
+#message {
+    position:absolute;
+    top:100%;
+    left:25%;
+    height:20px;
+    margin-top:-70px;
+    width:75%;
+    z-index:9;
+    border-top:1px solid #dadada;
+}
+
+    #message.message-emoticions-visible {
+        margin-top:-105px;
+    }
+
+    #message.message-emoticions-visible #message-emoticons {
+        display:block;
+    }
+
+    
 
 /*****************/
 /* global styles */
@@ -124,8 +144,6 @@ body {
 }
 
 
-
-
 /**************/
 /* left menue */
 /**************/
@@ -150,6 +168,36 @@ body {
 
 /* contact list */
 
+.mCSB_container {
+    margin-right:0;
+}
+
+    .mCSB_scrollTools .mCSB_draggerContainer {
+        margin-top:10px;
+        margin-bottom:10px;
+    }
+
+    .mCSB_scrollTools .mCSB_draggerRail {
+        background:transparent;
+    }
+
+    .mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar {
+        background:rgba(102, 102, 102, 0.20);
+    }
+    
+    .mCSB_scrollTools .mCSB_dragger:active .mCSB_dragger_bar,
+    .mCSB_scrollTools .mCSB_dragger.mCSB_dragger_onDrag .mCSB_dragger_bar {
+        background:#666;
+    }
+    
+    .mCSB_scrollTools .mCSB_dragger:hover .mCSB_dragger_bar{
+        background:#666;
+    }
+    
+    .mCSB_scrollTools {
+        z-index:20;
+    }
+
 .contacts,
 .contacts li {
     margin:0;
@@ -160,21 +208,26 @@ body {
 .contacts li {
     position:relative;
     height:50px;
-    border-bottom:1px solid #dadada;
     cursor:pointer;
-    background:#f9f9f9;
+    background:#f1f1f1;
     margin:0;
     padding:0;
-    border-right:5px solid #f9f9f9;
+    border-right:1px solid #dadada;
     
     display: -webkit-flex;
     display: flex;
     align-items: center;
+    
+    z-index:10;
 }
 
-    .contacts li.contacts-active {
-        background:#f1f1f1;
-        border-right:5px solid #8abfeb;
+    .contacts li.active {
+        background:#f9f9f9;
+        border-right:0;
+        border-bottom:1px solid #dadada;
+        border-top:1px solid #dadada;
+        box-shadow: 0px 5px 7px -4px #ccc;
+        z-index:11;
     }
 
     .contacts-state {
@@ -206,100 +259,267 @@ body {
         border-radius: 3px;
         font-size:0.8em;
         font-weight:bold;
-        margin-right:10px;
+        margin-right:15px;
     }
     
 
 /* room list */    
     
-#nav h1 {
-    font-size:0.95em;
-    margin-top:20px;
-    margin-left:10px;
-    color:#aaaaaa;
+#rooms {
+    height:200px;
+    border-top:1px solid #dadada;
 }
 
+    #rooms h1 {
+        font-size:0.95em;
+        margin-top:20px;
+        margin-left:10px;
+        color:#aaaaaa;
+    }
 
-.rooms,
-.rooms li {
-    margin:0;
+    #rooms-wrapper {
+        height:150px;
+    }
+
+    .rooms,
+    .rooms li {
+        margin:0;
+        padding:0;
+    }
+
+    .rooms li {
+        font-size:0.9em;
+        padding:10px;
+        position:relative;
+        background:#f1f1f1;
+        border-right:1px solid #dadada;
+        cursor:pointer;
+        
+        display: -webkit-flex;
+        display: flex;
+        align-items: center;
+        
+        z-index:10;
+    }    
+
+        .rooms li.active {
+            background:#f9f9f9;
+            border-right:0;
+            border-bottom:1px solid #dadada;
+            border-top:1px solid #dadada;
+            box-shadow: 0px 5px 7px -4px #ccc;
+            z-index:11;
+        }
+
+        .rooms .rooms-outside,
+        .rooms .rooms-inside {
+            border-radius:5px;
+            width:10px;
+            height:10px;
+            display:block;
+            margin-right:5px;
+        }
+
+            .rooms .rooms-inside {
+                background:#68b54d;
+            }
+            
+            .rooms .rooms-outside {
+                background:#e45857;
+            }
+        
+        .rooms .rooms-name {
+            position:relative;
+            -webkit-box-flex: 1;
+            box-flex: 1;
+            flex:1;
+            font-size:0.8em;
+            color:#5d5d5d;
+            overflow:hidden;
+            word-wrap:break-word;
+            text-overflow:ellipsis;
+            white-space: nowrap; 
+        }
+        
+        .rooms .rooms-unread {
+            display:block;
+            background:#e45857;
+            color:#ffffff;
+            padding:7px;
+            padding-top:2px;
+            padding-bottom:2px;
+            border-radius: 3px;
+            font-size:0.8em;
+            font-weight:bold;
+            margin-right:5px;
+        }
+        
+        .rooms .rooms-leave {
+            position:absolute;
+            font-size:1.4em;
+            margin-left:10px;
+            color:#999;
+            display:none;
+        }
+        
+            .rooms .rooms-leave:hover {
+                color:#000;
+            }
+        
+        .rooms li:hover .rooms-leave {
+            display:inline-block;
+        }
+    
+    
+/**************************/
+/* main chat message list */
+/**************************/
+
+#main {
     padding:0;
 }
 
-.rooms li {
-    font-size:0.9em;
-    padding:10px;
-    position:relative;
-    background:#f9f9f9;
-    border-right:5px solid #f9f9f9;
-    cursor:pointer;
+    #main-header {
+        height:37px;
+        padding-top:10px;
+        padding-bottom:10px;
+        width:100%;
+        color:#ffffff;
+        background:#66829a;
+    }
     
-    display: -webkit-flex;
-    display: flex;
-    align-items: center;
-}    
-
-    .rooms li.rooms-active {
-        background:#f1f1f1;
-        border-right:5px solid #8abfeb;
-    }
-
-    .rooms .rooms-outside,
-    .rooms .rooms-inside {
-        border-radius:5px;
-        width:10px;
-        height:10px;
-        display:block;
-        margin-right:5px;
-    }
-
-        .rooms .rooms-inside {
-            background:#68b54d;
+        #main-metadata {
+            display: flex;
+            align-items: center;
+            margin-left:20px;
         }
         
-        .rooms .rooms-outside {
-            background:#e45857;
+            #main-metadata > * {
+                margin-right:10px;
+            }
+    
+    #content {
+        padding:20px;
+        padding-top:0;
+        list-style:none;
+    }
+    
+    #content li {
+        padding-top:0;
+    }
+    
+    .entry {
+        margin-bottom:20px;
+        font-size:0.8em;
+        color:#666;
+        padding-bottom:10px;
+        border-bottom:1px solid #dadada;
+    }
+    
+        .entry:last-child {
+            border-bottom:0;
         }
     
-    .rooms .rooms-name {
-        position:relative;
-        -webkit-box-flex: 1;
-        box-flex: 1;
-        flex:1;
-        font-size:0.8em;
-        color:#5d5d5d;
-        overflow:hidden;
-        word-wrap:break-word;
-        text-overflow:ellipsis;
-        white-space: nowrap; 
-    }
+        .entry-metadata {
+            display: flex;
+            align-items: center;
+            font-weight:bold;
+            margin-bottom:10px;
+        }
+        
+            .entry-metadata > * {
+                margin-right:10px;
+            }
     
-    .rooms .rooms-unread {
-        display:block;
-        background:#e45857;
-        color:#ffffff;
-        padding:7px;
-        padding-top:2px;
-        padding-bottom:2px;
-        border-radius: 3px;
-        font-size:0.8em;
-        font-weight:bold;
-    }
+            .entry-datetime {
+                font-weight:normal;
+                font-size:0.8em;
+            }
     
-    .rooms .rooms-leave {
-        position:absolute;
-        font-size:1.4em;
-        margin-left:10px;
-        color:#999;
+
+    
+/**********************/
+/* message input area */
+/**********************/   
+
+#message {
+    background:#f1f1f1;
+    padding-top:10px;
+}
+    
+    #message-emoticons {
         display:none;
+        padding:5px;
+        margin-left:5px;
+        background:#f1f1f1;
+        transition: display 2s;
     }
-    
-        .rooms .rooms-leave:hover {
-            color:#000;
+
+        #message-emoticons img {
+            cursor:pointer;
         }
-    
-    .rooms li:hover .rooms-leave {
-        display:inline-block;
+
+    #message-input {
+        display: -webkit-flex;
+        display: flex;
+        padding:5px;
+        background:#f1f1f1;
     }
-    
-    
+
+        #message-input-textfield {
+            -webkit-box-flex: 1;
+            box-flex: 1;
+            flex:1;
+            padding:5px;
+            border-radius: 4px;
+            border-bottom-right-radius: 0;
+            border-top-right-radius: 0;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            -webkit-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+            transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+            border: 1px solid #ccc;
+            margin-right:0;
+        }
+        
+        #message-input-textfield:focus {
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+            border-color: #66afe9;
+        }
+            
+        #message-toggleemots {
+            display:block;
+            margin:0;
+            margin-top:2px;
+            margin-bottom:2px;
+            background:url(../emoticons/01.gif) no-repeat center center #eee;
+            width:30px;
+            height:30px;
+            border: 1px solid #ccc;
+            border-left:0;
+            border-right:0;
+            cursor:pointer;
+            height:40px;
+        }
+        
+            #message-toggleemots.active {
+                background-color:#e45857;
+                border-color:#14142;
+            }
+
+        #message-send {
+            cursor:pointer;
+            background-color:#68b54d;
+            border: 1px solid #ccc;
+            margin:0;
+            margin-top:2px;
+            margin-bottom:2px;
+            padding-top:7px;
+            padding-left:20px;
+            padding-right:20px;
+            font-size:1.5em;
+            color:#fff;
+            border-bottom-right-radius: 4px;
+            border-top-right-radius: 4px;
+        }

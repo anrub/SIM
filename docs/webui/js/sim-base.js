@@ -147,11 +147,14 @@ var sim = {
     initEvents: function() {
         // toggle emoticons
         $('#message-toggleemots').click(function() {
+            var emoticonsPopup = $('#message-emoticons');
             $(this).toggleClass('active');
-            if($(this).hasClass('active'))
-                $('#message').addClass('message-emoticions-visible');
-            else 
-                $('#message').removeClass('message-emoticions-visible');
+            if($(this).hasClass('active')) {
+                emoticonsPopup.css('marginTop', -1 * emoticonsPopup.height() - parseInt(emoticonsPopup.css('padding')));
+                emoticonsPopup.show();
+            } else  {
+                emoticonsPopup.hide();
+            }
         });
         
         // emoticons click
@@ -159,6 +162,7 @@ var sim = {
             $('#message-input-textfield').val(
                 $('#message-input-textfield').val() + " " + $(this).attr('title')
             );
+            $('#message-toggleemots').click();
         });
         
         // switch to user
@@ -168,6 +172,7 @@ var sim = {
             $(this).addClass('active');
             sim.currentConversation = user;
             sim.backend.getConversation(user);
+            $('#main-metadata').css('visibility', 'visible');
         });
         
         // enter room click
@@ -179,6 +184,7 @@ var sim = {
             sim.backend.joinRoom(room);
             sim.backend.updateRoomlist();
             sim.backend.getConversation(sim.currentConversation);
+            $('#main-metadata').css('visibility', 'visible');
         });
         
         // leave room click
@@ -190,9 +196,17 @@ var sim = {
         // send message
         $('#message-send').click(function() {
             var message = $('#message-input-textfield').val();
+            if (message.trim().length==0) {
+                alertify.error('bitte eine Nachricht eingeben');
+                return;
+            }
+            
+            if (sim.currentConversation==false) {
+                alertify.error('bitte einen Chat Kanal ausw&auml;hlen');
+                return;
+            }
             $('#message-input-textfield').val("");
             sim.backend.sendMessage(sim.currentConversation, message);
-            sim.backend.updateRoomlist();
         });
     },
     
@@ -295,9 +309,10 @@ var sim = {
         sim.backend.updateRoomlist();
         
         // set metadata: avatar
-        var avatar = '';
+        var avatar = 'group.png';
         if($('.contacts .active').length > 0)
-            avatar = '<img src="' + $('.contacts .active .avatar').attr('src') + '" class="avatar" />';
+            avatar = $('.contacts .active .avatar').attr('src');
+        avatar = '<img src="' + avatar + '" class="avatar" />';
         
         // set metadata: state
         var state = 'online';
@@ -326,10 +341,13 @@ var sim = {
                     ' + sim.emoticons(sim.escape(message.text)) + '\
                 </div>\
             </li>');
+            
+            // scroll 2 bottom
+            if(index==messages.length-1) {
+                window.setTimeout(function() { $("#content-wrapper").mCustomScrollbar("scrollTo","bottom"); }, 500);
+            }
         });
         
-        // scroll 2 bottom
-        $("#content-wrapper").mCustomScrollbar("scrollTo","bottom");
     },
     
         
@@ -410,7 +428,11 @@ var sim = {
      */
     emoticons: function(text) {
         $.each(emoticons, function(shortcut, emoticon) {
-            text = text.replace(shortcut, '<img src="'+ emoticon +'" title="' + shortcut + '"/>');
+            // escape shortcut
+            shortcut = shortcut.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+            
+            var re = new RegExp(shortcut, 'g');
+            text = text.replace(re, '<img src="'+ emoticon +'" title="' + shortcut + '"/>');
         });
         return text;
     }

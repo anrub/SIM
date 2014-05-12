@@ -342,6 +342,10 @@ var sim = {
                 </div>\
             </li>');
             
+            // set time ago updater
+            var dateTimeElement = $('#content .entry-datetime:last');
+            sim.startDateAgoUpdater(message.datetime, dateTimeElement);
+            
             // scroll 2 bottom
             if(index==messages.length-1) {
                 window.setTimeout(function() { $("#content-wrapper").mCustomScrollbar("scrollTo","bottom"); }, 500);
@@ -373,6 +377,51 @@ var sim = {
     
     // private helpers
     
+    
+    /**
+     * updates ago during element is visible
+     */
+    startDateAgoUpdater: function(date, element) {
+        
+        // no longer update removed elements
+        var found = false;
+        $('#content .entry-datetime').each(function(index, item) {
+            if($(item).html()==$(element).html()) {
+                found = true;
+                return false;
+            }
+        });
+        
+        if(found==false)
+            return;
+        
+        // calculate update interval
+        var now = new Date().getTime() / 1000;
+        var ageInSeconds = now - date;
+        var ageInMinutes = ageInSeconds / 60;
+        var ageInHours = ageInMinutes / 60;
+        var ageInDays = ageInHours / 24;
+        
+        var timeout = 1000;
+        if(ageInMinutes<1)
+            timeout = 1000;
+        else if(ageInHours<1)
+            timeout = 1000 * 60;
+        else if(ageInDays<1)
+            timeout = 1000 * 60 * 60;
+        else
+            return;
+        
+        // update element
+        $(element).html(sim.dateAgo(date));
+        
+        // trigger next update
+        window.setTimeout(function() {
+            sim.startDateAgoUpdater(date, element);
+        }, timeout);
+    },
+    
+    
     /**
      * return gravatar image if available
      */
@@ -385,6 +434,7 @@ var sim = {
      * convert date in vor n Minuten
      */
     dateAgo: function(date) {
+        
         var now = new Date().getTime() / 1000;
         
         var ageInSeconds = now - date;
